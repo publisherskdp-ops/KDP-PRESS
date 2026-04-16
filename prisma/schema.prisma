@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  role      Role     @default(READER)
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  authorProfile AuthorProfile?
+  books         Book[]
+  purchases     Transaction[]  @relation("BuyerTransactions")
+}
+
+enum Role {
+  READER
+  AUTHOR
+  ADMIN
+}
+
+model AuthorProfile {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @unique @db.ObjectId
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeConnectId String?  @unique
+  taxStatus       TaxStatus @default(PENDING)
+  w8w9Verified    Boolean  @default(false)
+  bio             String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+enum TaxStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model Book {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  subtitle        String?
+  descriptionHtml String?
+  isbn            String?  @unique
+  category        String
+  authorId        String   @db.ObjectId
+  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  contributors    String[] // Array of names or JSON strings
+  
+  status          BookStatus @default(DRAFT)
+  fileUrl         String?  // Reference to S3 location
+  coverUrl        String?
+  price           Float    @default(0.0)
+  
+  imprint         String?  @default("Independently Published")
+  trimSize        String?  @default("6 x 9 inches")
+  pageCount       Int?     @default(0)
+  language        String   @default("English")
+  publicationDate DateTime?
+
+  seriesTitle     String?
+  seriesSequence  Int?
+  readingAgeRange String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  logs            BookshelfLog[]
+  sales           Transaction[]  @relation("BookTransactions")
+}
+
+enum BookStatus {
+  DRAFT
+  IN_REVIEW
+  LIVE
+  ARCHIVED
+}
+
+model BookshelfLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  bookId    String   @db.ObjectId
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  status    BookStatus
+  note      String?
+  timestamp DateTime @default(now())
+}
+
+model Transaction {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  bookId    String   @db.ObjectId
+  book      Book     @relation("BookTransactions", fields: [bookId], references: [id])
+  buyerId   String   @db.ObjectId
+  buyer     User     @relation("BuyerTransactions", fields: [buyerId], references: [id])
+  amount    Float
+  royalty   Float    // Calculated as (amount * royaltyRate) - fees
+  currency  String   @default("USD")
+  stripeTxId String? @unique
+  createdAt DateTime @default(now())
+}
