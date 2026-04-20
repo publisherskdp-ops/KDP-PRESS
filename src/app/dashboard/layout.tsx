@@ -70,7 +70,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <main style={{ marginLeft: '260px', flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Top Header */}
         <header style={{ height: '70px', background: 'white', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 3rem', position: 'sticky', top: 0, zIndex: 40 }}>
-          <h2 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Author Central</h2>
+          {/* <h2 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Author Central</h2> */}
           <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
             <button style={{ background: 'transparent', border: 'none', position: 'relative', cursor: 'pointer' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>

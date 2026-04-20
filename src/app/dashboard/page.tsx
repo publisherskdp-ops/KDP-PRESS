@@ -284,7 +284,7 @@ function StatPreview({ icon, label, value, trend }: { icon: React.ReactNode, lab
         <div className="group p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all duration-500">
             <div className="flex items-center justify-between mb-6">
                 <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-all">
-                    {React.cloneElement(icon as React.isValidElement, { size: 24 })}
+                    {React.cloneElement(icon as React.ReactElement, { size: 24 })}
                 </div>
                 <div className="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black rounded-lg uppercase tracking-widest">
                     {trend}

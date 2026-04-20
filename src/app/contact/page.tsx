@@ -139,7 +139,7 @@ function ContactInfoItem({ icon, label, value }: { icon: React.ReactNode, label:
    return (
       <div className="flex items-center gap-5 group cursor-pointer">
          <div className="w-16 h-16 bg-white border border-slate-100 shadow-sm rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-all duration-300">
-            {React.cloneElement(icon as React.isValidElement, { size: 24 })}
+            {React.cloneElement(icon as React.ReactElement, { size: 24 })}
          </div>
          <div>
             <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">{label}</div>

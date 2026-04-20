@@ -163,7 +163,7 @@ function FeatureCard({ icon, title, desc }: { icon: React.ReactNode, title: stri
   return (
     <div className="group p-10 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
       <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-10 group-hover:bg-slate-900 group-hover:text-white transition-colors duration-500">
-        {React.cloneElement(icon as React.isValidElement, { size: 32 })}
+        {React.cloneElement(icon as React.ReactElement, { size: 32 })}
       </div>
       <h3 className="text-2xl font-black text-slate-900 mb-4">{title}</h3>
       <p className="text-slate-500 font-medium leading-relaxed">{desc}</p>
