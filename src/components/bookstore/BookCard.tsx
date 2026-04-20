@@ -2,6 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Star, ShoppingCart, Eye } from 'lucide-react';
+import { useCart } from '@/components/CartContext';
 
 interface BookProps {
   id: string;
@@ -16,6 +17,8 @@ interface BookProps {
 }
 
 export default function BookCard({ book, onQuickView }: { book: BookProps, onQuickView: (b: BookProps) => void }) {
+  const { addToCart } = useCart();
+  
   return (
     <div className="group relative flex flex-col h-full glass-card rounded-2xl overflow-hidden hover-perspective p-4 border border-white/40 shadow-sm hover:shadow-2xl transition-all duration-500">
       {/* Badge */}
@@ -42,6 +45,13 @@ export default function BookCard({ book, onQuickView }: { book: BookProps, onQui
             <Eye size={20} />
           </button>
           <button 
+            onClick={() => addToCart({
+              id: book.id,
+              title: book.title,
+              price: book.price,
+              quantity: 1,
+              image: book.image
+            })}
             className="p-3 bg-white text-slate-900 rounded-full hover:bg-amber-500 hover:text-white transition-colors shadow-lg"
             title="Add to Cart"
           >

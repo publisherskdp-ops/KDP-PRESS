@@ -26,7 +26,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </Link>
         </div>
-        
+
         <nav style={{ padding: '2rem 1rem', flex: 1 }}>
           <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem', paddingLeft: '1rem' }}>Menu</p>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

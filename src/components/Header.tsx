@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ShoppingCart, LogIn, Sparkles, BookMarked, Menu, X } from 'lucide-react';
 import { useCart } from './CartContext';
 
@@ -25,11 +26,18 @@ const Header: React.FC = () => {
       <div className="max-w-[1400px] mx-auto px-6 h-full flex items-center justify-between gap-8">
         
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white group-hover:bg-sky-600 transition-colors shadow-lg shadow-slate-900/10">
-              <BookMarked size={22} />
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="relative w-12 h-12 flex items-center justify-center transition-transform group-hover:scale-105 active:scale-95">
+              <Image 
+                src="/logo.png" 
+                alt="KDP Press Logo" 
+                width={120} 
+                height={40} 
+                className="object-contain w-auto h-10"
+                priority
+              />
           </div>
-          <span className="text-xl font-black tracking-tighter text-slate-900 uppercase">KDP <span className="text-sky-600">Press</span></span>
+          <span className="hidden sm:block text-xl font-black tracking-tighter text-slate-900 uppercase">KDP <span className="text-sky-600">Press</span></span>
         </Link>
         
         {/* Desktop Nav */}

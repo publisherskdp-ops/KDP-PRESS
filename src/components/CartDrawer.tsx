@@ -23,13 +23,13 @@ const CartDrawer: React.FC = () => {
       {/* Drawer */}
       <div style={{ 
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '450px', maxWidth: '100%', 
-        background: 'var(--surface)', borderLeft: '1px solid var(--border)', zIndex: 2001,
-        boxShadow: 'var(--shadow-lg)', display: 'flex', flexDirection: 'column',
+        background: 'var(--surface)', borderLeft: '1px solid var(--border-medium)', zIndex: 2001,
+        boxShadow: 'var(--shadow-lg, 0 10px 50px rgba(0,0,0,0.15))', display: 'flex', flexDirection: 'column',
         animation: 'slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
       }}>
-        <div style={{ padding: '2rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-           <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Your Shopping Cart ({cartCount})</h2>
-           <button onClick={() => setIsOpen(false)} style={{ color: 'var(--text-dim)', fontSize: '1.5rem' }}>✕</button>
+        <div style={{ padding: '2rem', borderBottom: '1px solid var(--border-medium)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)' }}>Your Shopping Cart ({cartCount})</h2>
+           <button onClick={() => setIsOpen(false)} style={{ color: 'var(--text-dim)', fontSize: '1.5rem', background: 'transparent', border: 'none', cursor: 'pointer' }}>✕</button>
         </div>
 
         <div style={{ flex: 1, overflowY: 'auto', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -44,18 +44,16 @@ const CartDrawer: React.FC = () => {
           ) : (
             cart.map((item) => (
               <div key={item.id} style={{ display: 'flex', gap: '1.2rem', alignItems: 'center' }}>
-                <div style={{ width: '80px', height: '120px', background: 'var(--surface-light)', borderRadius: '8px', border: '1px solid var(--border)', flexShrink: 0 }}></div>
+                <div style={{ width: '80px', height: '120px', background: 'var(--surface-light)', borderRadius: '8px', border: '1px solid var(--border-medium)', flexShrink: 0, backgroundImage: item.image ? `url(${item.image})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                 <div style={{ flex: 1 }}>
-                  <h4 style={{ fontSize: '1.1rem', marginBottom: '0.2rem' }}>{item.title}</h4>
-                  <p style={{ color: 'var(--primary)', fontWeight: 700, marginBottom: '0.8rem' }}>${item.price}</p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--background)', borderRadius: '8px', border: '1px solid var(--border)' }}>
-                      <button onClick={() => updateQuantity(item.id, -1)} style={{ padding: '0.5rem 0.8rem', color: '#fff' }}>−</button>
-                      <span style={{ padding: '0 0.5rem', fontSize: '0.9rem', fontWeight: 700 }}>{item.quantity}</span>
-                      <button onClick={() => updateQuantity(item.id, 1)} style={{ padding: '0.5rem 0.8rem', color: '#fff' }}>+</button>
+                  <h4 style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: 'var(--text-main)' }}>{item.title}</h4>
+                  <p style={{ color: 'var(--primary-color)', fontWeight: 700, marginBottom: '0.8rem' }}>${item.price}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--surface-elevated)', borderRadius: '8px', border: '1px solid var(--border-medium)' }}>
+                      <button onClick={() => updateQuantity(item.id, -1)} style={{ padding: '0.5rem 0.8rem', color: 'var(--text-main)', background: 'transparent', border: 'none', cursor: 'pointer' }}>−</button>
+                      <span style={{ padding: '0 0.5rem', fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>{item.quantity}</span>
+                      <button onClick={() => updateQuantity(item.id, 1)} style={{ padding: '0.5rem 0.8rem', color: 'var(--text-main)', background: 'transparent', border: 'none', cursor: 'pointer' }}>+</button>
                     </div>
-                    <button onClick={() => removeFromCart(item.id)} style={{ color: 'var(--error)', fontSize: '0.8rem', fontWeight: 600 }}>Remove</button>
-                  </div>
+                    <button onClick={() => removeFromCart(item.id)} style={{ color: 'var(--destructive, #ef4444)', fontSize: '0.8rem', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer' }}>Remove</button>
                 </div>
               </div>
             ))
@@ -64,7 +62,7 @@ const CartDrawer: React.FC = () => {
 
         {cart.length > 0 && (
           <div style={{ padding: '2.5rem', borderTop: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', fontSize: '1.2rem', fontWeight: 700 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-main)' }}>
               <span>Subtotal</span>
               <span>${cartTotal.toFixed(2)}</span>
             </div>

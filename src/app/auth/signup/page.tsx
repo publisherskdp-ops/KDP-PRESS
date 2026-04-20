@@ -1,7 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
-import Link from "next/link"
+import Image from "next/image"
 import { useAuthStore } from "@/lib/authStore"
 import { useRouter } from "next/navigation"
 
@@ -36,6 +35,16 @@ export default function SignupPage() {
   if (showVerify) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-4">
+        <Link href="/" className="mb-10 block transition-transform hover:scale-105 active:scale-95">
+          <Image 
+            src="/logo.png" 
+            alt="KDP Press Logo" 
+            width={160} 
+            height={50} 
+            className="object-contain h-10 w-auto"
+            priority
+          />
+        </Link>
         <div className="max-w-md w-full bg-white border border-slate-200 shadow-xl rounded-2xl p-8 text-center space-y-6">
           <div className="w-16 h-16 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center mx-auto">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
@@ -63,8 +72,15 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-4 py-12">
-      <Link href="/" className="text-3xl font-black tracking-tight text-sky-700 mb-10">
-        KDP<span className="text-amber-500">Press</span>
+      <Link href="/" className="mb-10 block transition-transform hover:scale-105 active:scale-95">
+        <Image 
+          src="/logo.png" 
+          alt="KDP Press Logo" 
+          width={180} 
+          height={60} 
+          className="object-contain h-12 w-auto"
+          priority
+        />
       </Link>
       
       <div className="max-w-md w-full bg-white border border-slate-200 shadow-xl rounded-2xl p-8 space-y-8">

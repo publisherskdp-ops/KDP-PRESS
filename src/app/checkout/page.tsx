@@ -13,7 +13,7 @@ export default function CheckoutPage() {
 
   if (cart.length === 0 && step !== 4) {
     return (
-      <main style={{ minHeight: '100vh', background: 'var(--background)', color: '#fff' }}>
+      <main style={{ minHeight: '100vh', background: 'var(--surface)', color: 'var(--text-main)' }}>
         <Header />
         <div className="section container" style={{ paddingTop: '12rem', textAlign: 'center' }}>
           <h1 style={{ fontSize: '3rem', marginBottom: '2rem' }}>Your Cart is Empty</h1>
@@ -28,7 +28,7 @@ export default function CheckoutPage() {
   const grandTotal = cartTotal + shipping + tax;
 
   return (
-    <main style={{ minHeight: '100vh', background: 'var(--background)', color: '#fff' }}>
+    <main style={{ minHeight: '100vh', background: 'var(--surface)', color: 'var(--text-main)' }}>
       <Header />
       
       <div className="section" style={{ paddingTop: '10rem' }}>
@@ -165,7 +165,7 @@ export default function CheckoutPage() {
           {/* STEP 3: Payment */}
           {step === 3 && (
             <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '4rem', alignItems: 'start' }}>
-              <div style={{ background: 'var(--surface)', padding: '3.5rem', borderRadius: '32px', border: '1px solid var(--border)' }}>
+              <div style={{ background: 'var(--surface)', padding: '3.5rem', borderRadius: '32px', border: '1px solid var(--border-medium)' }}>
                 <SectionTitle icon={
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                 } title="Payment Details" />
@@ -225,7 +225,7 @@ export default function CheckoutPage() {
                }}>
                  <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                </div>
-               <h1 style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '1.5rem' }}>Story Secured. ✦</h1>
+               <h1 style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '1.5rem', color: 'var(--text-main)' }}>Story Secured. ✦</h1>
                <p style={{ fontSize: '1.4rem', color: 'var(--text-muted)', marginBottom: '1.5rem', maxWidth: '600px', margin: '0 auto 1.5rem' }}>Thank you for supporting independent authors. A confirmation email has been sent to your inbox.</p>
                <p style={{ fontSize: '1rem', color: 'var(--text-dim)', marginBottom: '4rem' }}>Order #KDP-{Math.floor(Math.random() * 900000) + 100000} · Estimated delivery: 5–7 business days</p>
                <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center' }}>
@@ -248,9 +248,10 @@ function ProgressStep({ number, label, active, done }: { number: number, label: 
       <div style={{ textAlign: 'center', opacity: active ? 1 : 0.3 }}>
          <div style={{ 
             width: '50px', height: '50px', borderRadius: '50%', 
-            background: done ? 'var(--primary)' : active ? 'var(--primary)' : 'var(--surface-light)', 
+            background: done ? 'var(--primary-color)' : active ? 'var(--primary-color)' : 'var(--surface-elevated)', 
             display: 'flex', alignItems: 'center', justifyContent: 'center', 
-            fontWeight: 800, margin: '0 auto 0.8rem', border: '1px solid var(--border)',
+            fontWeight: 800, margin: '0 auto 0.8rem', border: '1px solid var(--border-medium)',
+            color: active || done ? '#fff' : 'var(--text-dim)',
             transition: 'all 0.4s ease'
          }}>
             {done ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg> : number}
@@ -261,14 +262,14 @@ function ProgressStep({ number, label, active, done }: { number: number, label: 
 }
 
 function ProgressLine({ active }: { active: boolean }) {
-   return <div style={{ width: '80px', height: '2px', background: active ? 'var(--primary)' : 'var(--border)', transition: 'background 0.4s ease', marginBottom: '2rem', flexShrink: 0 }}></div>;
+   return <div style={{ width: '80px', height: '2px', background: active ? 'var(--primary-color)' : 'var(--border-medium)', transition: 'background 0.4s ease', marginBottom: '2rem', flexShrink: 0 }}></div>;
 }
 
 function SectionTitle({ icon, title }: { icon: React.ReactNode, title: string }) {
    return (
       <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', marginBottom: '2.5rem' }}>
-         <div style={{ color: 'var(--primary)' }}>{icon}</div>
-         <h2 style={{ fontSize: '1.6rem', fontWeight: 800 }}>{title}</h2>
+         <div style={{ color: 'var(--primary-color)' }}>{icon}</div>
+         <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-main)' }}>{title}</h2>
       </div>
    );
 }
@@ -280,12 +281,12 @@ function Input({ label, placeholder, id, type = 'text' }: { label: string, place
          <input 
             id={id} type={type} placeholder={placeholder} 
             style={{ 
-               background: 'var(--background)', border: '1px solid var(--border)', 
-               padding: '1rem 1.2rem', borderRadius: '12px', color: '#fff', 
+               background: 'var(--surface-light)', border: '1px solid var(--border-medium)', 
+               padding: '1rem 1.2rem', borderRadius: '12px', color: 'var(--text-main)', 
                outline: 'none', fontSize: '1rem', transition: 'border-color 0.2s ease'
             }}
-            onFocus={(e) => e.target.style.borderColor = 'var(--primary)'}
-            onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
+            onFocus={(e) => e.target.style.borderColor = 'var(--primary-color)'}
+            onBlur={(e) => e.target.style.borderColor = 'var(--border-medium)'}
          />
       </div>
    );
@@ -298,8 +299,8 @@ function SelectInput({ label, id, options }: { label: string, id: string, option
          <select 
             id={id}
             style={{ 
-               background: 'var(--background)', border: '1px solid var(--border)', 
-               padding: '1rem 1.2rem', borderRadius: '12px', color: '#fff', 
+               background: 'var(--surface-light)', border: '1px solid var(--border-medium)', 
+               padding: '1rem 1.2rem', borderRadius: '12px', color: 'var(--text-main)', 
                outline: 'none', fontSize: '1rem', cursor: 'pointer', appearance: 'none'
             }}
          >
@@ -316,26 +317,26 @@ function ShippingOption({ id, selected, onSelect, label, desc, price }: any) {
          style={{ 
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '1.2rem 1.5rem', borderRadius: '16px', cursor: 'pointer',
-            background: selected ? 'rgba(255, 77, 109, 0.08)' : 'rgba(255,255,255,0.02)',
-            border: `2px solid ${selected ? 'var(--primary)' : 'var(--border)'}`,
+            background: selected ? 'var(--primary-surface)' : 'var(--surface)',
+            border: `2px solid ${selected ? 'var(--primary-color)' : 'var(--border-medium)'}`,
             transition: 'all 0.3s ease'
          }}
       >
          <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
             <div style={{ 
                width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
-               border: `2px solid ${selected ? 'var(--primary)' : 'var(--border)'}`,
-               background: selected ? 'var(--primary)' : 'transparent',
+               border: `2px solid ${selected ? 'var(--primary-color)' : 'var(--border-medium)'}`,
+               background: selected ? 'var(--primary-color)' : 'transparent',
                display: 'flex', alignItems: 'center', justifyContent: 'center'
             }}>
-               {selected && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#fff' }}></div>}
+               {selected && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--surface)' }}></div>}
             </div>
             <div>
-               <p style={{ fontWeight: 700, fontSize: '0.95rem' }}>{label}</p>
+               <p style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-main)' }}>{label}</p>
                <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>{desc}</p>
             </div>
          </div>
-         <span style={{ fontWeight: 800, color: selected ? 'var(--primary)' : '#fff' }}>{price}</span>
+         <span style={{ fontWeight: 800, color: selected ? 'var(--primary-color)' : 'var(--text-main)' }}>{price}</span>
       </div>
    );
 }
@@ -344,25 +345,25 @@ function PaymentMethodCard({ icon, label, selected }: { icon: React.ReactNode, l
    return (
       <div style={{ 
          padding: '1.2rem', borderRadius: '16px', textAlign: 'center', cursor: 'pointer',
-         background: selected ? 'rgba(255, 77, 109, 0.08)' : 'rgba(255,255,255,0.02)',
-         border: `2px solid ${selected ? 'var(--primary)' : 'var(--border)'}`,
+         background: selected ? 'var(--primary-surface)' : 'var(--surface)',
+         border: `2px solid ${selected ? 'var(--primary-color)' : 'var(--border-medium)'}`,
          transition: 'all 0.3s ease'
       }}>
-         <div style={{ color: selected ? 'var(--primary)' : 'var(--text-muted)', marginBottom: '0.5rem', display: 'flex', justifyContent: 'center' }}>{icon}</div>
-         <p style={{ fontWeight: 700, fontSize: '0.85rem' }}>{label}</p>
+         <div style={{ color: selected ? 'var(--primary-color)' : 'var(--text-muted)', marginBottom: '0.5rem', display: 'flex', justifyContent: 'center' }}>{icon}</div>
+         <p style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-main)' }}>{label}</p>
       </div>
    );
 }
 
 function OrderSummary({ cart, subtotal, shipping, tax, grandTotal }: { cart: any[], subtotal: number, shipping: number, tax: number, grandTotal: number }) {
    return (
-      <div style={{ background: 'var(--surface-light)', padding: '2.5rem', borderRadius: '32px', border: '1px solid var(--border)', alignSelf: 'flex-start', position: 'sticky', top: '10rem' }}>
-         <h3 style={{ marginBottom: '2rem', fontSize: '1.2rem', fontWeight: 800 }}>Order Summary</h3>
-         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', marginBottom: '2rem', paddingBottom: '2rem', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ background: 'var(--surface-light)', padding: '2.5rem', borderRadius: '32px', border: '1px solid var(--border-medium)', alignSelf: 'flex-start', position: 'sticky', top: '10rem' }}>
+         <h3 style={{ marginBottom: '2rem', fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)' }}>Order Summary</h3>
+         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', marginBottom: '2rem', paddingBottom: '2rem', borderBottom: '1px solid var(--border-medium)' }}>
             {cart.map(item => (
                <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem', alignItems: 'center', gap: '1rem' }}>
                   <span style={{ color: 'var(--text-muted)', flex: 1, lineHeight: '1.4' }}>{item.title} <span style={{ color: 'var(--text-dim)' }}>×{item.quantity}</span></span>
-                  <span style={{ fontWeight: 700, whiteSpace: 'nowrap' }}>${(item.price * item.quantity).toFixed(2)}</span>
+                  <span style={{ fontWeight: 700, whiteSpace: 'nowrap', color: 'var(--text-main)' }}>${(item.price * item.quantity).toFixed(2)}</span>
                </div>
             ))}
          </div>
@@ -377,15 +378,15 @@ function OrderSummary({ cart, subtotal, shipping, tax, grandTotal }: { cart: any
                <span>Tax (8%)</span><span>${tax.toFixed(2)}</span>
             </div>
          </div>
-         <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.8rem', display: 'flex', justifyContent: 'space-between', fontSize: '1.4rem', fontWeight: 900 }}>
+         <div style={{ borderTop: '1px solid var(--border-medium)', paddingTop: '1.8rem', display: 'flex', justifyContent: 'space-between', fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-main)' }}>
             <span>Total</span>
-            <span style={{ color: 'var(--primary)' }}>${grandTotal.toFixed(2)}</span>
+            <span style={{ color: 'var(--primary-color)' }}>${grandTotal.toFixed(2)}</span>
          </div>
          {/* Trust Badges */}
          <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
             {['Free returns within 30 days', 'Secure SSL encryption', 'Instant eBook delivery'].map(badge => (
                <div key={badge} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', fontSize: '0.8rem', color: 'var(--text-dim)' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   {badge}
                </div>
             ))}

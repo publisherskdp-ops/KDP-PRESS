@@ -13,8 +13,14 @@ import {
   CheckCircle2, 
   ArrowRight,
   Sparkles,
-  BookMarked
+  BookMarked,
+  Plus,
+  Minus,
+  Send,
+  User as UserIcon,
+  MessageSquare
 } from 'lucide-react';
+import { useCart } from '@/components/CartContext';
 
 // Expanded Mock Book matching the advanced metadata requirements
 const mockBooks = [
@@ -54,8 +60,38 @@ export default function BookProductPage({ params }: { params: Promise<{ id: stri
 
   const [selectedFormat, setSelectedFormat] = useState<FormatKey>('paperback');
   const [quantity, setQuantity] = useState(1);
-
+  const { addToCart } = useCart();
   const selectedPrice = book.price[selectedFormat];
+
+  // Review states
+  const [reviews, setReviews] = useState([
+    { id: 1, user: 'Alex Morgan', rating: 5, comment: 'Absolutely mesmerizing! The pacing was perfect.', date: '2 days ago' },
+    { id: 2, user: 'Jamie Chen', rating: 4, comment: 'A bit slow in the middle, but the ending was worth it.', date: '1 week ago' }
+  ]);
+  const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmitReview = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newReview.comment.trim()) return;
+    
+    setIsSubmitting(true);
+    // Simulate API call
+    setTimeout(() => {
+      setReviews([
+        { 
+          id: Date.now(), 
+          user: 'Verified Reader', 
+          rating: newReview.rating, 
+          comment: newReview.comment, 
+          date: 'Just now' 
+        }, 
+        ...reviews
+      ]);
+      setNewReview({ rating: 5, comment: '' });
+      setIsSubmitting(false);
+    }, 1000);
+  };
 
   return (
     <div className="min-h-screen bg-[#FDFCFB] text-slate-900 selection:bg-sky-100 selection:text-sky-900 pb-20">
@@ -197,30 +233,34 @@ export default function BookProductPage({ params }: { params: Promise<{ id: stri
                   />
                 </div>
 
-                <div className="mt-16 grid grid-cols-2 lg:grid-cols-4 gap-8 bg-white/50 p-8 rounded-3xl border border-slate-100 shadow-sm">
-                    <div className="space-y-1">
-                        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400">Length</span>
-                        <div className="flex items-center gap-2 text-slate-900 font-bold">
-                            <BookOpen size={16} className="text-sky-600" />
+                <div className="mt-16 flex flex-wrap gap-x-12 gap-y-10 bg-white/50 p-10 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                    <div className="min-w-[140px] space-y-2">
+                        <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Length</span>
+                        <div className="flex items-center gap-3 text-slate-900 font-bold">
+                            <div className="w-8 h-8 bg-sky-50 rounded-lg flex items-center justify-center">
+                              <BookOpen size={16} className="text-sky-600" />
+                            </div>
                             {book.pageCount} pages
                         </div>
                     </div>
-                    <div className="space-y-1">
-                        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400">Language</span>
-                        <div className="flex items-center gap-2 text-slate-900 font-bold">
-                            <Globe size={16} className="text-sky-600" />
+                    <div className="min-w-[140px] space-y-2">
+                        <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Language</span>
+                        <div className="flex items-center gap-3 text-slate-900 font-bold">
+                            <div className="w-8 h-8 bg-sky-50 rounded-lg flex items-center justify-center">
+                              <Globe size={16} className="text-sky-600" />
+                            </div>
                             {book.language}
                         </div>
                     </div>
-                    <div className="space-y-1">
-                        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400">ISBN</span>
-                        <div className="flex items-center gap-2 text-slate-900 font-bold italic">
+                    <div className="min-w-[180px] space-y-2">
+                        <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">ISBN-13</span>
+                        <div className="flex items-center gap-3 text-slate-900 font-bold font-mono text-sm tracking-tight">
                             {book.isbn}
                         </div>
                     </div>
-                    <div className="space-y-1">
-                        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400">Imprint</span>
-                        <div className="flex items-center gap-2 text-slate-900 font-black">
+                    <div className="min-w-[180px] space-y-2">
+                        <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Publisher</span>
+                        <div className="flex items-center gap-3 text-slate-900 font-black">
                             {book.imprint}
                         </div>
                     </div>
@@ -245,20 +285,51 @@ export default function BookProductPage({ params }: { params: Promise<{ id: stri
 
                 <div className="space-y-3">
                    <div className="relative group">
-                        <select className="w-full bg-slate-100 border-none px-6 py-4 rounded-2xl text-sm font-bold appearance-none outline-none focus:ring-2 focus:ring-sky-500/30 transition-all cursor-pointer">
-                            <option>Qty: 1</option>
-                            <option>Qty: 2</option>
-                            <option>Qty: 3</option>
-                        </select>
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40"><ChevronLeft size={16} className="-rotate-90" /></div>
+                        <div className="flex items-center bg-slate-100 rounded-2xl px-4 py-2">
+                           <button 
+                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                            className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-slate-900"
+                           >
+                              <Minus size={16} />
+                           </button>
+                           <span className="flex-1 text-center font-bold text-sm">Qty: {quantity}</span>
+                           <button 
+                            onClick={() => setQuantity(quantity + 1)}
+                            className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-slate-900"
+                           >
+                              <Plus size={16} />
+                           </button>
+                        </div>
                    </div>
-                   <button className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-slate-900/10 hover:shadow-slate-900/30 hover:bg-sky-600 transition-all active:scale-95 group">
+                   <button 
+                    onClick={() => addToCart({ 
+                      id: book.id, 
+                      title: book.title, 
+                      price: selectedPrice, 
+                      quantity: quantity,
+                      image: book.image
+                    })}
+                    className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-slate-900/10 hover:shadow-slate-900/30 hover:bg-sky-600 transition-all active:scale-95 group"
+                   >
                         <ShoppingCart size={20} className="group-hover:translate-x-1 transition-transform" />
                         Add to Library
                    </button>
-                   <button className="w-full py-5 bg-white border border-slate-200 text-slate-900 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95 shadow-sm">
-                        Buy Now
-                   </button>
+                   <Link href="/checkout">
+                    <button 
+                      onClick={() => {
+                        addToCart({ 
+                          id: book.id, 
+                          title: book.title, 
+                          price: selectedPrice, 
+                          quantity: quantity,
+                          image: book.image
+                        });
+                      }}
+                      className="w-full py-5 bg-white border border-slate-200 text-slate-900 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95 shadow-sm mt-3"
+                    >
+                          Buy Now
+                    </button>
+                   </Link>
                 </div>
 
                 <div className="pt-6 border-t border-slate-100 flex flex-col gap-4">
@@ -279,6 +350,107 @@ export default function BookProductPage({ params }: { params: Promise<{ id: stri
              </div>
           </aside>
         </div>
+
+        {/* Reviews Section */}
+        <section className="mt-32 border-t border-slate-200 pt-20 max-w-4xl mx-auto">
+           <div className="flex items-center justify-between mb-16">
+              <div>
+                 <h2 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">Verified Reviews</h2>
+                 <p className="text-slate-500 font-medium italic">Shared by our global community of readers</p>
+              </div>
+              <div className="px-6 py-4 bg-sky-50 rounded-2xl border border-sky-100 flex items-center gap-4">
+                 <div className="text-3xl font-black text-sky-600">{book.rating}</div>
+                 <div className="flex flex-col">
+                    <div className="flex text-amber-500">
+                      {[1,2,3,4,5].map(s => <Star key={s} size={14} fill={s <= Math.round(book.rating) ? "currentColor" : "none"} />)}
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-sky-400">Average Rating</span>
+                 </div>
+              </div>
+           </div>
+
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
+              {/* Existing Reviews */}
+              <div className="space-y-8">
+                 {reviews.map(rev => (
+                  <div key={rev.id} className="p-8 bg-white border border-slate-100 rounded-[2rem] shadow-sm hover:shadow-md transition-shadow">
+                     <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                           <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-400">
+                              <UserIcon size={18} />
+                           </div>
+                           <div>
+                              <p className="text-sm font-black text-slate-900">{rev.user}</p>
+                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{rev.date}</p>
+                           </div>
+                        </div>
+                        <div className="flex text-amber-500">
+                          {[1,2,3,4,5].map(s => <Star key={s} size={12} fill={s <= rev.rating ? "currentColor" : "none"} />)}
+                        </div>
+                     </div>
+                     <p className="text-slate-600 font-medium leading-relaxed leading-relaxed">{rev.comment}</p>
+                  </div>
+                 ))}
+              </div>
+
+              {/* Submit Review Form */}
+              <div className="bg-slate-900 text-white p-10 rounded-[2.5rem] shadow-2xl sticky top-28 self-start">
+                 <h3 className="text-2xl font-black mb-2 tracking-tighter">Share your thoughts ✦</h3>
+                 <p className="text-slate-400 text-sm font-medium mb-8">Your feedback helps our independent authors thrive.</p>
+                 
+                 <form onSubmit={handleSubmitReview} className="space-y-6">
+                    <div>
+                       <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3">Your Rating</label>
+                       <div className="flex gap-2">
+                          {[1,2,3,4,5].map(s => (
+                            <button 
+                              key={s}
+                              type="button"
+                              onClick={() => setNewReview({ ...newReview, rating: s })}
+                              className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
+                                newReview.rating >= s ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'bg-white/5 text-slate-500 border border-white/10 hover:bg-white/10'
+                              }`}
+                            >
+                               <Star size={20} fill={newReview.rating >= s ? "currentColor" : "none"} />
+                            </button>
+                          ))}
+                       </div>
+                    </div>
+
+                    <div>
+                       <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3">Your Review</label>
+                       <textarea 
+                        value={newReview.comment}
+                        onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                        placeholder="What did you think of the story?"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white placeholder:text-slate-600 outline-none focus:border-sky-500/50 transition-all min-h-[120px] resize-none"
+                        required
+                       />
+                    </div>
+
+                    <button 
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full py-5 bg-sky-500 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-sky-400 transition-all active:scale-95 disabled:opacity-50"
+                    >
+                       {isSubmitting ? (
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                       ) : (
+                        <>
+                          <Send size={18} />
+                          Post Review
+                        </>
+                       )}
+                    </button>
+                    
+                    <p className="text-[10px] text-center text-slate-600 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                       <ShieldCheck size={12} className="text-sky-500" />
+                       Verified readers only
+                    </p>
+                 </form>
+              </div>
+           </div>
+        </section>
       </main>
     </div>
   );

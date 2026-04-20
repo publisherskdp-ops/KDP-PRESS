@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { X, Star, ShoppingCart, Info, BookOpen, Clock, Heart } from 'lucide-react';
+import { useCart } from '@/components/CartContext';
 
 interface BookProps {
   id: string;
@@ -15,6 +16,7 @@ interface BookProps {
 }
 
 export default function QuickViewModal({ book, isOpen, onClose }: { book: BookProps | null, isOpen: boolean, onClose: () => void }) {
+  const { addToCart } = useCart();
   if (!isOpen || !book) return null;
 
   return (
@@ -76,7 +78,7 @@ export default function QuickViewModal({ book, isOpen, onClose }: { book: BookPr
             </p>
 
             {/* Actions */}
-            <div className="mt-auto space-y-4">
+             <div className="mt-auto space-y-4">
                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-start">
                     <span className="text-xl font-bold text-sky-600 mt-[4px]">$</span>
@@ -90,7 +92,19 @@ export default function QuickViewModal({ book, isOpen, onClose }: { book: BookPr
                </div>
 
                <div className="flex gap-4">
-                  <button className="flex-1 py-4 bg-slate-900 text-white rounded-2xl hover:bg-sky-600 transition-all duration-300 font-bold flex items-center justify-center gap-2 shadow-xl hover:shadow-sky-500/20">
+                  <button 
+                    onClick={() => {
+                      addToCart({
+                        id: book.id,
+                        title: book.title,
+                        price: book.price,
+                        quantity: 1,
+                        image: book.image
+                      });
+                      onClose();
+                    }}
+                    className="flex-1 py-4 bg-slate-900 text-white rounded-2xl hover:bg-sky-600 transition-all duration-300 font-bold flex items-center justify-center gap-2 shadow-xl hover:shadow-sky-500/20"
+                  >
                     <ShoppingCart size={20} />
                     Add to Cart
                   </button>

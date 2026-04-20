@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { BookMarked, Globe, ShieldCheck, Mail, Users, Share2, Camera, Send } from 'lucide-react';
 
 const Footer = () => {
@@ -16,10 +17,16 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="lg:col-span-5 space-y-8">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-900 group-hover:bg-sky-400 group-hover:text-white transition-all shadow-xl">
-                  <BookMarked size={28} />
+              <div className="relative w-14 h-14 bg-white/5 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:bg-sky-400/20 transition-all shadow-xl">
+                  <Image 
+                    src="/logo-light.png" 
+                    alt="KDP Press Logo" 
+                    width={140} 
+                    height={50} 
+                    className="object-contain w-auto h-12"
+                  />
               </div>
-              <span className="text-3xl font-black tracking-tighter uppercase">KDP <span className="text-sky-400">PRESS</span></span>
+              <span className="text-3xl font-black tracking-tighter uppercase whitespace-nowrap">KDP <span className="text-sky-400">PRESS</span></span>
             </Link>
             <p className="text-lg text-slate-400 leading-relaxed max-w-md font-medium">
                 Empowering independent authors with elite publishing technology, global fulfillment, and 100% royalty transparency.

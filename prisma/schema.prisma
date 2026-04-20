@@ -10,7 +10,6 @@ generator client {
 
 datasource db {
   provider = "mongodb"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -24,6 +23,7 @@ model User {
   authorProfile AuthorProfile?
   books         Book[]
   purchases     Transaction[]  @relation("BuyerTransactions")
+  reviews       Review[]
 }
 
 enum Role {
@@ -81,6 +81,7 @@ model Book {
 
   logs            BookshelfLog[]
   sales           Transaction[]  @relation("BookTransactions")
+  reviews         Review[]
 }
 
 enum BookStatus {
@@ -110,4 +111,16 @@ model Transaction {
   currency  String   @default("USD")
   stripeTxId String? @unique
   createdAt DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  bookId    String   @db.ObjectId
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int      @default(5)
+  comment   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
