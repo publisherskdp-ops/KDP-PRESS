@@ -140,7 +140,7 @@ function ValueItem({ icon, label }: { icon: React.ReactNode, label: string }) {
    return (
       <div className="flex items-center gap-4 group">
           <div className="w-12 h-12 bg-white shadow-sm border border-slate-100 rounded-xl flex items-center justify-center text-sky-600 group-hover:bg-sky-600 group-hover:text-white transition-all">
-              {React.cloneElement(icon as React.isValidElement, { size: 20 })}
+              {React.cloneElement(icon as React.ReactElement, { size: 20 })}
           </div>
           <span className="text-slate-900 font-bold uppercase tracking-widest text-[10px]">{label}</span>
       </div>
