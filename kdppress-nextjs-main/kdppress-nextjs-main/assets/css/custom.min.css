@@ -1,0 +1,2625 @@
+.yellow_txt {
+    color: #f5a91f;
+}
+
+.blogBox .btnBlog,
+.copyRight ul,
+.image_box ul,
+.infoBox,
+.logoForm .logo,
+.mainBanner,
+.pubLogoCarousel .slick-track,
+.socailicons,
+.socailicons li a,
+footer ul li a {
+    align-items: center;
+    display: flex
+}
+
+.bookKindBox h3,
+.contactSec h4,
+.stepBox h3,
+.teamBox .overlay-text *,
+.teamBox .overlay-text h4,
+.themeBtn,
+h4 {
+    text-transform: capitalize
+}
+
+.abtSec figure,
+.bookKindBox,
+.bookKindBox figure,
+.entry-box,
+.entry-right .text,
+.form-check-label,
+.image_box,
+.mainBanner,
+.mainBanner.lpBanner .contactBoxs,
+.provideBox,
+.provideBox .themeBtn,
+.provideBox img,
+.questionList .radioStyle,
+.questionList li,
+.radioOption,
+.servicesList li,
+.signupForm,
+.slider,
+.slider-wrapper,
+.socailicons li a img,
+.teamBox,
+.themeBtn,
+header,
+section {
+    position: relative
+}
+
+.mainBanner h6,
+.virtual-select .vscomp-option-text {
+    line-height: 1.5
+}
+
+body,
+html {
+    overflow-x: hidden;
+    line-height: 1;
+    height: 100%
+}
+
+a,
+a:hover,
+button,
+button:hover {
+    text-decoration: none
+}
+
+h3,
+h6 {
+    color: var(--secondry)
+}
+
+.mainBanner h6,
+h4,
+h6 {
+    font-weight: 600
+}
+
+:root {
+    --primary: #f5a91f;
+    --secondry: #000;
+    --black: #000;
+    --text-color: #828282;
+    --white: #fff
+}
+
+::selection {
+    background: var(--primary);
+    color: var(--white)
+}
+
+::-webkit-scrollbar {
+    width: 5px
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0)
+}
+
+::-webkit-scrollbar-thumb {
+    background: #f5a91f
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #f5a91f
+}
+
+.provideBox h6,
+.teamBox .overlay-text p,
+body,
+p {
+    font-size: 1rem
+}
+
+body {
+    background: var(--white);
+    color: #030303;
+    font-family: Poppins, sans-serif
+}
+
+a,
+button {
+    -webkit-transition: .5s;
+    transition: .5s
+}
+
+p {
+    line-height: 1.6;
+    margin: 1rem 0;
+    color: var(--text-color)
+}
+
+img {
+    max-width: 100%
+}
+
+ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none
+}
+
+section {
+    padding: 3rem 0
+}
+
+h3 {
+    font-size: 1.87rem
+}
+
+h4 {
+    font-size: 2.5rem;
+    color: #2d353f
+}
+
+h6 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem
+}
+
+.mainBanner {
+    min-height: 33rem;
+    align-items: center !important;
+    padding: 0
+}
+
+.mainBanner h4 {
+    font-size: 2.5rem;
+    color: var(--white)
+}
+
+.mainBanner h6 {
+    color: var(--white);
+    font-size: 1.25rem;
+    text-align: left;
+    margin: 1rem 0
+}
+
+.bookKindBox h3,
+.countSec ul li,
+.counter,
+.discountStrip,
+.entry-box,
+.entry-left,
+.exceptionalSec ul li,
+.infoBox,
+.mainBanner.lpBanner .signupForm h4,
+.packageBox .themeBtn,
+.packageBox h3,
+.packageBox h4,
+.packageBox p,
+.portInner .blueContnt,
+.provideBox .themeBtn,
+.tag {
+    text-align: center
+}
+
+.mainBanner p {
+    color: var(--white);
+    width: 80%
+}
+
+.congsContnt p a:hover,
+.contactBoxs .servicesList li input:checked+.checkBoxStyle i,
+.ctaSec h6,
+.lpBanner h4 span,
+.lpBanner h6,
+.provideBox ul li i,
+.select:hover::after,
+.servicesForm p span,
+.servicesList li input:checked+.checkBoxStyle i,
+.socailicons li a i,
+.socailicons li a:hover i,
+.stepHeader .topBar ul li a i,
+.themeBtn-Black:hover,
+.themeBtn:hover,
+.whiteBox h4 span,
+footer ul li a i,
+footer ul li a:hover,
+header .navbar .navbar-nav .nav-item .nav-link:hover {
+    /* color: var(--primary) */
+    color: white;
+}
+
+.copyRight p,
+.image_box.four,
+.lpBanner .listStyled li p,
+.lpBanner h6,
+.mainBanner figure,
+.pubBox .pubHead h6,
+.servicesForm p,
+.teamBox figure {
+    margin: 0
+}
+
+.lpBanner {
+    /* height: calc(100% - -.1rem) */
+    padding: 90px 0 60px;
+}
+
+.lpBanner h4 {
+    margin: 0 0 1rem
+}
+
+.lpBanner h4+h6 {
+    margin: 3rem 0 1.5rem
+}
+
+.lpBanner .listStyled,
+.section-label {
+    display: flex;
+    flex-direction: column;
+    gap: 12px
+}
+
+.lpBanner .listStyled li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px
+}
+
+.lpBanner .listStyled li p strong {
+    font-weight: 600;
+    color: var(--primary);
+    transition: .5s;
+    animation: 1s infinite blink
+}
+
+.lpBanner .listStyled li i {
+    color: var(--white);
+    position: relative;
+    top: 4px
+}
+
+.btnSec {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 3rem
+}
+
+.logoSlider .slick-slide img,
+.portfolioSlider img {
+    margin: 0 auto
+}
+
+.publisherSec:after,
+.publisherSec:before {
+    position: absolute;
+    width: 30%;
+    z-index: 1;
+    content: ""
+}
+
+.abtSec {
+    margin-bottom: 3rem
+}
+
+.portfolioSec {
+    background: url(../assets/images/bg.webp) left top/cover no-repeat fixed
+}
+
+.portfolioSec .slick-next:before,
+.portfolioSec .slick-prev:before {
+    content: "\f104";
+    font-family: FontAwesome;
+    font-weight: 900
+}
+
+.portfolioSec .slick-next:before {
+    content: "\f105";
+    font-family: FontAwesome;
+    font-weight: 900
+}
+
+.portfolioSec .slick-prev.slick-arrow,
+.slick-prev.slick-arrow {
+    top: -5rem;
+    left: 0
+}
+
+.portfolioSec .slick-next.slick-arrow,
+.slick-next.slick-arrow {
+    right: 2rem;
+    top: -5rem
+}
+
+.portfolioSlider {
+    margin-top: 10rem
+}
+
+.portfolioSec .slick-dots {
+    bottom: auto;
+    top: -7rem;
+    display: flex;
+    justify-content: center
+}
+
+.portfolioSec .slick-dots li button {
+    width: .2rem;
+    height: 2rem;
+    background: var(--secondry)
+}
+
+.portfolioSec .slick-dots li.slick-active button {
+    width: .2rem;
+    height: 5rem;
+    background: #f5a91f
+}
+
+.exceptionalSec {
+    background: url(../images/4_4.webp) top center/cover no-repeat fixed;
+    margin-bottom: 10rem
+}
+
+.contactSec h4,
+.exceptionalSec h4 {
+    color: var(--white);
+    margin-bottom: 3rem
+}
+
+.exceptionalSec ul {
+    background: var(--secondry);
+    padding: 4rem 2rem;
+    border-radius: 20px;
+    margin-bottom: -11rem;
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    flex-wrap: wrap
+}
+
+.exceptionalSec ul li {
+    color: var(--white);
+    flex: 0 0 22%;
+    line-height: 1.3
+}
+
+.exceptionalSec ul li p span {
+    font-weight: 700;
+    display: block;
+    min-height: 2rem
+}
+
+.exceptionalSec ul li p {
+    color: var(--white);
+    margin-bottom: 0
+}
+
+.exceptionalSec ul li img {
+    display: block;
+    margin: 0 auto;
+    margin-top: 0 !important
+}
+
+/* Get In Touch Start */
+
+.get-in-touch_sec {
+    padding: 60px 0;
+    margin-top: 30px;
+    background: #000;
+}
+
+.get-in-touch_sec .txt {
+    text-align: center;
+}
+
+.get-in-touch_sec .txt h4 {
+    color: #e99805;
+}
+
+.get-in-touch_sec .txt p {
+    font-size: 17px;
+    line-height: 26px;
+    max-width: 800px;
+    margin: 0 auto 20px;
+    color: white;
+}
+
+.get-in-touch_sec .img img {
+    display: block;
+    margin: 0 auto 35px;
+}
+
+/* Get In Touch End */
+
+/* Lasting Impression Start */
+
+.lasting_impression_sec {
+    padding: 60px 0 0;
+    background: #000;
+}
+
+.lasting_impression_sec .txt {
+    text-align: center;
+}
+
+.lasting_impression_sec h4,
+.lasting_impression_sec p {
+    color: white;
+}
+
+.lasting_impression_sec h4 {
+    margin-bottom: 5px;
+}
+
+.lasting_impression_sec p {
+    margin-bottom: 30px;
+    margin-top: 8px;
+}
+
+/* Lasting Impression End */
+
+/* book store start */
+
+.book_store_sec {
+    background-color: black;
+}
+
+.book_store_sec .txt h4,
+.book_store_sec .txt p {
+    color: white;
+}
+
+/* book store End */
+
+.contactSec h3,
+.countSec ul li img,
+.teamSec .nav-tabs {
+    margin-bottom: 1rem
+}
+
+.lpContactSec .logoForm .logo:hover,
+.teamBox:hover {
+    transform: scale(1.05)
+}
+
+.accordionStyle .accordion-button,
+.accordionStyle .accordion-item:first-of-type .accordion-button,
+.accordionStyle .accordion-item:last-of-type .accordion-button.collapsed,
+.teamBox figure img {
+    border-radius: 30px
+}
+
+.faqSec {
+    background: url(../images/amazonbookpublishinglp/6_3.webp) top right/cover no-repeat fixed
+}
+
+.ctaSec,
+.portInner .blueBox:hover::before,
+.stepHeader .topBar,
+footer {
+    background: var(--secondry)
+}
+
+.accordionStyle .accordion-button:not(.collapsed) {
+    background: var(--white);
+    color: var(--black);
+    border-radius: 30px;
+    box-shadow: none
+}
+
+.accordionStyle .accordion-item {
+    margin: 5px 0;
+    border: none;
+    border-radius: 30px
+}
+
+.accordionStyle .accordion {
+    --bs-accordion-border-color: none
+}
+
+.accordion-button::after {
+    content: "\f061";
+    font-family: FontAwesome;
+    background: var(--primary);
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    color: var(--white);
+    background-image: none;
+    display: flex;
+    justify-content: center;
+    align-items: center
+}
+
+.accordion-button:not(.collapsed)::after {
+    background-image: none;
+    transform: rotate(90deg)
+}
+
+.ctaSec {
+    margin-top: 4rem;
+    padding: 0
+}
+
+.ctaSec img {
+    margin-bottom: -1rem;
+    margin-top: -4rem;
+    width: 100%;
+}
+
+.servicesList li {
+    margin: 0;
+    border-radius: 0
+}
+
+.contactBoxs .accordion-button::after {
+    color: var(--primary);
+    background: 0 0;
+    font-size: 1.4rem;
+    transform: rotate(90deg)
+}
+
+.contStrip .listNum li,
+.reviewHead {
+    display: flex;
+    align-items: center;
+    gap: 1rem
+}
+
+.arrow,
+.reviewBox p,
+.stepBox h3 {
+    margin-top: 2rem
+}
+
+.portfolioSlider div {
+    margin: 0 1rem
+}
+
+.lpBanner ul:not(.iti__country-list) {
+    margin: 2rem 0 3rem
+}
+
+.signupForm {
+    padding: 1rem;
+    border-radius: 1rem;
+    margin-left: 0;
+    background: linear-gradient(to right, #f5a91f 0, #b76d00 100%);
+    padding-block: 1rem;
+    margin-left: auto;
+    width: 80%;
+}
+
+.signupForm .file_uploaded {
+    margin-top: 11px
+}
+
+.signupForm .file_uploaded .cv {
+    margin-bottom: 8px;
+    padding: 0 6px
+}
+
+.signupForm .file_uploaded input {
+    background: 0 0 !important;
+    height: 100% !important;
+    margin-bottom: 0 !important;
+    padding: 0 6px;
+    width: 100%
+}
+
+.mainBanner.lpBanner .signupForm h4 {
+    color: var(--white);
+    margin-bottom: 0;
+    font-size: 25px;
+    margin-top: 25px
+}
+
+.mainBanner.lpBanner .signupForm h4 span {
+    color: #bcb0a0;
+    display: block;
+    font-size: 30px;
+    font-weight: 800;
+    margin-top: 8px
+}
+
+.mainBanner.lpBanner .signupForm form {
+    margin-top: 1rem;
+    margin-bottom: 40px
+}
+
+.lpBanner .listStyle {
+    background: rgba(0, 0, 0, 0);
+    padding: 0
+}
+
+.mainBanner.lpBanner .signupForm .themeBtn {
+    border: none;
+    width: 100%;
+    margin-top: 1.5rem
+}
+
+.mainBanner.lpBanner .signupForm .themeBtn:hover {
+    background-color: white;
+    color: #e99805;
+}
+
+.mainBanner.lpBanner .contactBoxs .schtech,
+.schtech1 {
+    position: absolute;
+    top: -3rem;
+    left: 5rem;
+    width: 70px;
+    z-index: 3;
+    transform: rotate(35deg)
+}
+
+.leadLp .signupForm input,
+.leadLp .signupForm textarea {
+    background: var(--white);
+    color: #000 !important;
+    height: 50px;
+    border: 0;
+    margin-bottom: .8rem
+}
+
+.leadLp .signupForm input::placeholder,
+.leadLp .signupForm textarea::placeholder {
+    color: grey !important
+}
+
+.leadLp .servicesList {
+    margin: 0;
+    border: 1px solid rgba(130, 130, 130, .3098039216);
+    border-radius: 15px
+}
+
+.phone-container .phone1 {
+    border-radius: 10px;
+    width: 100%;
+    padding-left: 10px;
+    color: #0000
+}
+
+.select {
+    position: relative;
+    display: flex;
+    height: 4.5rem;
+    line-height: 3;
+    overflow: hidden;
+    border-radius: .25em
+}
+
+.select option {
+    height: 300px
+}
+
+.select::after {
+    content: "▼";
+    position: absolute;
+    top: 1rem;
+    right: 0;
+    padding: 0 1em;
+    background: var;
+    cursor: pointer;
+    pointer-events: none;
+    transition: .25s;
+    color: var(--primary)
+}
+
+.entry-right .text:before,
+.form-check-label:after,
+.form-check-label:before,
+.image_box:before,
+.themeBtn:before {
+    content: "";
+    position: absolute
+}
+
+.logoForm,
+.pakageSteps .btnSec {
+    display: flex;
+    justify-content: center
+}
+
+@media only screen and (max-width:1600px) {
+    .bannerDis {
+        top: 81%;
+        left: 13rem
+    }
+
+    .exceptionalSec ul {
+        align-items: flex-start;
+        padding: 2rem;
+        border-radius: 14px;
+        gap: 2rem
+    }
+
+    .mainBanner.lpBanner .contactBoxs .schtech {
+        left: -23px
+    }
+}
+
+@media only screen and (max-width:1366px) {
+    .bannerDis {
+        top: 80%;
+        left: 14rem;
+        width: 11rem
+    }
+}
+
+@media only screen and (max-width:1200px) {
+    .bannerDis {
+        top: 80%;
+        left: 10rem;
+        width: 11rem
+    }
+}
+
+@media only screen and (max-width:1199px) {
+    .bannerDis {
+        top: 75%;
+        left: 8rem;
+        width: 11rem
+    }
+}
+
+@media only screen and (max-width:991px) {
+    .servicesForm {
+        margin-top: 2rem
+    }
+
+    .bannerDis {
+        top: 73%;
+        left: 0;
+        width: 9rem
+    }
+}
+
+@media only screen and (max-width:576px) {
+    .bannerDis {
+        top: 70%;
+        left: 0;
+        width: 9rem
+    }
+
+    .stepBanner {
+        padding: 1rem 0 3rem
+    }
+}
+
+.lpContactSec .logoForm .logoRowOne,
+.lpContactSec .logoForm .logoRowThree,
+.lpContactSec .logoForm .logoRowTwo {
+    flex: 0 0 33.33%;
+    justify-content: space-evenly;
+    display: flex
+}
+
+.lpContactSec .logoForm .logo {
+    width: 12rem;
+    height: 7rem;
+    border-radius: 10px;
+    border: 2px solid var(--primary)
+}
+
+.logoForm .logo4 img {
+    width: 7rem;
+    margin: 0 auto
+}
+
+.logoForm .logo {
+    width: 9rem;
+    height: 9rem;
+    padding: 1rem;
+    box-shadow: 0 16px 30px rgba(0, 0, 0, .1411764706);
+    transition: .5s
+}
+
+#footerForm .accordion-button,
+.signupForm .accordion-button {
+    height: 49px
+}
+
+@media screen and (max-width:768px) {
+    .mainBanner.lpBanner .signupForm h4 {
+        font-size: 22px
+    }
+
+    .mainBanner.lpBanner .signupForm h4 span {
+        font-size: 30px
+    }
+
+    .mainBanner.lpBanner .signupForm {
+        padding-block: 2.5rem
+    }
+
+    .signupForm .themeBtn {
+        padding: 1.5rem;
+        font-size: 16px
+    }
+
+    .signupForm form>* {
+        margin-bottom: 1rem !important
+    }
+}
+
+.process_img img {
+    width: 100%
+}
+
+.signupForm input {
+    color: #000;
+    font-weight: 500;
+    font-size: 14px;
+    border-radius: 10px
+}
+
+.signupForm input::placeholder {
+    color: rgba(0, 0, 0, .726)
+}
+
+.signupForm .virtual-select,
+footer .virtual-select {
+    width: 100%;
+    max-width: 100%
+}
+
+.signupForm .iti__tel-input {
+    height: 48px;
+    border-radius: 10px;
+    border: none
+}
+
+.leadForm .virtual-select .vscomp-toggle-button,
+.signupForm .virtual-select .vscomp-toggle-button {
+    width: 100%;
+    height: 69px;
+    padding-left: 1rem;
+    border-radius: 10px;
+    border: 1px solid #fff;
+    background: #fff;
+    color: #000;
+    font-weight: 500
+}
+
+.signupForm .virtual-select .vscomp-arrow::after {
+    border: 1px solid transparent;
+    border-bottom-color: #000;
+    border-right-color: #000
+}
+
+.signupForm .virtual-select .vscomp-dropbox {
+    font-weight: 500
+}
+
+.signupForm .virtual-select .vscomp-wrapper.multiple .vscomp-option.selected .checkbox-icon::after {
+    border-color: transparent #fff #fff transparent
+}
+
+.banner-form .phone,
+.banner-form select {
+    height: 45px !important;
+    width: 100% !important
+}
+
+.banner-form input,
+.satisfy-content p {
+    font-size: 15px
+}
+
+.slider-wrapper {
+    width: 100%;
+    height: 100px
+}
+
+.slider,
+.slider-item {
+    height: auto;
+    width: 100%
+}
+
+.slider-item {
+    position: absolute;
+    opacity: 0
+}
+
+@media screen and (min-width:1440px) {
+    .slider-wrapper {
+        margin-bottom: 216px
+    }
+
+    .slider-item img {
+        margin: 0
+    }
+}
+
+.entry-box {
+    padding-top: 0;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: 20px;
+    box-shadow: 0 0 50px 0 #000;
+    overflow: hidden;
+    pointer-events: auto
+}
+
+.form-check {
+    padding: 0
+}
+
+.contactBoxs .accordion-button::after,
+.contactBoxs .accordionStyle .accordion-item .accordion-button[aria-expanded=true]:hover,
+.form-check label a {
+    color: #000
+}
+
+.form-check-input:focus {
+    box-shadow: inherit
+}
+
+section.sec_process {
+    padding: 80px 0;
+    background: #f0f0f0
+}
+
+.global_content h2 {
+    font-weight: 700;
+    color: #2d353f;
+    font-size: 38px
+}
+
+.image_box ul li {
+    margin: 0 10px
+}
+
+.image_box ul li h4 {
+    font-size: 30px;
+    color: #2d353f;
+    line-height: 30px;
+    margin: 0
+}
+
+.image_box ul li p {
+    color: #8f8f8f;
+    font-size: 16px;
+    font-weight: 400
+}
+
+.image_box {
+    margin: 0 0 30px;
+    z-index: 9
+}
+
+.image_box:before {
+    display: block;
+    background-image: url(../images/line_circle.webp);
+    background-repeat: no-repeat;
+    width: 156px;
+    height: 25px;
+    left: -120px;
+    bottom: 0;
+    top: 0;
+    margin: auto;
+    z-index: -1
+}
+
+.image_box.three,
+.image_box.two {
+    padding-left: 100px
+}
+
+.image_box.three:before,
+.image_box.two:before {
+    left: -53px
+}
+
+.image_box.three:before {
+    left: -40px
+}
+
+.image_box.four:before {
+    left: -90px
+}
+
+.image_box ul li:first-child {
+    width: 210px
+}
+
+.sec_process .process_li_img {
+    width: 70px;
+    height: 70px;
+    background: #252525;
+    border-radius: 50px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sec_process .process_li_img img {
+    filter: brightness(1) invert(1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+}
+
+.form-check-label {
+    padding-left: 28px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 15px;
+    line-height: 20px;
+    margin: 15px 0 0;
+    color: #fff
+}
+
+.form-check-label:before {
+    left: 0;
+    top: 1px;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #000;
+    border-radius: 4px;
+    background: #fff;
+    transition: .2s
+}
+
+.form-check-label:after {
+    left: 5px;
+    top: 2px;
+    width: 8px;
+    height: 14px;
+    border: solid #007bff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    opacity: 0;
+    transition: .2s
+}
+
+.form-check-input:checked+.form-check-label:before {
+    background: #f5a91f;
+    border-color: #000
+}
+
+.form-check-input:checked+.form-check-label:after {
+    opacity: 1;
+    border-color: #000
+}
+
+.form-check-label:hover:before {
+    border-color: #000
+}
+
+input[type=checkbox] {
+    background: 0 0 !important
+}
+
+.themeBtn,
+.themeBtn:before {
+    transition: .4s ease-in-out
+}
+
+.themeBtn {
+    background-color: var(--primary);
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--white);
+    padding: 1rem 1.5rem;
+    display: inline-block;
+    border-radius: 5px
+}
+
+.contStrip .listNum,
+.lp-footer-satisfaction,
+.lpHeader .btnOpt,
+.slick-dots,
+.topBar ul {
+    display: flex;
+    display: flex
+}
+
+/* .themeBtn:before {
+    inset: 0;
+    border: 2px solid #bcb0a0;
+    left: .5rem;
+    right: -.5rem;
+    top: .5rem;
+    bottom: -.5rem;
+    z-index: 1;
+    border-radius: 5px
+} */
+
+.chat_button:hover {
+    /* background-color: #fff */
+    background-color: green;
+    color: white;
+}
+
+.themeBtn:hover::before {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0
+}
+
+.themeBtn2 {
+    background: #f5a91f;
+    color: var(--secondry);
+}
+
+.pulse {
+    animation: scalePulse 0.8s infinite ease-in-out;
+}
+
+@keyframes scalePulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.03);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.themeBtn2:before,
+select.form-control:hover {
+    border-color: #f5a91f
+}
+
+.themeBtn-Black {
+    background: var(--black);
+    color: var(--white)
+}
+
+.slick-dots {
+    justify-content: center;
+    bottom: auto;
+    top: -7rem;
+    justify-content: center
+}
+
+.slick-dots li button {
+    background: var(--primary);
+    border-radius: 100px;
+    transition: .5s;
+    width: .2rem;
+    height: 2rem;
+    background: var(--secondry)
+}
+
+.slick-dots li {
+    width: auto
+}
+
+.slick-dots li button:before {
+    content: none
+}
+
+.slick-next:before,
+.slick-prev:before {
+    content: "\f177";
+    color: var(--primary);
+    font-family: "Font Awesome 5 Pro";
+    font-size: 3rem
+}
+
+.slick-next:before {
+    content: "\f178"
+}
+
+.provideSlider {
+    margin-top: 8rem
+}
+
+.slick-dots li.slick-active button {
+    width: .2rem;
+    height: 5rem;
+    background: var(--primary)
+}
+
+.reviewSec .slick-next.slick-arrow,
+.reviewSec .slick-prev.slick-arrow {
+    top: 3rem;
+    z-index: 1111
+}
+
+.topBar {
+    background: var(--primary);
+    padding: 8px 0;
+    transition: .5s
+}
+
+.topBar ul {
+    justify-content: center;
+    gap: 4rem
+}
+
+.topBar ul li a i {
+    padding-right: 2px
+}
+
+.topBar ul li a {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--secondry)
+}
+
+header {
+    background: #000;
+    z-index: 11;
+    width: 100%;
+    transition: .5s;
+    position: sticky;
+    top: 0
+}
+
+header .navbar {
+    padding: 12px 0;
+    width: 100%
+}
+
+header.sticky {
+    background: var(--secondry);
+    top: 0;
+    position: fixed
+}
+
+header.sticky .navbar-brand img {
+    width: 150px
+}
+
+header .navbar .navbar-nav {
+    gap: 2rem
+}
+
+header .navbar .navbar-nav .nav-item .nav-link {
+    color: var(--white);
+    font-size: 1rem;
+    text-transform: capitalize;
+    padding: 0;
+    font-weight: 500
+}
+
+.navbar-nav .dropdown-menu {
+    border: 0;
+    background: var(--secondry);
+    padding: 5px 0;
+    overflow: hidden;
+    top: 3rem;
+    border-radius: 0
+}
+
+.navbar-nav .dropdown-menu li a {
+    padding: 8px 1rem;
+    display: block;
+    color: var(--white);
+    position: relative
+}
+
+.navbar-nav .dropdown-menu li a::before {
+    content: "\f105";
+    margin-right: 8px;
+    font-family: "Font Awesome 5 Pro";
+    font-weight: 800
+}
+
+header .topBar .contList {
+    justify-content: flex-end;
+    gap: 3rem
+}
+
+.stepHeader .topBar ul li a {
+    color: var(--white);
+    font-size: 1rem;
+    font-weight: 400
+}
+
+.stepHeader .logo img {
+    width: 5rem
+}
+
+.lpHeader img {
+    width: 120px;
+}
+
+.lpHeader .btnOpt {
+    align-items: center;
+    justify-content: flex-end;
+    gap: 2rem
+}
+
+.lpHeader .btnOpt .themeBtn {
+    font-size: 1rem;
+    padding: 10px 1rem
+}
+
+select.form-control {
+    padding: 12px 15px;
+    border: 2px solid #e1e1e1;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #fff;
+    transition: .3s;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px;
+    color: gray !important
+}
+
+select.form-control:focus {
+    border-color: #f5a91f;
+    box-shadow: 0 0 0 3px rgba(245, 169, 31, .1);
+    outline: 0
+}
+
+select.form-control option {
+    padding: 10px
+}
+
+.lp-footer {
+    background-color: #000
+}
+
+footer {
+    padding-top: 3rem
+}
+
+footer h4,
+footer span.h4 {
+    font-size: 1.475rem;
+    margin: 2rem 0;
+    display: block
+}
+
+footer ul li a {
+    font-size: 1rem;
+    gap: 10px;
+    transition: .5s;
+    padding: 8px 0
+}
+
+footer ul li a i {
+    font-size: 13px;
+    transition: .5s
+}
+
+footer ul li a:hover i {
+    transform: none
+}
+
+footer p {
+    font-size: 1.15rem
+}
+
+.socailicons {
+    gap: 10px
+}
+
+.socailicons li a {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--primary);
+    border-radius: 50%;
+    justify-content: center
+}
+
+.socailicons li a i {
+    transform: none;
+    font-size: 1.25rem;
+    transform: scale(1) rotate(0)
+}
+
+.socailicons li a:hover i,
+.socailicons li a:hover img {
+    transform: scale(1) rotate(-360deg)
+}
+
+.socailicons li a img {
+    width: 22px;
+    transform: scale(1) rotate(0);
+    transition: .5s
+}
+
+footer form input,
+footer form textarea {
+    width: 100%;
+    height: 49px;
+    padding-left: 1rem;
+    border-radius: 10px;
+    border: none;
+    font-size: 13px;
+    margin: 3px 0
+}
+
+footer form textarea {
+    height: 100px;
+    padding: 1rem
+}
+
+footer form .themeBtn {
+    display: inline-block;
+    width: 100%;
+    border: none
+}
+
+.setisy-img img {
+    width: 78%
+}
+
+.satisfy-content {
+    max-width: 500px
+}
+
+.satisfy-content h4 {
+    font-size: 18px;
+    font-weight: 800
+}
+
+.lp-footer-list {
+    list-style: none;
+    padding: 10px 0 0
+}
+
+.lp-footer-list li {
+    padding: 8px 0;
+    font-size: 18px;
+    color: #fff
+}
+
+.lp-footer-list li a {
+    color: #fff !important
+}
+
+.copyRight {
+    padding: 1rem 0
+}
+
+.copyRight ul {
+    gap: 1rem
+}
+
+.contStrip .listNum {
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 3rem;
+    margin: 3rem 0 0;
+    background: #0003;
+    border: 1px solid #00000059;
+    border-radius: 10px
+}
+
+.contStrip .listNum li i {
+    color: var(--primary);
+    transform: rotate(0);
+    font-size: inherit
+}
+
+.socialFooter {
+    margin-top: 3rem
+}
+
+.disclaimer {
+    padding: 10px 0 5px;
+    border-top: 5px solid var(--primary)
+}
+
+.disclaimer p {
+    margin: 0;
+    font-size: 14px
+}
+
+.contactBoxs .accordionStyle .accordion-item {
+    background: #fff;
+    border-radius: 15px
+}
+
+.contactBoxs .accordionStyle {
+    margin: 5px 0
+}
+
+.contactBoxs .servicesList .checkBoxStyle label {
+    color: #9b9b9b
+}
+
+.contactBoxs .accordionStyle .accordion-item .accordion-button {
+    padding: 12px 1rem;
+    color: #767676
+}
+
+footer .form-control {
+    height: 3rem;
+    margin: 8px 0;
+    border-radius: 10px;
+    border: none
+}
+
+.contactBoxs .accordion-body {
+    padding-top: 0
+}
+
+.accordion-button {
+    border: 1px solid #f5a91f !important
+}
+
+.accordion-button:focus {
+    border-color: #f5a91f !important;
+    box-shadow: 0 0 0 .2rem rgba(245, 169, 31, .25)
+}
+
+footer.contactBoxs .accordionStyle .accordion-item .accordion-button {
+    padding: 8px 1rem
+}
+
+.lpHeader.scrolled {
+    background-color: rgba(0, 0, 0, .8);
+    backdrop-filter: blur(6px)
+}
+
+button.btn-close.close {
+    position: absolute;
+    top: 3px;
+    right: 6px;
+    z-index: 999999;
+    width: 15px;
+    height: 15px;
+    background: #e12020;
+    border-radius: 50px;
+    color: #fff
+}
+
+.entry-box div#banner-form h4 {
+    font-size: 30px;
+    color: #fff
+}
+
+.entry-box .vscomp-wrapper.has-clear-button .vscomp-toggle-button {
+    padding-right: 54px;
+    margin: 0 0 20px
+}
+
+.counter_sec {
+    padding-bottom: 70px
+}
+
+.section-label p {
+    font-size: 13.5px;
+    color: #8b8fa8;
+    line-height: 1.6;
+    max-width: 100%;
+    margin: 0
+}
+
+.counter {
+    flex: 1;
+    padding: 28px 32px;
+    position: relative;
+    border-left: 1px solid rgba(255, 255, 255, .06);
+    cursor: default;
+    transition: background .3s
+}
+
+.counter:first-child {
+    border-left: none
+}
+
+.counter:hover {
+    background: rgb(245 169 31 / 12%)
+}
+
+.counter:hover .counter-number {
+    background: linear-gradient(135deg, #f5a91f, #e99805);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text
+}
+
+.counter-label {
+    display: block;
+    font-size: 12.5px;
+    color: #6b7280;
+    margin-top: 8px;
+    letter-spacing: .05em;
+    font-weight: 500
+}
+
+.counter_wrapper {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+    max-width: 90%;
+    margin: 20px auto 0;
+    border: 2px solid #f5a91f;
+    padding: 20px;
+    border-radius: 25px;
+    box-shadow: inset 2px 0 23px 11px #f5a91f4a
+}
+
+.counter-number {
+    font-family: Syne, sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: #2d353f;
+    line-height: 1;
+    display: block;
+    transition: .4s;
+    letter-spacing: -1px
+}
+
+.counter:nth-child(2) {
+    animation: .6s .28s both fadeUp;
+    position: relative;
+    border-right: 2px solid #f5a91f;
+    border-left: 2px solid #f5a91f
+}
+
+.counter:first-child {
+    animation: .6s .15s both fadeUp
+}
+
+.counter:nth-child(3) {
+    animation: .6s .41s both fadeUp
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px)
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0)
+    }
+}
+
+@media (max-width:768px) {
+    .counter_wrapper {
+        flex-direction: column
+    }
+
+    .counter-number {
+        font-size: 30px
+    }
+
+    .counter {
+        border: none
+    }
+
+    .counter:first-child {
+        border-top: none
+    }
+
+    .counter:nth-child(2) {
+        border: 0;
+        border-top: 2px solid #f5a91f;
+        border-bottom: 2px solid #f5a91f
+    }
+}
+
+@media (min-width:1500px) {
+    .container {
+        max-width: 1280px
+    }
+}
+
+@media (min-width:1800px) {
+    .container {
+        max-width: 1640px
+    }
+}
+
+@media only screen and (max-width:1440px) {
+    .teamBox .overlay-text {
+        text-align: center
+    }
+
+    .reviewBox {
+        min-height: 22rem;
+        padding: 1rem
+    }
+
+    .reviewBox p {
+        margin-top: 1rem
+    }
+
+    .infoBox {
+        min-height: 8rem
+    }
+
+    .lpBanner .btnSec {
+        margin-top: 2rem
+    }
+
+    .lpBanner h4+h6 {
+        margin: 1rem 0
+    }
+
+    .lpBanner .listStyled {
+        gap: 10px
+    }
+
+    .mainBanner h4 {
+        font-size: 2rem !important
+    }
+
+    .mainBanner.lpBanner .signupForm h4 span {
+        color: var(--secondry);
+        display: block;
+        font-size: 21px;
+        font-weight: 800;
+        margin-top: 8px
+    }
+
+    .lpContactSec .logoForm .logo {
+        width: auto;
+        height: auto
+    }
+
+    .reviewSlider {
+        padding: 6rem 0 0
+    }
+
+    .reviewSec .slick-dots {
+        top: 1rem
+    }
+
+    .reviewSec .slick-next.slick-arrow,
+    .reviewSec .slick-prev.slick-arrow {
+        top: 2rem
+    }
+}
+
+@media only screen and (max-width:1366px) {
+    html {
+        font-size: 15px
+    }
+
+    .mainBanner h6 {
+        font-size: 1.125rem
+    }
+
+    .infoBox p,
+    .mainBanner p,
+    .topBar ul li a {
+        font-size: 1rem
+    }
+
+    .mainBanner p {
+        width: 90%
+    }
+
+    .infoBox {
+        padding: 1rem;
+        border-radius: 10px
+    }
+
+    .infoBox p {
+        margin-bottom: 0
+    }
+
+    .contactInner {
+        margin-top: -5rem;
+        padding: 2rem 0
+    }
+
+    .banner-title {
+        font-size: 40px !important
+    }
+}
+
+@media only screen and (max-width:1199px) {
+    html {
+        font-size: 14px
+    }
+
+    header .navbar {
+        padding: 8px 0
+    }
+
+    .navbar .logo img {
+        width: 7rem
+    }
+
+    .mainBanner {
+        height: calc(100% - 7rem)
+    }
+
+    .themeBtn {
+        font-size: 1.125rem;
+        font-weight: 500
+    }
+
+    .reviewHead h3,
+    h6 {
+        font-size: 1.25rem
+    }
+
+    .blogBox h3,
+    .bookKindBox h3 {
+        font-size: 1.5rem
+    }
+
+    .blogBox h3 {
+        margin: 1rem 0
+    }
+
+    .ctaSec h4 {
+        font-size: 2rem
+    }
+
+    .pubBox .pubHead img {
+        width: 40px
+    }
+
+    .provideBox {
+        padding: 2rem 1rem;
+        margin: 3rem 0 0
+    }
+
+    .packageBox,
+    .reviewBox {
+        padding: 1rem
+    }
+
+    .countSec ul li {
+        flex: 0 0 25%
+    }
+
+    .teamSec .nav-tabs {
+        gap: 1rem
+    }
+
+    .teamBox .overlay-text {
+        margin: -2rem 0 0
+    }
+
+    .bookKindBox figure::before,
+    .bookKindBox img,
+    .exceptionalSec ul,
+    .teamBox figure img {
+        border-radius: 10px
+    }
+
+    .contactInner {
+        margin-top: 0
+    }
+
+    .infoBox p {
+        font-size: 1rem
+    }
+
+    .reviewBox {
+        min-height: 24rem
+    }
+
+    .tag {
+        left: 46%;
+        transform: translateX(-46%)
+    }
+}
+
+@media only screen and (max-width:991px) {
+
+    .contOpt .navbar-toggler,
+    .contOpt a,
+    .navbar-toggler {
+        color: var(--primary)
+    }
+
+    .footerlogo,
+    .socialFooter p {
+        margin-bottom: 1rem
+    }
+
+    html {
+        font-size: 13px
+    }
+
+    .contOpt {
+        display: flex;
+        align-items: center;
+        gap: 2rem
+    }
+
+    .navbar-toggler {
+        position: relative;
+        border: 0;
+        padding: 0;
+        margin-right: 1rem;
+        z-index: 5;
+        font-size: 1rem
+    }
+
+    .navbar-toggler:focus {
+        box-shadow: none
+    }
+
+    .navbar-toggler.collapsed .fa::before {
+        content: "\f0c9"
+    }
+
+    .navbar-toggler[aria-expanded=true] .fa:before {
+        content: "\f00d"
+    }
+
+    .navbar-collapse {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: -100%;
+        background: var(--secondry);
+        z-index: 4;
+        width: calc(100% - 0px);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 3rem 2rem;
+        transition: .5s
+    }
+
+    .navbar-collapse.show {
+        right: 0;
+        width: calc(100% - 0px);
+        box-shadow: -10px 0 20px #0002;
+        overflow-y: auto
+    }
+
+    header .navbar .navbar-collapse .navbar-nav {
+        margin-left: 0 !important;
+        align-items: stretch;
+        gap: 1.5rem;
+        width: 100%
+    }
+
+    header .navbar .navbar-collapse .navbar-nav li:first-child {
+        margin-bottom: 2rem
+    }
+
+    header .navbar .navbar-nav .nav-item .nav-link {
+        font-size: 1rem;
+        border-color: var(--white);
+        color: var(--white);
+        border-radius: 6px
+    }
+
+    header .navbar .navbar-nav .nav-item .dropdown-menu {
+        background: 0 0;
+        border: 0
+    }
+
+    header .navbar .navbar-nav .nav-item .dropdown-menu li {
+        margin: 10px 0;
+        border: 1px solid var(--white);
+        padding: 10px;
+        border-radius: 6px
+    }
+
+    header .navbar .navbar-nav .nav-item .dropdown-menu li a {
+        color: var(--white)
+    }
+
+    .abtArrow,
+    .abtSec figure,
+    .ctaSec img,
+    .faqSec img,
+    .mainBanner figure,
+    .portInner img,
+    .stepSec .col-lg-5,
+    .topBar,
+    header .navbar .navbar-collapse .themeBtn {
+        display: none
+    }
+
+    .stepHeader .topBar {
+        display: block
+    }
+
+    .mainBanner {
+        height: calc(100% - 4.75rem);
+        background-image: linear-gradient(to bottom, #2d353f, #272f39, #222a34, #1c242e, #171f29) !important
+    }
+
+    .mainBanner h4 {
+        font-size: 2rem
+    }
+
+    .logoSec h6,
+    .mainBanner h6 {
+        font-size: 1.25rem
+    }
+
+    .mainBanner p {
+        font-size: 1.15rem
+    }
+
+    .socialFooter p,
+    .stepBox h3 {
+        font-size: 1.5rem
+    }
+
+    .exceptionalSec ul {
+        gap: 1rem
+    }
+
+    .exceptionalSec ul li {
+        flex: 0 0 23%
+    }
+
+    .stepBox {
+        margin-top: 3rem
+    }
+
+    .stepBox img {
+        width: 3rem
+    }
+
+    .contactSec .leadForm {
+        margin-bottom: 3rem
+    }
+
+    .ctaSec {
+        margin-top: 0;
+        padding: 2rem 0
+    }
+
+    footer .copyRight {
+        padding: 1rem 0;
+        margin-top: 1rem
+    }
+
+    footer p {
+        font-size: 1rem;
+        margin: 0
+    }
+
+    footer .copyRight ul li a {
+        padding: 0
+    }
+
+    .portInner .blueBox::before,
+    .reviewSlider::before {
+        content: none
+    }
+
+    .portInner .blueBox {
+        position: relative;
+        padding: 2rem;
+        background: #f0f0f08a
+    }
+
+    .footerlogo {
+        display: inline-block
+    }
+
+    .socialFooter {
+        margin-top: 1rem
+    }
+
+    .infoBox,
+    .lpContactSec .logoForm .logoRowOne,
+    .lpContactSec .logoForm .logoRowThree,
+    .lpContactSec .logoForm .logoRowTwo {
+        margin: 10px 0
+    }
+
+    .contactBanner {
+        align-items: center !important
+    }
+
+    .reviewSlider {
+        padding: 8rem 0 0
+    }
+
+    .reviewBox {
+        min-height: 20rem
+    }
+
+    .teamBox .overlay-text h4 {
+        font-size: 1.55rem
+    }
+
+    .portfolioSlider div {
+        margin: 0 5px
+    }
+
+    .contStrip .listNum {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem
+    }
+
+    .servicesForm {
+        padding: 2rem 1rem 1rem;
+        border-radius: .5rem
+    }
+
+    .servicesList .checkBoxStyle {
+        padding: 10px 1rem
+    }
+
+    .mainBanner.lpBanner .signupForm {
+        margin: 2rem 0 0
+    }
+
+    .lpBanner.publishLpOne {
+        height: auto !important
+    }
+
+    .logoForm {
+        flex-wrap: wrap
+    }
+}
+
+@media only screen and (max-width:767px) {
+
+    .btnSec .themeBtn,
+    .servicesForm .themeBtn {
+        width: 100%
+    }
+
+    .image_box ul,
+    .logoSec h3 {
+        display: block
+    }
+
+    .btnSec .themeBtn,
+    .image_box ul,
+    .stepBox,
+    footer .copyRight p {
+        text-align: center
+    }
+
+    .mainBanner.lpBanner .contactBoxs .schtech {
+        left: 0
+    }
+
+    .schtech1 {
+        right: 0
+    }
+
+    html {
+        font-size: 12px
+    }
+
+    .mainBanner h4,
+    .publishLpOne .signupForm h4 span,
+    .stepBanner h2,
+    .stepWrap h2,
+    h3,
+    h4 {
+        font-size: 2rem
+    }
+
+    section {
+        padding: 2rem 0
+    }
+
+    .exceptionalSec ul li p span,
+    .logoSec h6,
+    .lpBanner.publishLpOne .listStyled li i,
+    .mainBanner h6,
+    .stepHeader .topBar ul li a i {
+        font-size: 1.25rem
+    }
+
+    .mainBanner p {
+        font-size: 1rem;
+        line-height: 1.6
+    }
+
+    .contactimage {
+        margin: 0
+    }
+
+    .logoSec h3 {
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--primary);
+        margin-bottom: 1rem;
+        font-size: 1.5rem
+    }
+
+    .logoSlider .slick-slide img,
+    .publisherSec img {
+        width: 6rem
+    }
+
+    .abtSec,
+    .countSec ul li p {
+        margin-bottom: 0
+    }
+
+    h3 {
+        color: var(--secondry)
+    }
+
+    .pubBox {
+        padding: 1.25rem;
+        margin: 5px 0;
+        height: auto
+    }
+
+    .slick-dots li {
+        width: 5px;
+        height: 20px;
+        margin: 0 3px
+    }
+
+    .portfolioSec .slick-dots li button,
+    .portfolioSec .slick-dots li.slick-active button,
+    .slick-dots li button,
+    .slick-dots li.slick-active button {
+        width: 5px;
+        padding: 0
+    }
+
+    .portfolioSlider div {
+        margin: 0 5px
+    }
+
+    .btnSec {
+        margin-top: 0;
+        flex-direction: column
+    }
+
+    .countSec ul,
+    .stepBox {
+        margin-top: 2rem
+    }
+
+    .exceptionalSec ul {
+        gap: 2rem;
+        border-radius: 0
+    }
+
+    .exceptionalSec ul li {
+        flex: 0 0 100%
+    }
+
+    .exceptionalSec ul li p {
+        font-size: 1.125rem
+    }
+
+    .countSec ul {
+        border: 2px solid #00000024
+    }
+
+    .countSec ul li:first-child,
+    .countSec ul li:nth-child(2) {
+        border-bottom: 2px solid #00000024
+    }
+
+    .countSec ul li {
+        flex: 0 0 50%;
+        padding: 1.5rem
+    }
+
+    .blogBox {
+        padding: 0
+    }
+
+    footer {
+        padding-top: 2rem;
+        border-radius: 0
+    }
+
+    .copyRight ul {
+        justify-content: center;
+        margin-bottom: 1rem
+    }
+
+    .portInner .blueBox {
+        padding: 2rem 1rem
+    }
+
+    .blogBox .btnBlog,
+    .summary {
+        margin-top: 1rem
+    }
+
+    .blogContnt,
+    .reviewBox {
+        min-height: auto
+    }
+
+    .bookKindBox figure::before {
+        background: #0000
+    }
+
+    .lpHeader .btnOpt {
+        gap: 1rem
+    }
+
+    .lpHeader .btnOpt .themeBtn {
+        font-size: 23px;
+        background: #fff;
+        padding: 5px
+    }
+
+    .lpHeader .btnOpt .themeBtn span {
+        display: none
+    }
+
+    .lpHeader .btnOpt .themeBtn:before {
+        content: none
+    }
+
+    .lpHeader .btnOpt .themeBtn i {
+        font-size: 20px;
+        color: var(--primary)
+    }
+
+    .stepBanner .headingStyleThree h2 {
+        font-size: 3rem
+    }
+
+    .portfolioSec .slick-prev.slick-arrow,
+    .slick-prev.slick-arrow {
+        left: 20px
+    }
+
+    .portfolioSec .slick-next.slick-arrow,
+    .slick-next.slick-arrow {
+        right: 20px
+    }
+
+    .stepHeader .topBar ul li a {
+        font-size: 0
+    }
+
+    .lpBanner.publishLpOne .bannerContnt {
+        min-height: calc(100vh - 4.5rem);
+        margin: 0 -10px;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center
+    }
+
+    .mainBanner.lpBanner .signupForm {
+        margin: 0 -30px;
+        border-radius: 0;
+        padding-inline: 3rem
+    }
+
+    .lpBanner h6 {
+        margin-bottom: 1rem;
+        font-size: 1.25rem
+    }
+
+    .publishLpOne h4 {
+        font-size: 2.25rem
+    }
+
+    .lpBanner.publishLpOne .listStyled li p {
+        font-size: 16px;
+        line-height: 1.3
+    }
+
+    .lpBanner.publishLpOne .listStyled li {
+        padding: 5px 0
+    }
+
+    .lpBanner.publishLpOne .listStyled {
+        margin: 2rem 0 1rem
+    }
+
+    .publishLpOne .signupForm h4 {
+        font-size: 1.35rem
+    }
+
+    .leadLp .accordionStyle,
+    .publishLpOne .phone-container .phone1 {
+        border-radius: 5px
+    }
+
+    .leadLp .accordionStyle .accordion-item .accordion-button {
+        padding: 6px 1rem
+    }
+
+    .stepBanner p {
+        font-size: 1rem
+    }
+
+    .lpContactSec .logoForm .logoRowOne,
+    .lpContactSec .logoForm .logoRowThree,
+    .lpContactSec .logoForm .logoRowTwo {
+        flex: 0 0 50%
+    }
+
+    .image_box {
+        position: unset;
+        margin: 30px 0 0 !important;
+        padding: 0 !important
+    }
+
+    .image_box img {
+        margin: 0 0 15px;
+        width: auto !important;
+        height: auto
+    }
+
+    .image_box ul li:first-child {
+        width: inherit
+    }
+}
+
+@media only screen and (max-width:575px) {
+    .lpHeader img {
+        width: 93px;
+        max-width: 73px;
+    }
+
+    .packageBox .listStyle {
+        height: 250px
+    }
+
+    .packageBox .listStyle li {
+        font-size: 1.15rem
+    }
+
+    .packageBox h3 {
+        margin-top: 1rem
+    }
+
+    .tag {
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 1.35rem
+    }
+
+    .lpContactSec .logoForm .logoRowOne,
+    .lpContactSec .logoForm .logoRowThree,
+    .lpContactSec .logoForm .logoRowTwo {
+        flex: 0 0 48%;
+        gap: 1rem
+    }
+
+    .lpContactSec .logoForm .logo {
+        width: 11rem;
+        height: 6rem
+    }
+}
+
+@media only screen and (max-width:480px) {
+
+    .banner-title,
+    .ctaSec h4,
+    .mainBanner p,
+    .services_testi h4 {
+        text-align: center
+    }
+
+    .entry-box h1 {
+        font-size: 18px
+    }
+
+    .mainBanner.lpBanner .contactBoxs .schtech {
+        left: -40px
+    }
+
+    .schtech1 {
+        right: -40px
+    }
+
+    .lpBanner.publishLpOne .bannerContnt {
+        min-height: calc(100vh - 7.5rem)
+    }
+
+    .banner-title {
+        font-size: 30px !important
+    }
+
+    .mainBanner p {
+        font-size: 12px;
+        line-height: 1.6;
+        width: 100%;
+        margin-top: 0 !important
+    }
+
+    .ctaSec h4,
+    .faqSec h4 {
+        font-size: 20px
+    }
+
+    .img_wrapper {
+        margin-top: 11px
+    }
+
+    .img_wrapper .rating_wrap {
+        justify-content: center !important;
+        width: max-content;
+        margin: 0 auto
+    }
+
+    .img_wrapper .reviews_wrap {
+        width: 100%
+    }
+
+    .mainBanner.lpBanner .signupForm {
+        padding: 10px 20px
+    }
+
+    section.sec_process {
+        padding: 60px 0
+    }
+
+    .image_box ul li h4 {
+        font-size: 25px
+    }
+
+    .faqSec .accordion-body p,
+    .image_box ul li p,
+    .service figure figcaption .content p,
+    .themeBtn,
+    footer .bottomtext p {
+        font-size: 13px
+    }
+
+    .ctaSec h4 {
+        line-height: 30px
+    }
+
+    section#Services .content {
+        height: 165px
+    }
+
+    .get-a-quote .container-h {
+        padding: 23px 0 50px !important
+    }
+
+    .get-a-quote .btn.btn--primary {
+        margin-top: -48px !important
+    }
+
+    .portfolioSlider img {
+        width: 100% !important
+    }
+
+    .service figure figcaption {
+        padding: 85px 20px 0px !important;
+        margin: 58px 0 35px !important;
+    }
+
+    .service figure img {
+        left: 0;
+        top: -30px;
+        width: 170px
+    }
+
+    .get-in-touch_sec {
+        padding: 35px 0;
+    }
+
+    .get-in-touch_sec .txt p {
+        font-size: 14px;
+        line-height: 23px;
+    }
+
+    .lasting_impression_sec {
+        padding: 30px 0px 0;
+    }
+
+    .lasting_impression_sec .txt {
+        padding: 0 10px;
+    }
+
+    .global_content h2 {
+        font-size: 25px;
+    }
+
+    .sec_process .process_li_img {
+        margin: 0 auto;
+    }
+
+    .sec_process .process_li_img img {
+        margin: 0;
+    }
+}

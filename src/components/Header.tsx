@@ -46,6 +46,7 @@ const Header: React.FC = () => {
           <Link href="/bookstore" className="text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-widest">Bookstore</Link>
           <Link href="/about" className="text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-widest">About</Link>
           <Link href="/contact" className="text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-widest">Contact</Link>
+          <Link href="/book-publishing" className="text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-widest">Book Publishing</Link>
           <Link href="/dashboard" className="text-sm font-black text-amber-600 hover:text-amber-700 transition-colors uppercase tracking-widest flex items-center gap-1">
             <Sparkles size={14} />
             Dashboard
@@ -92,6 +93,7 @@ const Header: React.FC = () => {
            <Link href="/bookstore" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black text-slate-900 uppercase">Bookstore</Link>
            <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black text-slate-900 uppercase">About</Link>
            <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black text-slate-900 uppercase">Contact</Link>
+           <Link href="/book-publishing" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black text-slate-900 uppercase">Book Publishing</Link>
            <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black text-amber-600 uppercase flex items-center gap-2">
              <Sparkles size={20} />
              Dashboard

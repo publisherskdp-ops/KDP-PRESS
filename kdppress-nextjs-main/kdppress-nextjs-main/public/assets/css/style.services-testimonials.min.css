@@ -1,0 +1,656 @@
+@font-face {
+    font-family: Volte-Semibold;
+    src: url(../fonts/3841E4_0_0.woff2);
+    font-display: swap
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: Volte-Semibold, sans-serif
+}
+
+.testimonial_slider {
+    display: block
+}
+
+.testimonial_slider .item {
+    padding: 0 10px
+}
+
+.testimonial_slider .slick-slide {
+    height: auto
+}
+
+.client-image img {
+    max-width: 50px
+}
+
+.testimonial-quote {
+    padding: 59px 25px 10px;
+    border-radius: 30px;
+    position: relative;
+    background: #eef4f8
+}
+
+.red {
+    color: #f90 !important
+}
+
+.test_p {
+    max-height: 70px;
+    overflow-y: scroll
+}
+
+.testimonial-each .testimonial-quote h4 {
+    margin-bottom: 7px;
+    font-size: 13.5px
+}
+
+.stars-rate {
+    font-size: 14px;
+    padding-left: 0
+}
+
+.testimonial-each .testimonial-quote p {
+    font-size: 14px;
+    line-height: 19px
+}
+
+.testimonial-quote .quote-blue {
+    font-size: 50px;
+    position: absolute;
+    left: 30px;
+    color: #000;
+    top: 2px
+}
+
+.fa-star {
+    color: #f6ae2d
+}
+
+.testimonial-quote:after {
+    width: 0;
+    height: 0;
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-top: 18px solid #eef4f8;
+    position: absolute;
+    content: close-quote;
+    bottom: -16px;
+    left: 42px
+}
+
+.fadeIn,
+.fromBottom,
+.fromLeft,
+.fromRight,
+.fromTop {
+    -webkit-transition: 1s;
+    -moz-transition: 1s;
+    -o-transition: 1s;
+    transition: 1s;
+    opacity: 1
+}
+
+.fadeIn.nV {
+    opacity: 0
+}
+
+.fromTop.nV {
+    -webkit-transform: translateY(-50px);
+    transform: translateY(-50px);
+    opacity: 0
+}
+
+.fromBottom.nV {
+    -webkit-transform: translateY(50px);
+    transform: translateY(50px);
+    opacity: 0
+}
+
+.fromLeft.nV {
+    -webkit-transform: translateX(-50px);
+    transform: translateX(-50px);
+    opacity: 0
+}
+
+.fromRight.nV {
+    -webkit-transform: translateX(50px);
+    transform: translateX(50px);
+    opacity: 0
+}
+
+.service figure figcaption,
+.serviceLarge {
+    border-radius: 10px;
+    color: #000;
+    background-color: #fff
+}
+
+.service figure:hover .my_pd.mywdth {
+    background-color: #f6ae2d;
+}
+
+.service figure:hover .content h3,
+.service figure:hover .content p.desc,
+.service figure:hover .linkText p {
+    color: white;
+}
+
+
+.service figure:hover .content .linkText span.arrow:after {
+    border-bottom: 2px solid #fff;
+    border-right: 2px solid #fff;
+}
+
+.service {
+    position: relative;
+    list-style: none;
+    outline: 0
+}
+
+.service a {
+    width: 100%;
+    height: 100%;
+    outline: 0
+}
+
+.service figure {
+    width: 100%;
+    display: inline-block;
+    -webkit-transition: none;
+    -moz-transition: none;
+    -o-transition: none;
+    transition: none
+}
+
+.service figure img {
+    position: absolute;
+    z-index: 1;
+    padding: 0 40px;
+    -webkit-transition: .1s linear;
+    -moz-transition: .1s linear;
+    -o-transition: .1s linear;
+    transition: .1s linear;
+    height: 150px;
+    object-fit: contain;
+    top: 50px;
+}
+
+.intr {
+    margin: 25px 0 15px !important
+}
+
+.service figure figcaption {
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    position: relative;
+    float: left;
+    cursor: pointer;
+    width: 100%;
+    min-height: 100%;
+    margin: 140px 0 15px;
+    padding: 30px;
+    z-index: 0;
+    -webkit-box-shadow: 0 20px 70px #888ea066;
+    -moz-box-shadow: 0 20px 70px #888ea066;
+    box-shadow: 0 20px 70px #888ea066;
+    -webkit-transition: .4s;
+    -moz-transition: .4s;
+    -o-transition: .4s;
+    transition: .4s
+}
+
+.service figure figcaption h2 {
+    font-weight: 300;
+    color: #000;
+    padding: 20px 0;
+    font-size: 24px
+}
+
+.service figure figcaption .content h2,
+.service figure figcaption .content p {
+    margin: 0
+}
+
+.service figure figcaption .content p {
+    font-size: 15px;
+    line-height: 1.5em
+}
+
+.service figure figcaption .content p.desc {
+    min-height: 220px;
+    margin-bottom: 0;
+    padding: 0
+}
+
+.my_pd {
+    padding: 90px 30px 0px !important
+}
+
+.service figure figcaption .content .linkText,
+.serviceLarge .content .linkText {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    bottom: 21px;
+    right: 22px;
+    padding: 14px 25px;
+    -webkit-transition: .3s;
+    -moz-transition: .3s;
+    -o-transition: .3s;
+    transition: .3s;
+    -webkit-box-shadow: 0 20px 50px #0000004d;
+    -moz-box-shadow: 0 20px 50px #0000004d;
+    box-shadow: 0 10px 50px #0003;
+    border-radius: 50px
+}
+
+.service figure figcaption .content .linkText p,
+.serviceLarge .content .linkText p {
+    opacity: 0;
+    width: 100px;
+    line-height: 1.4em;
+    padding: 0
+}
+
+.service figure figcaption .content .linkText .arrow,
+.serviceLarge .content .linkText .arrow {
+    position: absolute;
+    right: 15px;
+    top: 12px;
+    width: 20px;
+    height: 15px;
+    -webkit-transition: .4s;
+    -moz-transition: .4s;
+    -o-transition: .4s;
+    transition: .4s
+}
+
+.service figure figcaption .content .linkText span.arrow:before,
+.serviceLarge .content .linkText span.arrow:before {
+    content: "";
+    width: 20px;
+    display: inline-block;
+    position: relative;
+    background-color: #888e9a;
+    top: -5px
+}
+
+.service figure figcaption .content .linkText span.arrow:after,
+.serviceLarge .content .linkText span.arrow:after {
+    content: "";
+    position: absolute;
+    top: 8px;
+    right: 0;
+    height: 10px;
+    width: 10px;
+    border-bottom: 2px solid #888e9a;
+    border-right: 2px solid #888e9a;
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg)
+}
+
+.no-touch .service figure:hover img {
+    filter: drop-shadow(0 20px 15px #0000004d)
+}
+
+.no-touch .service figure:hover figcaption {
+    background-color: #f90;
+    -webkit-box-shadow: 0 50px 120px -20px #f90;
+    -moz-box-shadow: 0 50px 120px -20px #f90;
+    box-shadow: 0 50px 120px -20px #f90
+}
+
+.no-touch .service figure:hover figcaption .content {
+    -webkit-transform: translateZ(20px);
+    transform: translateZ(20px)
+}
+
+.no-touch .service figure:hover figcaption .content .linkText p::before,
+.no-touch .serviceLarge:hover .content .linkText p::before {
+    width: 50px;
+    -webkit-transform: translateX(-60px);
+    transform: translateX(-60px)
+}
+
+.no-touch .service figure:hover figcaption .content .linkText,
+.no-touch .serviceLarge:hover .content .linkText {
+    display: block;
+    width: 150px
+}
+
+.no-touch .service figure:hover figcaption .content .linkText p,
+.no-touch .serviceLarge:hover .content .linkText p {
+    color: #fff;
+    opacity: 1
+}
+
+.no-touch .service figure:hover figcaption .content .linkText span.arrow:after,
+.no-touch .service figure:hover figcaption .content .linkText span.arrow:before {
+    border-color: #fff
+}
+
+section#Services .content {
+    height: 240px;
+}
+
+@media (max-width:736px) and (orientation:portrait) {
+    .mt_testi {
+        margin-top: -20% !important
+    }
+}
+
+@media (max-width:460px) {
+    .services_testi .owl-controls {
+        display: none
+    }
+
+    .services_testi {
+        padding-top: 85px !important;
+        padding-bottom: 30px
+    }
+}
+
+.get-a-quote,
+.get-a-quote.section {
+    margin-top: -1px
+}
+
+.pb-0px {
+    padding-bottom: 0 !important
+}
+
+.pt-0px {
+    padding-top: 0 !important
+}
+
+.get-a-quote {
+    overflow: hidden;
+    padding: 0 0 60px
+}
+
+.section--no-overflow,
+.section--no-overflow .section__content {
+    overflow: hidden;
+    contain: content
+}
+
+.section {
+    position: relative
+}
+
+.ui-light-background {
+    background: #000
+}
+
+.pb-20px {
+    padding-bottom: 65px
+}
+
+.pt-150px {
+    padding-top: 65px
+}
+
+.pr-0px {
+    padding-right: 0 !important
+}
+
+.pl-0px {
+    padding-left: 0 !important
+}
+
+.is-visually-hidden,
+.sr-only {
+    clip: rect(0 0 0 0);
+    -webkit-clip-path: inset(100%);
+    clip-path: inset(100%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute !important;
+    white-space: nowrap;
+    width: 1px
+}
+
+.get-a-quote__wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center
+}
+
+.get-a-quote__text {
+    position: absolute;
+    left: 0;
+    top: 30px;
+    color: #fff;
+    white-space: nowrap;
+    -webkit-animation: 8s linear infinite get-a-quote-animation;
+    animation: 8s linear infinite get-a-quote-animation;
+    transition-property: color;
+    font-size: 6rem;
+    font-weight: 700;
+    line-height: 1.08333em;
+    letter-spacing: -.04em
+}
+
+.container-h {
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    width: 100%
+}
+
+.btn--xl.btn--square {
+    width: 60px;
+    padding-left: 0;
+    padding-right: 0;
+    flex-grow: 0;
+    flex-shrink: 0
+}
+
+.btn.btn--square {
+    width: 50px;
+    padding-left: 0;
+    padding-right: 0;
+    flex-grow: 0;
+    flex-shrink: 0
+}
+
+.btn {
+    height: 50px;
+    padding: 0 30px;
+    font-size: 1.5rem;
+    line-height: 1.2em;
+    letter-spacing: -.02em
+}
+
+.btn--square {
+    will-change: transform;
+    --x: 50%;
+    --y: 50%;
+    border: 0;
+    border-radius: 200px;
+    box-shadow: none;
+    background-color: transparent;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    text-align: center;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none
+}
+
+.btn__content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100%;
+    position: relative;
+    z-index: 1
+}
+
+.btn-container:hover .get-a-quote__text,
+.get-a-quote__text:hover {
+    color: #191b1d
+}
+
+@media only screen and (min-width:1200px) and (min-height:600px) {
+    .get-a-quote__text {
+        top: -5px
+    }
+}
+
+@-webkit-keyframes get-a-quote-animation {
+    0% {
+        transform: translateX(-25%)
+    }
+
+    to {
+        transform: translateX(-45%)
+    }
+}
+
+@keyframes get-a-quote-animation {
+    0% {
+        transform: translateX(-25%)
+    }
+
+    to {
+        transform: translateX(-45%)
+    }
+}
+
+#contactBtn {
+    position: absolute;
+    z-index: 1000;
+    display: block;
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 50%;
+    background: #fff;
+    vertical-align: middle;
+    -webkit-backface-visibility: hidden;
+    color: #000
+}
+
+.heading-6 {
+    font-size: 16px;
+    font-weight: 100
+}
+
+#contactBtn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    z-index: -1;
+    -webkit-transform: scale3d(.9, .9, 1);
+    transform: scale3d(.9, .9, 1);
+    box-shadow: inset 0 0 0 2px #f90;
+    -webkit-transition: box-shadow .3s, -webkit-transform .3s;
+    transition: box-shadow .3s, transform .3s
+}
+
+#contactBtn:hover svg {
+    stroke: #fff;
+    color: #000
+}
+
+#contactBtn.slide4:hover::before,
+#contactBtn:hover::before {
+    box-shadow: inset 0 0 0 28px #f90
+}
+
+#contactBtn svg {
+    fill: none !important;
+    stroke: #F90;
+    stroke-width: 2px;
+    stroke-miterlimit: 10
+}
+
+.morph-button-fixed,
+.morph-button-fixed .morph-content {
+    position: fixed;
+    right: 25px;
+    bottom: 10%;
+    display: block;
+    width: 56px;
+    height: 56px;
+    z-index: 2
+}
+
+.chat_btn {
+    bottom: 16.5%
+}
+
+@media (max-width:767px) {
+
+    .morph-button-fixed,
+    .morph-button-fixed .morph-content {
+        right: 0;
+        bottom: 8%
+    }
+
+    .chat_btn {
+        bottom: 10% !important
+    }
+}
+
+@media only screen and (max-width:480px) {
+    .service figure img {
+        left: 0;
+        top: -30px;
+        width: 170px
+    }
+}
+
+@media (max-width:600px) {
+    .service figure img {
+        padding: 0 15px;
+        max-width: 300px
+    }
+
+    .get-a-quote .pt-150px {
+        padding-top: 0
+    }
+
+    footer {
+        padding-top: 0 !important
+    }
+
+    .no-touch footer .bottomtext a,
+    footer .contactinfo a {
+        width: 100%;
+        display: block;
+        text-align: center
+    }
+
+    footer .logo img {
+        margin: 0 auto;
+        display: block
+    }
+
+    footer section h3 {
+        text-align: center
+    }
+
+    .bottombar a {
+        color: #fff
+    }
+
+    .chat_btn {
+        display: none
+    }
+}
