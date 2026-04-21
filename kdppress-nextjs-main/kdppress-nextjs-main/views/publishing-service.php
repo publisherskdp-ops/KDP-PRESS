@@ -635,10 +635,10 @@
     <style>
         .faqs_img img {
             object-fit: cover;
-            max-height: 600px;
-            min-height: 600px;
+            /* max-height: 600px; */
+            /* min-height: 600px; */
             display: block;
-            margin: 0 auto -80px;
+            margin: 0 auto;
         }
 
         section h3 {

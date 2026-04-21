@@ -70,7 +70,7 @@ function loadView(fileName) {
   }
 
   html = removePhp(html);
-  html = stripHeader(html);
+  // html = stripHeader(html); // Commented out to keep header for publishing-service
   html = stripGetAQuote(html);
   html = stripScripts(html);
   html = stripHeadAndHtml(html);
