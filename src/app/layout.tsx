@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import './globals.css';
 import InteractiveProvider from "@/components/InteractiveProvider";
 import { CartProvider } from "@/components/CartContext";
 import CartDrawer from "@/components/CartDrawer";
+import ScriptLoader from "@/components/ScriptLoader";
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'KDP Press | Publish Your Story Globally',
@@ -29,13 +30,12 @@ export default function RootLayout({
             <CartDrawer />
           </InteractiveProvider>
         </CartProvider>
-        
-        {/* Global jQuery and form handler */}
         <Script
           strategy="beforeInteractive"
           src="https://code.jquery.com/jquery-3.6.0.min.js"
         />
         <Script strategy="afterInteractive" src="/assets/js/custom.new.js" />
+        {/* <ScriptLoader /> */}
       </body>
     </html>
   );
