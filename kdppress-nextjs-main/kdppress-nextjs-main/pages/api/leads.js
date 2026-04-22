@@ -155,6 +155,7 @@ export default async function handler(req, res) {
 
     try {
       const response = await fetch('https://savtrack.savtechglobal.com/api/customer', {
+        // const response = await fetch('https://webhook.site/727dd895-a7cb-404a-bc2f-aec32cafb114', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

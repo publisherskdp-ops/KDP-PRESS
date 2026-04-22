@@ -36,11 +36,18 @@ export default function PublishingPageClient({ html }: Props) {
 
     // Custom window functions
     (window as any).toggleLiveChat = function () {
+      console.log('toggleLiveChat called');
       if (typeof (window as any).__lcLoad === 'function') {
+        console.log('Calling __lcLoad');
         (window as any).__lcLoad();
+      } else {
+        console.log('__lcLoad not available');
       }
       if (typeof (window as any).LiveChatWidget !== 'undefined' && typeof (window as any).LiveChatWidget.call === 'function') {
+        console.log('Calling LiveChatWidget.call maximize');
         (window as any).LiveChatWidget.call('maximize');
+      } else {
+        console.log('LiveChatWidget not available');
       }
     };
     (window as any).toggleChat = (window as any).toggleLiveChat;
@@ -94,26 +101,25 @@ export default function PublishingPageClient({ html }: Props) {
         .publishing-subproject footer {
           padding: 40px 0 !important;
         }
-        .get-a-quote {
-          display: none !important;
-        }
       `}</style>
       <div dangerouslySetInnerHTML={{ __html: html }} />
       
-      {/* Loading subproject scripts */}
-      <Script
-        strategy="afterInteractive"
-        src="https://code.jquery.com/jquery-3.6.0.min.js"
-      />
+      {/* Loading subproject scripts - jQuery is already loaded globally */}
       <Script
         strategy="afterInteractive"
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
       />
       <Script strategy="afterInteractive" src="/assets/js/slick.js" />
-      <Script strategy="afterInteractive" src="/assets/js/custom.new.js" />
       
-      <Script id="livechat-init" strategy="afterInteractive">
-        {`(function(n,t,c){function i(n){return e._h?e._h.apply(null,n):e._q.push(n)}var e={_q:[],_h:null,_v:"2.0",on:function(){i(["on",c.call(arguments)])},once:function(){i(["once",c.call(arguments)])},off:function(){i(["off",c.call(arguments)])},get:function(){if(!e._h)throw new Error("[LiveChatWidget] You can't use getters before load.");return i(["get",c.call(arguments)])},call:function(){i(["call",c.call(arguments)])},init:function(){if(t.getElementById("livechat-tracking"))return;var n=t.createElement("script");n.id="livechat-tracking";n.async=!0;n.type="text/javascript";n.src="https://cdn.livechatinc.com/tracking.js";t.head.appendChild(n)}};n.LiveChatWidget=n.LiveChatWidget||e;if(!n.__lc.asyncInit){var s=!1;var r=function(){if(s)return;s=!0;e.init()};n.__lcLoad=r;["click","touchstart"].forEach(function(t){n.addEventListener(t,r,{once:!0,passive:!0})})}})(window,document,[].slice);`}
+      <Script id="livechat-config" strategy="beforeInteractive">
+        {`window.__lc = window.__lc || {};
+        window.__lc.license = 18940913;
+        window.__lc.integration_name = "manual_onboarding";
+        window.__lc.product_name = "livechat";`}
+      </Script>
+      
+      <Script id="livechat-init" strategy="beforeInteractive">
+        {`(function(n,t,c){function i(n){return e._h?e._h.apply(null,n):e._q.push(n)}var e={_q:[],_h:null,_v:"2.0",on:function(){i(["on",c.call(arguments)])},once:function(){i(["once",c.call(arguments)])},off:function(){i(["off",c.call(arguments)])},get:function(){if(!e._h)throw new Error("[LiveChatWidget] You can't use getters before load.");return i(["get",c.call(arguments)])},call:function(){i(["call",c.call(arguments)])},init:function(){if(t.getElementById("livechat-tracking"))return;var n=t.createElement("script");n.id="livechat-tracking";n.async=!0;n.type="text/javascript";n.src="https://cdn.livechatinc.com/tracking.js";t.head.appendChild(n)}};n.LiveChatWidget=n.LiveChatWidget||e;if(n.__lc && !n.__lc.asyncInit){var s=!1;var r=function(){if(s)return;s=!0;e.init()};n.__lcLoad=r;["click","touchstart"].forEach(function(t){n.addEventListener(t,r,{once:!0,passive:!0})})}})(window,document,[].slice);`}
       </Script>
     </>
   );

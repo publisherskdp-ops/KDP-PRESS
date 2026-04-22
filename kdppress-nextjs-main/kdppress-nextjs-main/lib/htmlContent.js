@@ -17,6 +17,7 @@ function normalizeAssetPaths(html) {
     .replace(/href=["']assets\//g, 'href="/assets/')
     .replace(/href=["']images\/logo\/favicon\.png["']/g, 'href="/assets/images/logo.png"')
     .replace(/href=["']\/css\/fonts\/3841E4_0_0\.woff2["']/g, 'href="/assets/fonts/3841E4_0_0.woff2"')
+    .replace(/action=["']\/leads\/["']/g, 'action="/api/leads/"')
     .replace(/<link rel="icon"[^>]*>/gi, '');
 }
 
@@ -71,7 +72,7 @@ function loadView(fileName) {
 
   html = removePhp(html);
   // html = stripHeader(html); // Commented out to keep header for publishing-service
-  html = stripGetAQuote(html);
+  // html = stripGetAQuote(html); // Commented out to show the get-a-quote marquee
   html = stripScripts(html);
   html = stripHeadAndHtml(html);
   return {

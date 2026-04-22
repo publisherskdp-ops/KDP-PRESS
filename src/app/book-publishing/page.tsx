@@ -1,4 +1,3 @@
-import React from 'react';
 import { getPublishingServiceHtml } from '../../../kdppress-nextjs-main/kdppress-nextjs-main/lib/htmlContent';
 import PublishingPageClient from './PublishingPageClient';
 

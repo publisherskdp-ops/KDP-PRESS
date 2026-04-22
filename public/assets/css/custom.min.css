@@ -589,6 +589,10 @@ footer {
     width: 80%;
 }
 
+.modal .signupForm {
+    width: 100%;
+}
+
 .signupForm .file_uploaded {
     margin-top: 11px
 }
@@ -2384,9 +2388,14 @@ button.btn-close.close {
     }
 
     .mainBanner.lpBanner .signupForm {
-        margin: 0 -30px;
-        border-radius: 0;
+        margin: 0 0px;
+        width: 100%;
+        border-radius: 15px !important;
         padding-inline: 3rem
+    }
+
+    .banner_img {
+        display: none !important;   
     }
 
     .lpBanner h6 {

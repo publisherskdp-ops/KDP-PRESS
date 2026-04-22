@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import './globals.css';
 import InteractiveProvider from "@/components/InteractiveProvider";
 import { CartProvider } from "@/components/CartContext";
@@ -28,6 +29,13 @@ export default function RootLayout({
             <CartDrawer />
           </InteractiveProvider>
         </CartProvider>
+        
+        {/* Global jQuery and form handler */}
+        <Script
+          strategy="beforeInteractive"
+          src="https://code.jquery.com/jquery-3.6.0.min.js"
+        />
+        <Script strategy="afterInteractive" src="/assets/js/custom.new.js" />
       </body>
     </html>
   );
