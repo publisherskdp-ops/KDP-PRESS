@@ -78,7 +78,28 @@ export async function POST(request: NextRequest) {
     const clientIp = getRealIpAddress(request);
 
     // Build data object for webhook
-    const data = {
+    // const data = {
+    //   name: `${firstName} ${lastName}`.trim(),
+    //   email,
+    //   phone,
+    //   brief,
+    //   domain: 'www.kdpPress.com',
+    //   brand: 'www.kdpPress.com',
+    //   ip_address: clientIp,
+    //   route,
+    // };
+
+    const data: {
+      name: string;
+      email: string;
+      phone: string;
+      brief: string;
+      domain: string;
+      brand: string;
+      ip_address: string;
+      route: string;
+      manuscript_url?: string;
+    } = {
       name: `${firstName} ${lastName}`.trim(),
       email,
       phone,
