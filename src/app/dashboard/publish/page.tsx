@@ -615,7 +615,7 @@ export default function PublishBook() {
 
             <div style={{ padding: '1.5rem 2rem', background: '#f8fafc', borderTop: '1px solid var(--border)', borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <button onClick={() => setStep(1)} style={{ padding: '0.8rem 2rem', background: 'transparent', color: 'var(--text-main)', border: '1px solid var(--border-medium)', borderRadius: '8px', fontSize: '1rem', fontWeight: 700, cursor: 'pointer' }}>
-                {`< Back to Details`}
+                {"< Back to Details"}
               </button>
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <button style={{ padding: '0.8rem 2rem', background: 'white', color: 'var(--text-main)', border: '1px solid var(--border-medium)', borderRadius: '8px', fontSize: '1rem', fontWeight: 700, cursor: 'pointer' }}>
@@ -628,7 +628,6 @@ export default function PublishBook() {
             </div>
           </div>
         )}
-
         {step === 3 && (
            <div className="step-content">
              <div style={{ padding: '2rem' }}>
