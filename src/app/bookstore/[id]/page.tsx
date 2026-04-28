@@ -218,7 +218,7 @@ export default function BookProductPage({ params }: { params: Promise<{ id: stri
                 </div>
 
                 <div className="flex gap-2 text-sm">
-                   {book.contributors.map((c, i) => (
+                   {book.contributors?.map((c, i) => (
                     <div key={i} className="flex flex-col group cursor-pointer">
                         <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">{c.role}</span>
                         <span className="text-slate-900 font-bold group-hover:text-sky-600 transition-colors underline-offset-4 group-hover:underline">{c.name}</span>
@@ -247,7 +247,7 @@ export default function BookProductPage({ params }: { params: Promise<{ id: stri
                           }`}
                          >
                             <span className="block text-sm font-black uppercase tracking-widest mb-1 opacity-60">{fmt.label}</span>
-                            <span className="block text-2xl font-black mb-1">${fmt.price.toFixed(2)}</span>
+                            <span className="block text-2xl font-black mb-1">${(fmt.price ?? 0).toFixed(2)}</span>
                             <span className="block text-[10px] font-bold opacity-50 uppercase tracking-tighter">{fmt.desc}</span>
                             {selectedFormat === fmt.id && <div className="absolute top-2 right-2"><CheckCircle2 size={24} className="text-sky-400" /></div>}
                          </button>

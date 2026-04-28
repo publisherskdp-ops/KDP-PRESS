@@ -446,12 +446,10 @@ export default function PublishBook() {
             </div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', padding: '2rem' }}>
-              
               {/* Manuscript & Cover Upload Logic */}
               <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: '2rem', borderBottom: '1px solid var(--border)', paddingBottom: '2rem' }}>
                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>Manuscript & Cover</h3>
                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                    {/* Manuscript */}
                     <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
                        <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem' }}>Upload Paperback Manuscript</h4>
                        <p style={{ color: 'var(--text-dim)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>Upload your interior file. Formats accepted: PDF, DOC, DOCX, RTF.</p>
@@ -462,7 +460,6 @@ export default function PublishBook() {
                        {manuscriptName && <p style={{ color: 'var(--success)', fontSize: '0.85rem', fontWeight: 700, marginTop: '1rem' }}>✓ {manuscriptName} uploaded successfully</p>}
                     </div>
 
-                    {/* Cover */}
                     <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
                        <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem' }}>Upload Book Cover</h4>
                        <p style={{ color: 'var(--text-dim)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>Upload a print-ready PDF covering the back, spine, and front.</p>
@@ -475,14 +472,13 @@ export default function PublishBook() {
                  </div>
               </div>
 
-
               {/* ISBN Generation logic */}
               <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: '2rem', borderBottom: '1px solid var(--border)', paddingBottom: '2rem' }}>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>ISBN</h3>
                 <div>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>You can have us assign an ISBN for your book or you can add one you've already purchased. An ISBN is a unique ID retailers, libraries, and distributors use.</p>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>You can have us assign an ISBN for your book or you can add one you've already purchased.</p>
                   
-                  <div style={{ background: isbnChoice === 'free' ? 'var(--surface-light)' : '#f8fafc', padding: '1.5rem', borderRadius: '12px', border: isbnChoice === 'free' ? '1px solid var(--border-medium)' : '1px solid var(--border)', marginBottom: '1rem' }}>
+                  <div style={{ background: isbnChoice === 'free' ? 'var(--surface-light)' : '#f8fafc', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--border-medium)', marginBottom: '1rem' }}>
                     <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontWeight: 700, cursor: 'pointer' }}>
                       <input type="radio" value="free" checked={isbnChoice === 'free'} onChange={() => setIsbnChoice('free')} style={{ marginTop: '0.2rem' }} />
                       <div>
@@ -491,10 +487,10 @@ export default function PublishBook() {
                           <div style={{ marginTop: '1rem' }}>
                             {generatedIsbn ? (
                               <div style={{ padding: '1rem 1.5rem', background: 'white', borderRadius: '8px', border: '2px solid var(--success)', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '1px', display: 'inline-block' }}>
-                                ISBN-13: <span style={{ color: 'var(--text-main)' }}>{generatedIsbn}</span>
+                                ISBN-13: {generatedIsbn}
                               </div>
                             ) : (
-                              <button onClick={generateEAN13} style={{ padding: '0.6rem 2rem', background: 'var(--primary-darker)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(2, 132, 199, 0.2)' }}>
+                              <button onClick={generateEAN13} style={{ padding: '0.6rem 2rem', background: 'var(--primary-darker)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}>
                                 Assign Free ISBN
                               </button>
                             )}
@@ -504,7 +500,7 @@ export default function PublishBook() {
                     </label>
                   </div>
                   
-                  <div style={{ background: isbnChoice === 'own' ? 'var(--surface-light)' : '#f8fafc', padding: '1.5rem', borderRadius: '12px', border: isbnChoice === 'own' ? '1px solid var(--border-medium)' : '1px solid var(--border)' }}>
+                  <div style={{ background: isbnChoice === 'own' ? 'var(--surface-light)' : '#f8fafc', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--border-medium)' }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '12px', fontWeight: 700, cursor: 'pointer' }}>
                       <input type="radio" value="own" checked={isbnChoice === 'own'} onChange={() => setIsbnChoice('own')} />
                       Use my own ISBN
@@ -532,22 +528,20 @@ export default function PublishBook() {
                 <div>
                   <div style={{ marginBottom: '2rem' }}>
                     <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.5rem' }}>Ink and Paper Type</h4>
-                    <div style={{ display: 'flex', gap: '2rem' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '260px' }}>
-                        {['Black & white interior with cream paper', 'Black & white interior with white paper', 'Standard color interior with white paper', 'Premium color interior with white paper'].map((opt, i) => (
-                          <div 
-                            key={i} 
-                            onClick={() => setInkType(opt)}
-                            style={{ 
-                              padding: '1rem', border: inkType === opt ? '2px solid var(--primary)' : '1px solid var(--border-medium)', 
-                              borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: inkType === opt ? 700 : 500,
-                              background: inkType === opt ? 'var(--surface-light)' : 'white'
-                            }}
-                          >
-                            {opt}
-                          </div>
-                        ))}
-                      </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '260px' }}>
+                      {['Black & white interior with cream paper', 'Black & white interior with white paper', 'Standard color interior with white paper', 'Premium color interior with white paper'].map((opt, i) => (
+                        <div 
+                          key={i} 
+                          onClick={() => setInkType(opt)}
+                          style={{ 
+                            padding: '1rem', border: inkType === opt ? '2px solid var(--primary)' : '1px solid var(--border-medium)', 
+                            borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: inkType === opt ? 700 : 500,
+                            background: inkType === opt ? 'var(--surface-light)' : 'white'
+                          }}
+                        >
+                          {opt}
+                        </div>
+                      ))}
                     </div>
                   </div>
 
@@ -572,7 +566,6 @@ export default function PublishBook() {
               <div style={{ background: '#eff6ff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #bfdbfe' }}>
                 <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#1e40af', marginBottom: '0.5rem' }}>Lulu Fulfillment Configuration</h4>
                 <p style={{ fontSize: '0.85rem', color: '#1e40af', marginBottom: '1.5rem' }}>Enter the unique IDs from your Lulu Developer Portal to enable global print-on-demand.</p>
-                
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                    <div>
                      <InputLabel required helpText="The ID of your PDF asset in the Lulu system.">Lulu Print Asset ID</InputLabel>
@@ -585,16 +578,14 @@ export default function PublishBook() {
                 </div>
               </div>
 
-              {/* Precise AI Content Workflow */}
+              {/* AI Content */}
               <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: '2rem', borderBottom: '1px solid var(--border)', paddingBottom: '2rem' }}>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>Artificial Intelligence (AI) Content</h3>
                 <div>
                   <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>We require you to disclose if your content is AI-generated.</p>
-                  
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '8px', border: '1px solid var(--border)' }}>
                        <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.8rem' }}>AI-generated content</h4>
-                       <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>Text, images, or translations created by an AI-based tool. Did you use AI-generated content?</p>
                        <div style={{ display: 'flex', gap: '1rem' }}>
                          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}><input type="radio" name="ai_gen" /> Yes</label>
                          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}><input type="radio" name="ai_gen" defaultChecked /> No</label>
@@ -602,7 +593,6 @@ export default function PublishBook() {
                     </div>
                     <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '8px', border: '1px solid var(--border)' }}>
                        <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.8rem' }}>AI-assisted content</h4>
-                       <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>Content you created yourself but used AI tools to edit, refine, brainstorm, or error-check. Did you use AI-assisted content?</p>
                        <div style={{ display: 'flex', gap: '1rem' }}>
                          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}><input type="radio" name="ai_assist" /> Yes</label>
                          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}><input type="radio" name="ai_assist" defaultChecked /> No</label>
