@@ -31,11 +31,11 @@ export default function LoginPage() {
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-4 py-12">
       <Link href="/" className="mb-10 block transition-transform hover:scale-105 active:scale-95">
         <Image 
-          src="/logo.png" 
+          src="/kdppress Logo-01.png" 
           alt="KDP Press Logo" 
-          width={180} 
-          height={60} 
-          className="object-contain h-12 w-auto"
+          width={500} 
+          height={200} 
+          className="object-contain h-40 w-auto"
           priority
         />
       </Link>

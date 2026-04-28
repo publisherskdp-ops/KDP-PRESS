@@ -1,0 +1,38 @@
+[
+  {
+    "id": "help-my-unbelief",
+    "title": "HELP MY UNBELIEF",
+    "subtitle": "A Journey Through Faith and Doubt",
+    "author": "J. Andre Weisbrod",
+    "contributors": [
+      { "name": "J. Andre Weisbrod", "role": "Author" }
+    ],
+    "price": { "paperback": 14.99, "kindle": 9.99, "hardcover": 24.99 },
+    "genre": "Christianity",
+    "rating": 5.0,
+    "reviews": 1,
+    "language": "English",
+    "published": "April 2026",
+    "imprint": "Independently Published",
+    "isbn": "nvr6v7q",
+    "trimSize": "6 x 9 in",
+    "pageCount": 66,
+    "image": "https://placehold.co/400x600?text=HELP+MY+UNBELIEF",
+    "descriptionHtml": "<p><b>A powerful exploration of faith and doubt</b>. J. Andre Weisbrod takes readers on a profound journey through the complexities of belief in the modern world.</p><p>This book is a must-read for anyone wrestling with their faith or looking for deeper spiritual understanding.</p>",
+    "luluPrintAssetId": "nvr6v7q",
+    "luluPodPackageId": "0600X0900BWSTDPB060UW444GXX",
+    "status": "LIVE"
+  },
+  {
+    "id": "1",
+    "title": "Echoes of Eternity",
+    "author": "Elena Rivers",
+    "genre": "Mystery & Crime",
+    "price": { "paperback": 19.99, "kindle": 9.99, "hardcover": 29.99 },
+    "rating": 4.8,
+    "reviews": 1240,
+    "image": "/book_cover_mystery_v2_1775078752710.png",
+    "descriptionHtml": "<p>A gripping journey into the unknown...</p>",
+    "status": "LIVE"
+  }
+]

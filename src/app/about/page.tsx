@@ -17,11 +17,12 @@ export default function About() {
                 <Sparkles size={12} />
                 Est. 2026
             </div>
-            <h1 className="text-6xl md:text-8xl font-black text-slate-900 tracking-tighter leading-none mb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-               Publishing <span className="gradient-text italic">Redefined</span>.
-            </h1>
+<h1 className="text-6xl md:text-8xl font-black text-slate-900 tracking-tighter leading-none mb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+    Readers’ Heaven.<br />
+    <span className="gradient-text italic">Indie Authors’ Hub</span>.
+</h1>
             <p className="text-xl md:text-2xl text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-12 duration-1000">
-               We believe that the journey from manuscript to bookstore should be as inspiring as the stories being told.
+               KDP Press empowers writers—new and experienced—to publish freely, own their work completely, and connect with readers seeking stories beyond the mainstream. 
             </p>
          </div>
          
@@ -35,20 +36,22 @@ export default function About() {
             <div className="flex-1 space-y-10">
                <div className="space-y-4">
                    <h2 className="text-5xl font-black text-slate-900 leading-tight tracking-[0.02em] uppercase">
-                       Empowering <br/><span className="text-sky-600">Global Voices</span>
+                       Built for Stories <br/><span className="text-sky-600">That Deserve to Be Seen</span>
                    </h2>
                    <div className="w-20 h-1 bg-sky-600" />
                </div>
                
                <p className="text-lg text-slate-600 leading-relaxed font-medium">
-                  Every author deserves access to the industry's most sophisticated tools and absolute transparency. We provide a platform where world-class formatting, expert cover design, and global fulfillment are the standard—not the exception.
+                  The publishing world is competitive, but great stories shouldn’t be lost in the noise. 
+
+At KDP Press, we remove the barriers by offering free self-publishing and access to a global distribution network of 50+ platforms. This means you don’t just publish but also get the opportunity to be discovered.
                </p>
 
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
-                  <ValueItem icon={<Award />} label="Elite Quality" />
-                    <ValueItem icon={<Globe />} label="Global reach" />
-                    <ValueItem icon={<Target />} label="Strategic Growth" />
-                    <ValueItem icon={<Heart />} label="Author Centric" />
+                  <ValueItem icon={<Award />} label="Free Publishing" />
+                    <ValueItem icon={<Globe />} label="Guaranteed Author Visibility" />
+                    <ValueItem icon={<Target />} label="Complete Ownership" />
+                    <ValueItem icon={<Heart />} label="Simple Process" />
                </div>
 
                <div className="pt-10">
@@ -93,20 +96,22 @@ export default function About() {
             <div className="order-1 lg:order-2 space-y-10">
                <div className="space-y-4 text-right lg:text-left">
                   <h2 className="text-5xl font-black text-white leading-tight tracking-[0.02em] uppercase">
-                      Curated For <br/><span className="text-amber-500">Readers</span>
+                      A Library Beyond <br/><span className="text-amber-500">the Bestsellers </span>
                   </h2>
                   <div className="w-20 h-1 bg-amber-500 ml-auto lg:ml-0" />
                </div>
                
                <p className="text-xl text-slate-400 leading-relaxed font-medium">
-                  We care as much about the reading experience as we do about publishing. Our bookstore is a curated sanctuary for high-impact literature, meticulously selected to ensure every reader finds something that shifts their perspective.
+                  For readers seeking something different, KDP Press offers a curated space of fresh, undiscovered voices. 
+
+Explore a growing collection of titles, from editor’s picks to featured authors, and find stories that go beyond the usual.
                </p>
 
                <div className="grid grid-cols-2 gap-6">
-                  <StatCard number="10k+" label="Authors" />
-                  <StatCard number="1M+" label="Copies" />
-                  <StatCard number="24/7" label="Support" />
-                  <StatCard number="99%" label="Success" />
+                  <StatCard number="1000+" label="Authors" />
+                  <StatCard number="50,000+" label="Books" />
+                  <StatCard number="100,000" label="Readership" />
+                  <StatCard number="50+"label="Catogeries" />
                </div>
             </div>
          </div>
@@ -118,7 +123,7 @@ export default function About() {
          
          <div className="max-w-4xl mx-auto space-y-10 relative z-10">
             <h2 className="text-6xl md:text-8xl font-black text-slate-900 tracking-tighter leading-none mb-8">
-               Your next chapter <br />starts <span className="italic text-slate-300">here</span>.
+               Redefining Book Stores Starting Now!
             </h2>
             <div className="flex flex-wrap gap-4 justify-center">
                <Link href="/auth/signup" className="px-10 py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-sky-600 transition-all shadow-xl active:scale-95">

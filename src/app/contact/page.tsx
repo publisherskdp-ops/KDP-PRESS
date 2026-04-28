@@ -14,10 +14,10 @@ export default function Contact() {
         <div className="max-w-[1400px] mx-auto px-6 relative z-10">
           <div className="max-w-3xl space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
             <h1 className="text-6xl md:text-8xl font-black text-slate-900 tracking-tighter leading-none">
-               Talk to our <br/><span className="gradient-text italic">Experts</span>.
+              Have Questions?<br/><span className="gradient-text italic">Let’s Talk. </span>.
             </h1>
             <p className="text-xl md:text-2xl text-slate-500 leading-relaxed font-medium">
-               Whether you're finalizing your first manuscript or looking to reach a global scale, our team is ready to guide your publishing journey.
+               Our team of publishing experts and skilled publishers loves to answer your questions and clear your queries. Reach out to us today!  
             </p>
           </div>
         </div>

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, use } from 'react';
+import React, { useState, use, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Star, 
@@ -21,6 +21,8 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { useCart } from '@/components/CartContext';
+import { getBookAction } from '../actions';
+import { Book } from '@/lib/books';
 
 // Expanded Mock Book matching the advanced metadata requirements
 const mockBooks = [
@@ -55,21 +57,49 @@ type FormatKey = 'kindle' | 'paperback' | 'hardcover';
 
 export default function BookProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  // Default to mock data
-  const book = mockBooks[0]; // Normally fetch via ID
-
+  const [book, setBook] = useState<Book | null>(null);
+  const [loading, setLoading] = useState(true);
   const [selectedFormat, setSelectedFormat] = useState<FormatKey>('paperback');
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
-  const selectedPrice = book.price[selectedFormat];
 
-  // Review states
+  useEffect(() => {
+    async function loadBook() {
+      const data = await getBookAction(id);
+      if (data) {
+        setBook(data as any);
+      }
+      setLoading(false);
+    }
+    loadBook();
+  }, [id]);
+
+  // Moved hooks to the top to follow Rules of Hooks
   const [reviews, setReviews] = useState([
     { id: 1, user: 'Alex Morgan', rating: 5, comment: 'Absolutely mesmerizing! The pacing was perfect.', date: '2 days ago' },
     { id: 2, user: 'Jamie Chen', rating: 4, comment: 'A bit slow in the middle, but the ending was worth it.', date: '1 week ago' }
   ]);
   const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FDFCFB]">
+        <div className="w-12 h-12 border-4 border-sky-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!book) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#FDFCFB] gap-4">
+        <h1 className="text-2xl font-black">Book Not Found</h1>
+        <Link href="/bookstore" className="text-sky-600 font-bold hover:underline">Return to Store</Link>
+      </div>
+    );
+  }
+
+  const selectedPrice = book.price[selectedFormat] || book.price.paperback;
 
   const handleSubmitReview = (e: React.FormEvent) => {
     e.preventDefault();

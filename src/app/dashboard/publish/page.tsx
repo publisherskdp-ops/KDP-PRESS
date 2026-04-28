@@ -114,6 +114,10 @@ export default function PublishBook() {
   const [finish, setFinish] = useState('Matte');
   const [pageCount, setPageCount] = useState<string>('200');
   
+  // Lulu Print API Fields
+  const [luluPrintAssetId, setLuluPrintAssetId] = useState('');
+  const [luluPodPackageId, setLuluPodPackageId] = useState('0600X0900BWSTDPB060UW444MXX');
+  
   // Advanced Step 2 State
   const [isbnChoice, setIsbnChoice] = useState('free'); 
   const [generatedIsbn, setGeneratedIsbn] = useState<string | null>(null);
@@ -188,7 +192,9 @@ export default function PublishBook() {
       date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
       price: listPrice || '0.00',
       asin: isbnChoice === 'free' && generatedIsbn ? generatedIsbn.split('-').join('') : 'B0' + Math.random().toString(36).substring(2, 10).toUpperCase(),
-      status: 'In Review' 
+      status: 'In Review',
+      luluPrintAssetId: luluPrintAssetId,
+      luluPodPackageId: luluPodPackageId
     };
     const existing = JSON.parse(localStorage.getItem('kdp_books') || '[]');
     localStorage.setItem('kdp_books', JSON.stringify([newBook, ...existing]));
@@ -561,9 +567,22 @@ export default function PublishBook() {
                     </div>
                   </div>
 
-                  <div style={{ marginBottom: '2rem', maxWidth: '300px' }}>
-                    <InputLabel required helpText="Estimated page count is required to calculate manufacturing print cost.">Estimated Page Count</InputLabel>
-                    <InputField type="number" value={pageCount} onChange={(e) => setPageCount(e.target.value)} />
+                  </div>
+
+                  <div style={{ background: '#eff6ff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #bfdbfe', marginTop: '2rem' }}>
+                    <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#1e40af', marginBottom: '0.5rem' }}>Lulu Fulfillment Configuration</h4>
+                    <p style={{ fontSize: '0.85rem', color: '#1e40af', marginBottom: '1.5rem' }}>Enter the unique IDs from your Lulu Developer Portal to enable global print-on-demand.</p>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                       <div>
+                         <InputLabel required helpText="The ID of your PDF asset in the Lulu system.">Lulu Print Asset ID</InputLabel>
+                         <InputField placeholder="e.g. 159967055..." value={luluPrintAssetId} onChange={e => setLuluPrintAssetId(e.target.value)} />
+                       </div>
+                       <div>
+                         <InputLabel required helpText="The Lulu code for your book's physical specs.">Lulu POD Package ID</InputLabel>
+                         <InputField placeholder="e.g. 0600X0900BWST..." value={luluPodPackageId} onChange={e => setLuluPodPackageId(e.target.value)} />
+                       </div>
+                    </div>
                   </div>
 
                 </div>

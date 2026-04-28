@@ -20,16 +20,16 @@ export default function Home() {
           <div className="max-w-4xl space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
             <div className="inline-flex items-center gap-3 px-5 py-2 bg-white/50 backdrop-blur-md border border-white rounded-full shadow-lg shadow-slate-200/50">
                <div className="w-2 h-2 bg-sky-500 rounded-full animate-pulse" />
-               <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">The Future of Publishing</span>
+               <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Write It. Publish It. Own It.</span>
             </div>
             
             <h1 className="text-6xl md:text-8xl font-black tracking-tight leading-[0.95] text-slate-900">
-              Your story, published <br />
-              <span className="gradient-text">professionally</span>.
+              Not Your Ordinary  <br />
+              <span className="gradient-text">Book Store</span>.
             </h1>
             
             <p className="text-xl md:text-2xl text-slate-500 max-w-2xl leading-relaxed font-medium">
-              Keep 100% of your rights and earn up to 70% royalties. Reach a global audience with the industry's most advanced publishing infrastructure.
+              KDP Press empowers writers to publish for FREE, keep full ownership, and reach readers who are ready for something beyond the mainstream.
             </p>
 
             <div className="flex flex-wrap gap-5 pt-6">
@@ -61,20 +61,20 @@ export default function Home() {
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
             <div className="space-y-2 group">
-              <h3 className="text-5xl font-black text-slate-900 tracking-tighter group-hover:scale-110 transition-transform">1.2M</h3>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Independent Authors</p>
+              <h3 className="text-5xl font-black text-slate-900 tracking-tighter group-hover:scale-110 transition-transform">1000+</h3>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Authors</p>
             </div>
             <div className="space-y-2 group">
-              <h3 className="text-5xl font-black text-slate-900 tracking-tighter group-hover:scale-110 transition-transform">$3.4B</h3>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Royalties Paid</p>
+              <h3 className="text-5xl font-black text-slate-900 tracking-tighter group-hover:scale-110 transition-transform">50,000+</h3>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Books</p>
             </div>
             <div className="space-y-2 group">
-              <h3 className="text-5xl font-black text-slate-900 tracking-tighter group-hover:scale-110 transition-transform">192</h3>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Active Countries</p>
+              <h3 className="text-5xl font-black text-slate-900 tracking-tighter group-hover:scale-110 transition-transform">100%</h3>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Ownership</p>
             </div>
             <div className="space-y-2 group">
-              <h3 className="text-5xl font-black text-slate-900 tracking-tighter group-hover:scale-110 transition-transform">70%</h3>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Max Royalty Tier</p>
+              <h3 className="text-5xl font-black text-slate-900 tracking-tighter group-hover:scale-110 transition-transform">100,000+</h3>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Readership</p>
             </div>
           </div>
         </div>
@@ -86,27 +86,27 @@ export default function Home() {
           <div className="max-w-3xl mb-24 space-y-6">
              <div className="inline-flex items-center gap-2 text-sky-600 font-black uppercase tracking-[0.2em] text-xs">
                 <Sparkles size={16} />
-                Elite Infrastructure
+                Our Process
              </div>
-             <h2 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 leading-[1.05]">Built for those who <br /><span className="italic font-serif text-sky-600">refuse</span> to settle.</h2>
+             <h2 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 leading-[1.05]"> Your 3-Step Pathway to <br /><span className="italic font-serif text-sky-600">Being</span>  Published</h2>
              <p className="text-xl text-slate-500 font-medium max-w-xl">We've eliminated the technical friction of publishing so you can focus on the art of storytelling.</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             <FeatureCard 
               icon={<Zap className="text-amber-500" />} 
-              title="Instant Formatting" 
-              desc="Drop your manuscript and let our AI engine handle the complex typesetting for both digital and print arrays." 
+              title="Write Your Story" 
+              desc="Bring your ideas to life, whether it’s fiction, non-fiction, or anything in between." 
             />
             <FeatureCard 
               icon={<Globe className="text-sky-500" />} 
-              title="Global Fulfillment" 
-              desc="Your book is stocked in major retail networks worldwide, with automated local printing to minimize shipping costs." 
+              title="Upload Your Manuscript" 
+              desc="Submit your work to KDP Press in just a few clicks without any complex steps or hefty fees." 
             />
             <FeatureCard 
               icon={<Rocket className="text-slate-900" />} 
-              title="Launch Dynamics" 
-              desc="Access elite marketing tools, algorithmic optimization, and real-time sales analytics to fuel your growth." 
+              title="Get Published and Discovered" 
+              desc="Your book goes live in our store, ready to be explored by readers worldwide." 
             />
           </div>
         </div>
@@ -120,11 +120,13 @@ export default function Home() {
          <div className="max-w-[1200px] mx-auto px-10 relative z-10 flex flex-col lg:flex-row items-center gap-20">
             <div className="flex-1 space-y-10">
                 <div className="space-y-4">
-                   <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter leading-none">Stay Inspired.</h2>
+                   <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter leading-none">Let’s Publish!</h2>
                    <div className="w-20 h-1 bg-sky-500" />
                 </div>
                 <p className="text-2xl text-slate-400 font-medium leading-relaxed">
-                   Discover why 50k+ authors choose KDP Press for their most ambitious projects. The bookstore isn't just a shop—it's an experience.
+                   Simple steps. Free self-publishing. Unlimited options. 
+Kickstart your author journey with us and tap into unlimited possibilities. 
+
                 </p>
                 <div className="flex gap-10">
                     <div className="space-y-1">

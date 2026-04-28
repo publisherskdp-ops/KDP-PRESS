@@ -4,12 +4,57 @@ import Header from '@/components/Header';
 import Button from '@/components/Button';
 import { useCart } from '@/components/CartContext';
 import Link from 'next/link';
+import { calculateShippingAction, createOrderAction } from './actions';
 
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart();
   const [step, setStep] = useState(1); // 1: Shipping, 2: Billing, 3: Payment, 4: Success
   const [sameAsShipping, setSameAsShipping] = useState(true);
   const [shippingMethod, setShippingMethod] = useState('standard');
+  const [shippingRates, setShippingRates] = useState<any[]>([]);
+  const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
+  const [address, setAddress] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    street1: '',
+    city: '',
+    state_code: '',
+    postcode: '',
+    country_code: 'US'
+  });
+
+  const handleCalculateShipping = async () => {
+    if (!address.street1 || !address.city || !address.postcode) return;
+    
+    setIsCalculatingShipping(true);
+    const res = await calculateShippingAction(address, cart);
+    if (res.success) {
+      setShippingRates(res.rates);
+      if (res.rates.length > 0) {
+        setShippingMethod(res.rates[0].level);
+      }
+    }
+    setIsCalculatingShipping(false);
+  };
+
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const handlePlaceOrder = async () => {
+    setIsPlacingOrder(true);
+    const res = await createOrderAction({
+      ...address,
+      shipping_level: shippingMethod
+    }, cart);
+    
+    if (res.success) {
+      setStep(4);
+      clearCart();
+    } else {
+      alert(`Order failed: ${res.error}`);
+    }
+    setIsPlacingOrder(false);
+  };
 
   if (cart.length === 0 && step !== 4) {
     return (
@@ -23,7 +68,8 @@ export default function CheckoutPage() {
     );
   }
 
-  const shipping = shippingMethod === 'express' ? 12.99 : shippingMethod === 'overnight' ? 24.99 : 4.99;
+  const selectedRate = shippingRates.find(r => r.level === shippingMethod);
+  const shipping = selectedRate ? parseFloat(selectedRate.total_price) : 0;
   const tax = cartTotal * 0.08;
   const grandTotal = cartTotal + shipping + tax;
 
@@ -55,41 +101,49 @@ export default function CheckoutPage() {
                 
                 <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                    <Input label="First Name *" placeholder="John" id="ship-first" />
-                    <Input label="Last Name *" placeholder="Rivers" id="ship-last" />
+                    <Input label="First Name *" placeholder="John" id="ship-first" value={address.first_name} onChange={(val) => setAddress({...address, first_name: val})} />
+                    <Input label="Last Name *" placeholder="Rivers" id="ship-last" value={address.last_name} onChange={(val) => setAddress({...address, last_name: val})} />
                   </div>
-                  <Input label="Email Address *" placeholder="john@example.com" id="ship-email" type="email" />
-                  <Input label="Phone Number" placeholder="+1 (555) 000-0000" id="ship-phone" type="tel" />
-                  <Input label="Address Line 1 *" placeholder="123 Publishing Way" id="ship-addr1" />
+                  <Input label="Email Address *" placeholder="john@example.com" id="ship-email" type="email" value={address.email} onChange={(val) => setAddress({...address, email: val})} />
+                  <Input label="Phone Number" placeholder="+1 (555) 000-0000" id="ship-phone" type="tel" value={address.phone} onChange={(val) => setAddress({...address, phone: val})} />
+                  <Input label="Address Line 1 *" placeholder="123 Publishing Way" id="ship-addr1" value={address.street1} onChange={(val) => setAddress({...address, street1: val})} />
                   <Input label="Address Line 2" placeholder="Apt, Suite, Floor (optional)" id="ship-addr2" />
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-                    <Input label="City *" placeholder="Dallas" id="ship-city" />
-                    <Input label="State *" placeholder="TX" id="ship-state" />
-                    <Input label="ZIP Code *" placeholder="75201" id="ship-zip" />
+                    <Input label="City *" placeholder="Dallas" id="ship-city" value={address.city} onChange={(val) => setAddress({...address, city: val})} />
+                    <Input label="State *" placeholder="TX" id="ship-state" value={address.state_code} onChange={(val) => setAddress({...address, state_code: val})} />
+                    <Input label="ZIP Code *" placeholder="75201" id="ship-zip" value={address.postcode} onChange={(val) => setAddress({...address, postcode: val})} />
                   </div>
-                  <SelectInput label="Country *" id="ship-country" options={['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'India', 'Other']} />
+                  <SelectInput label="Country *" id="ship-country" value={address.country_code} onChange={(val) => setAddress({...address, country_code: val})} options={['US', 'GB', 'CA', 'AU', 'DE', 'FR', 'IN']} />
+
+                  {/* Shipping Method Calculation Trigger */}
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={(e) => { e.preventDefault(); handleCalculateShipping(); }}
+                    disabled={isCalculatingShipping}
+                  >
+                    {isCalculatingShipping ? 'Calculating...' : 'Fetch Shipping Rates'}
+                  </Button>
 
                   {/* Shipping Method */}
-                  <div style={{ marginTop: '1.5rem' }}>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', fontWeight: 600, marginBottom: '1.2rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Shipping Method</p>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                      <ShippingOption 
-                        id="standard" selected={shippingMethod === 'standard'} 
-                        onSelect={() => setShippingMethod('standard')}
-                        label="Standard Shipping" desc="5–7 business days" price="$4.99"
-                      />
-                      <ShippingOption 
-                        id="express" selected={shippingMethod === 'express'} 
-                        onSelect={() => setShippingMethod('express')}
-                        label="Express Shipping" desc="2–3 business days" price="$12.99"
-                      />
-                      <ShippingOption 
-                        id="overnight" selected={shippingMethod === 'overnight'} 
-                        onSelect={() => setShippingMethod('overnight')}
-                        label="Overnight Delivery" desc="Next business day" price="$24.99"
-                      />
+                  {shippingRates.length > 0 && (
+                    <div style={{ marginTop: '1.5rem' }}>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', fontWeight: 600, marginBottom: '1.2rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Shipping Method</p>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {shippingRates.map((rate) => (
+                          <ShippingOption 
+                            key={rate.level}
+                            id={rate.level} 
+                            selected={shippingMethod === rate.level} 
+                            onSelect={() => setShippingMethod(rate.level)}
+                            label={rate.level} 
+                            desc={`Est: ${rate.min_delivery_days}-${rate.max_delivery_days} days`} 
+                            price={`$${rate.total_price}`}
+                          />
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   <Button size="lg" style={{ marginTop: '2rem' }} onClick={(e) => { e.preventDefault(); setStep(2); }}>
                     Continue to Billing →
@@ -205,8 +259,8 @@ export default function CheckoutPage() {
 
                   <div style={{ display: 'flex', gap: '1.5rem', marginTop: '1rem' }}>
                     <Button variant="outline" onClick={(e) => { e.preventDefault(); setStep(2); }} style={{ flex: 1 }}>← Back</Button>
-                    <Button size="lg" style={{ flex: 2 }} onClick={(e) => { e.preventDefault(); setStep(4); clearCart(); }}>
-                      Place Order — ${grandTotal.toFixed(2)}
+                    <Button size="lg" style={{ flex: 2 }} onClick={(e) => { e.preventDefault(); handlePlaceOrder(); }} disabled={isPlacingOrder}>
+                      {isPlacingOrder ? 'Processing...' : `Place Order — $${grandTotal.toFixed(2)}`}
                     </Button>
                   </div>
                 </form>
@@ -274,16 +328,19 @@ function SectionTitle({ icon, title }: { icon: React.ReactNode, title: string })
    );
 }
 
-function Input({ label, placeholder, id, type = 'text' }: { label: string, placeholder: string, id: string, type?: string }) {
+function Input({ label, placeholder, id, type = 'text', value, onChange }: { label: string, placeholder: string, id: string, type?: string, value?: string, onChange?: (val: string) => void }) {
    return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
          <label htmlFor={id} style={{ fontSize: '0.82rem', color: 'var(--text-dim)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</label>
          <input 
             id={id} type={type} placeholder={placeholder} 
+            value={value}
+            onChange={(e) => onChange?.(e.target.value)}
             style={{ 
                background: 'var(--surface-light)', border: '1px solid var(--border-medium)', 
                padding: '1rem 1.2rem', borderRadius: '12px', color: 'var(--text-main)', 
-               outline: 'none', fontSize: '1rem', transition: 'border-color 0.2s ease'
+               outline: 'none', fontSize: '1rem', transition: 'border-color 0.2s ease',
+               width: '100%'
             }}
             onFocus={(e) => e.target.style.borderColor = 'var(--primary-color)'}
             onBlur={(e) => e.target.style.borderColor = 'var(--border-medium)'}
@@ -292,12 +349,14 @@ function Input({ label, placeholder, id, type = 'text' }: { label: string, place
    );
 }
 
-function SelectInput({ label, id, options }: { label: string, id: string, options: string[] }) {
+function SelectInput({ label, id, options, value, onChange }: { label: string, id: string, options: string[], value?: string, onChange?: (val: string) => void }) {
    return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
          <label htmlFor={id} style={{ fontSize: '0.82rem', color: 'var(--text-dim)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</label>
          <select 
             id={id}
+            value={value}
+            onChange={(e) => onChange?.(e.target.value)}
             style={{ 
                background: 'var(--surface-light)', border: '1px solid var(--border-medium)', 
                padding: '1rem 1.2rem', borderRadius: '12px', color: 'var(--text-main)', 

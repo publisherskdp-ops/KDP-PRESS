@@ -1,9 +1,10 @@
 'use client';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, SlidersHorizontal, ChevronDown, Rocket, Sparkles, BookMarked } from 'lucide-react';
 import BookCard from '@/components/bookstore/BookCard';
 import QuickViewModal from '@/components/bookstore/QuickViewModal';
+import { getBooksAction } from './actions';
 
 const ALL_BOOKS = [
   { id: '1', title: 'Echoes of Eternity', author: 'Elena Rivers', genre: 'Mystery & Crime', price: 19.99, rating: 4.8, reviews: 1240, image: '/book_cover_mystery_v2_1775078752710.png', format: 'Paperback' },
@@ -15,14 +16,25 @@ const ALL_BOOKS = [
 const GENRES = ['All Literature', 'Modern Fiction', 'Non-Fiction', 'Mystery & Crime', 'Science Fiction', 'Poetry', 'Business & Growth'];
 
 export default function Bookstore() {
+  const [books, setBooks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
   const [activeGenre, setActiveGenre] = useState('All Literature');
   const [sortBy, setSortBy] = useState('Featured');
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  useEffect(() => {
+    async function loadBooks() {
+      const data = await getBooksAction();
+      setBooks(data);
+      setLoading(false);
+    }
+    loadBooks();
+  }, []);
+
   const filteredBooks = useMemo(() => {
-    let result = [...ALL_BOOKS];
+    let result = [...books];
     if (query.trim()) {
       const q = query.toLowerCase();
       result = result.filter(b => b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q));
@@ -83,11 +95,11 @@ export default function Bookstore() {
                     Editor's Choice
                 </div>
                 <h1 className="text-5xl md:text-7xl font-black text-slate-900 leading-[1.1] tracking-tight">
-                    Discover your next <br />
-                    <span className="gradient-text">Masterpiece</span>.
+                   Unlock a World of <br />
+                    <span className="gradient-text">Hidden Stories</span>.
                 </h1>
                 <p className="text-xl text-slate-600 max-w-lg leading-relaxed font-medium">
-                    Explore a curated selection of globally published works. From thrilling mysteries to soulful poetry, find the stories that move you.
+                    Enjoy access to unlimited indie masterpieces. Read and support the hidden gems of the publishing world!
                 </p>
                 <div className="flex gap-4 pt-4">
                     <button className="px-8 py-4 bg-sky-600 text-white rounded-2xl font-bold shadow-xl shadow-sky-600/20 hover:bg-sky-700 hover:-translate-y-1 transition-all">
@@ -167,11 +179,16 @@ export default function Bookstore() {
         </div>
 
         {/* Books Grid */}
-        {filteredBooks.length > 0 ? (
+        {loading ? (
+          <div className="py-32 text-center">
+            <div className="w-12 h-12 border-4 border-sky-600 border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="mt-4 text-slate-500 font-bold uppercase tracking-widest text-[10px]">Browsing Library...</p>
+          </div>
+        ) : filteredBooks.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12">
             {filteredBooks.map((book, idx) => (
               <div key={book.id} className="animate-in fade-in slide-in-from-bottom-4 duration-500" style={{ animationDelay: `${idx * 50}ms` }}>
-                <BookCard book={book} onQuickView={handleQuickView} />
+                <BookCard book={{...book, price: book.price.paperback}} onQuickView={handleQuickView} />
               </div>
             ))}
           </div>

@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
+  engineType = "library"
 }
 
 datasource db {
@@ -76,6 +77,10 @@ model Book {
   seriesSequence  Int?
   readingAgeRange String?
 
+  // Lulu Print API Fields
+  luluPrintAssetId String?  // The PDF file ID on Lulu
+  luluPodPackageId String?  // The trim/paper combination ID on Lulu
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -110,6 +115,14 @@ model Transaction {
   royalty   Float    // Calculated as (amount * royaltyRate) - fees
   currency  String   @default("USD")
   stripeTxId String? @unique
+
+  // Lulu Fulfillment Fields
+  luluPrintJobId Int?    @unique
+  shippingStatus String?  @default("PENDING")
+  shippingMethod String?
+  trackingNumber String?
+  trackingUrl    String?
+
   createdAt DateTime @default(now())
 }
 

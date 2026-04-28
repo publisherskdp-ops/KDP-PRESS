@@ -17,16 +17,15 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="lg:col-span-5 space-y-8">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative w-14 h-14 bg-white/5 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:bg-sky-400/20 transition-all shadow-xl">
+              <div className="relative w-40 h-40 bg-white/5 backdrop-blur-sm rounded-[2.5rem] flex items-center justify-center group-hover:bg-sky-400/20 transition-all shadow-xl p-6">
                 <Image
-                  src="/logo-light.png"
+                  src="/kdppress Logo-01.png"
                   alt="KDP Press Logo"
-                  width={140}
-                  height={50}
-                  className="object-contain w-auto h-12"
+                  width={400}
+                  height={200}
+                  className="object-contain w-auto h-32"
                 />
               </div>
-              <span className="text-3xl font-black tracking-tighter uppercase whitespace-nowrap">KDP <span className="text-sky-400">PRESS</span></span>
             </Link>
             <p className="text-lg text-slate-400 leading-relaxed max-w-md font-medium">
               Empowering independent authors with elite publishing technology, global fulfillment, and 100% royalty transparency.
