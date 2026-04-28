@@ -530,7 +530,6 @@ export default function PublishBook() {
               <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: '2rem', borderBottom: '1px solid var(--border)', paddingBottom: '2rem' }}>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>Print Options</h3>
                 <div>
-                  
                   <div style={{ marginBottom: '2rem' }}>
                     <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.5rem' }}>Ink and Paper Type</h4>
                     <div style={{ display: 'flex', gap: '2rem' }}>
@@ -566,28 +565,25 @@ export default function PublishBook() {
                       ))}
                     </div>
                   </div>
-
-                  </div>
-
-                  <div style={{ background: '#eff6ff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #bfdbfe', marginTop: '2rem' }}>
-                    <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#1e40af', marginBottom: '0.5rem' }}>Lulu Fulfillment Configuration</h4>
-                    <p style={{ fontSize: '0.85rem', color: '#1e40af', marginBottom: '1.5rem' }}>Enter the unique IDs from your Lulu Developer Portal to enable global print-on-demand.</p>
-                    
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                       <div>
-                         <InputLabel required helpText="The ID of your PDF asset in the Lulu system.">Lulu Print Asset ID</InputLabel>
-                         <InputField placeholder="e.g. 159967055..." value={luluPrintAssetId} onChange={e => setLuluPrintAssetId(e.target.value)} />
-                       </div>
-                       <div>
-                         <InputLabel required helpText="The Lulu code for your book's physical specs.">Lulu POD Package ID</InputLabel>
-                         <InputField placeholder="e.g. 0600X0900BWST..." value={luluPodPackageId} onChange={e => setLuluPodPackageId(e.target.value)} />
-                       </div>
-                    </div>
-                  </div>
-
                 </div>
               </div>
 
+              {/* Lulu Fulfillment */}
+              <div style={{ background: '#eff6ff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #bfdbfe' }}>
+                <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#1e40af', marginBottom: '0.5rem' }}>Lulu Fulfillment Configuration</h4>
+                <p style={{ fontSize: '0.85rem', color: '#1e40af', marginBottom: '1.5rem' }}>Enter the unique IDs from your Lulu Developer Portal to enable global print-on-demand.</p>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                   <div>
+                     <InputLabel required helpText="The ID of your PDF asset in the Lulu system.">Lulu Print Asset ID</InputLabel>
+                     <InputField placeholder="e.g. 159967055..." value={luluPrintAssetId} onChange={e => setLuluPrintAssetId(e.target.value)} />
+                   </div>
+                   <div>
+                     <InputLabel required helpText="The Lulu code for your book's physical specs.">Lulu POD Package ID</InputLabel>
+                     <InputField placeholder="e.g. 0600X0900BWST..." value={luluPodPackageId} onChange={e => setLuluPodPackageId(e.target.value)} />
+                   </div>
+                </div>
+              </div>
 
               {/* Precise AI Content Workflow */}
               <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: '2rem', borderBottom: '1px solid var(--border)', paddingBottom: '2rem' }}>
@@ -615,7 +611,6 @@ export default function PublishBook() {
                   </div>
                 </div>
               </div>
-
             </div>
 
             <div style={{ padding: '1.5rem 2rem', background: '#f8fafc', borderTop: '1px solid var(--border)', borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
