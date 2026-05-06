@@ -18,40 +18,11 @@ import {
   Minus,
   Send,
   User as UserIcon,
-  MessageSquare
 } from 'lucide-react';
 import { useCart } from '@/components/CartContext';
 import { getBookAction } from '../actions';
 import { Book } from '@/lib/books';
 
-// Expanded Mock Book matching the advanced metadata requirements
-const mockBooks = [
-  {
-    id: '1',
-    title: 'Echoes of Eternity',
-    subtitle: 'The Final Frontier of Time',
-    contributors: [
-      { name: 'Elena Rivers', role: 'Author' },
-      { name: 'Marcus J. Volt', role: 'Editor' },
-      { name: 'Sarah Thorne', role: 'Illustrator' }
-    ],
-    price: { kindle: 9.99, paperback: 19.99, hardcover: 29.99 },
-    rating: 4.8,
-    reviews: 1240,
-    language: 'English',
-    published: 'March 12, 2026',
-    imprint: 'KDP Press Select',
-    isbn: '978-0-123456-47-2',
-    trimSize: '6 x 9 inches',
-    pageCount: 342,
-    seriesTitle: 'The Chronos Saga',
-    seriesSequence: 1,
-    readingAgeRange: '13-18 years',
-    image: '/book_cover_mystery_v2_1775078752710.png',
-    genre: 'Mystery & Crime',
-    descriptionHtml: "<p><b>A gripping journey into the unknown</b>, where time stands still and the echoes of the past hold the key to the future.</p><p>Elena Rivers crafts a masterpiece of suspense and philosophical exploration that will leave readers questioning reality itself. The answers are hidden in the silence.</p><ul><li>Expansive world-building</li><li>Twists you won't see coming</li><li>Award-nominated conceptual design</li></ul><h4>Praise for Echoes of Eternity</h4><p><i>\"A masterclass in tension...\"</i> - Daily Chronicle</p>"
-  }
-];
 
 type FormatKey = 'kindle' | 'paperback' | 'hardcover';
 

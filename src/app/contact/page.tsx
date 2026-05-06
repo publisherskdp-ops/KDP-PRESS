@@ -8,7 +8,6 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-[#FDFCFB] text-slate-900 selection:bg-sky-100 selection:text-sky-900">
       <Header />
-      
       {/* Hero Section */}
       <section className="relative pt-48 pb-20 overflow-hidden hero-gradient">
         <div className="max-w-[1400px] mx-auto px-6 relative z-10">
@@ -25,7 +24,6 @@ export default function Contact() {
 
       <main className="max-w-[1400px] mx-auto px-6 pb-32">
         <div className="flex flex-col lg:flex-row gap-20 items-start">
-          
           {/* Contact Form Section */}
           <div className="flex-1 w-full animate-in fade-in slide-in-from-left-12 duration-700 delay-200">
             <div className="glass-card rounded-[3rem] p-8 md:p-12 border border-white shadow-2xl relative overflow-hidden">
@@ -136,7 +134,7 @@ export default function Contact() {
 }
 
 function ContactInfoItem({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
-   return (
+   return ( 
       <div className="flex items-center gap-5 group cursor-pointer">
          <div className="w-16 h-16 bg-white border border-slate-100 shadow-sm rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-all duration-300">
             {React.isValidElement(icon) ? (

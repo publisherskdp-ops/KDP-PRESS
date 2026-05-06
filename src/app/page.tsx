@@ -3,7 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Rocket, Sparkles, Globe, ShieldCheck, Zap, BookMarked, ArrowRight, Star } from 'lucide-react';
+import { Rocket, Sparkles, Globe, ShieldCheck, Zap, ArrowRight } from 'lucide-react';
 
 export default function Home() {
   return (

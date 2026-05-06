@@ -1,18 +1,10 @@
 'use client';
 import React, { useState, useMemo, useEffect } from 'react';
-import Link from 'next/link';
-import { Search, SlidersHorizontal, ChevronDown, Rocket, Sparkles, BookMarked } from 'lucide-react';
+import { Search, SlidersHorizontal, ChevronDown, Rocket, Sparkles } from 'lucide-react';
 import BookCard from '@/components/bookstore/BookCard';
 import QuickViewModal from '@/components/bookstore/QuickViewModal';
 import { getBooksAction } from './actions';
-
-const ALL_BOOKS = [
-  { id: '1', title: 'Echoes of Eternity', author: 'Elena Rivers', genre: 'Mystery & Crime', price: 19.99, rating: 4.8, reviews: 1240, image: '/book_cover_mystery_v2_1775078752710.png', format: 'Paperback' },
-  { id: '2', title: 'Digital Heartbeat', author: 'Marcus J. Volt', genre: 'Science Fiction', price: 14.99, rating: 4.5, reviews: 840, image: '/book_cover_scifi_v2_1775078971012.png', format: 'Kindle Edition' },
-  { id: '3', title: 'The Crimson Chapter', author: 'S.H. Black', genre: 'Modern Fiction', price: 16.99, rating: 4.7, reviews: 950, image: '/book_cover_thriller_v2_1775078995981.png', format: 'Hardcover' },
-  { id: '4', title: 'Midnight Musings', author: 'Lily Thorne', genre: 'Poetry', price: 12.99, rating: 4.6, reviews: 720, image: '/book_cover_romance_v2_1775079015999.png', format: 'Paperback' },
-];
-
+import Header from '@/components/Header';
 const GENRES = ['All Literature', 'Modern Fiction', 'Non-Fiction', 'Mystery & Crime', 'Science Fiction', 'Poetry', 'Business & Growth'];
 
 export default function Bookstore() {
@@ -56,36 +48,7 @@ export default function Bookstore() {
 
   return (
     <div className="min-h-screen bg-[#FDFCFB] text-slate-900 selection:bg-sky-100 selection:text-sky-900">
-      {/* Navigation Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200">
-        <div className="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between gap-8">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white group-hover:bg-sky-600 transition-colors">
-                <BookMarked size={22} />
-            </div>
-            <span className="text-2xl font-black tracking-tighter text-slate-900 uppercase">KDP <span className="text-sky-600">Press</span></span>
-          </Link>
-
-          <div className="flex-1 max-w-2xl relative group hidden md:block">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-sky-600 transition-colors" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search by title, author, or genre..." 
-              className="w-full pl-12 pr-4 py-3 bg-slate-100 border-none rounded-2xl focus:ring-2 focus:ring-sky-500/20 focus:bg-white transition-all outline-none text-sm font-medium"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </div>
-
-          <nav className="flex items-center gap-6">
-            <button className="text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors">Sign In</button>
-            <button className="px-6 py-3 bg-slate-900 text-white rounded-2xl text-sm font-bold shadow-lg hover:shadow-slate-900/20 hover:-translate-y-0.5 transition-all">
-                Publish Work
-            </button>
-          </nav>
-        </div>
-      </header>
-
+<Header />
       {/* Hero Section */}
       <section className="relative px-6 py-12 md:py-20 overflow-hidden hero-gradient">
         <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -188,7 +151,14 @@ export default function Bookstore() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12">
             {filteredBooks.map((book, idx) => (
               <div key={book.id} className="animate-in fade-in slide-in-from-bottom-4 duration-500" style={{ animationDelay: `${idx * 50}ms` }}>
-                <BookCard book={{...book, price: book.price.paperback}} onQuickView={handleQuickView} />
+                <BookCard 
+                  book={{
+                    ...book, 
+                    price: book.price.paperback || book.price.kindle || 0,
+                    format: book.price.kindle && !book.price.paperback ? 'eBook' : 'Paperback'
+                  }} 
+                  onQuickView={handleQuickView} 
+                />
               </div>
             ))}
           </div>

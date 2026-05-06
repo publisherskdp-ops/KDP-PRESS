@@ -1,10 +1,19 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Header from '@/components/Header';
 import Button from '@/components/Button';
 import { useCart } from '@/components/CartContext';
 import Link from 'next/link';
 import { calculateShippingAction, createOrderAction } from './actions';
+import { 
+  validateEmail, 
+  validatePhone, 
+  validateCreditCard, 
+  validateExpiryDate, 
+  validateCVV, 
+  validateRequired,
+  validateZipCode
+} from '@/lib/validation';
 
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart();
@@ -13,6 +22,8 @@ export default function CheckoutPage() {
   const [shippingMethod, setShippingMethod] = useState('standard');
   const [shippingRates, setShippingRates] = useState<any[]>([]);
   const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
+  
+  // Shipping Address State
   const [address, setAddress] = useState({
     first_name: '',
     last_name: '',
@@ -25,8 +36,106 @@ export default function CheckoutPage() {
     country_code: 'US'
   });
 
+  // Billing Address State
+  const [billingAddress, setBillingAddress] = useState({
+    first_name: '',
+    last_name: '',
+    street1: '',
+    city: '',
+    state_code: '',
+    postcode: '',
+    country_code: 'US'
+  });
+
+  // Payment Details State
+  const [payment, setPayment] = useState({
+    cardholderName: '',
+    cardNumber: '',
+    expiryDate: '',
+    cvv: ''
+  });
+
+  // Validation States
+  const [errors, setErrors] = useState<Record<string, string | null>>({});
+
+  const validateStep1 = () => {
+    const newErrors: Record<string, string | null> = {};
+    if (!address.first_name) newErrors['ship-first'] = 'First name is required';
+    if (!address.last_name) newErrors['ship-last'] = 'Last name is required';
+    if (!address.email) {
+      newErrors['ship-email'] = 'Email is required';
+    } else if (validateEmail(address.email)) {
+      newErrors['ship-email'] = validateEmail(address.email);
+    }
+    if (!address.phone) {
+      newErrors['ship-phone'] = 'Phone number is required';
+    } else if (validatePhone(address.phone)) {
+      newErrors['ship-phone'] = validatePhone(address.phone);
+    }
+    if (!address.street1) newErrors['ship-addr1'] = 'Address is required';
+    if (!address.city) newErrors['ship-city'] = 'City is required';
+    if (!address.state_code) newErrors['ship-state'] = 'State is required';
+    if (!address.postcode) {
+      newErrors['ship-zip'] = 'ZIP code is required';
+    } else if (validateZipCode(address.postcode)) {
+      newErrors['ship-zip'] = validateZipCode(address.postcode);
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateStep2 = () => {
+    if (sameAsShipping) return true;
+    const newErrors: Record<string, string | null> = {};
+    if (!billingAddress.first_name) newErrors['bill-first'] = 'First name is required';
+    if (!billingAddress.last_name) newErrors['bill-last'] = 'Last name is required';
+    if (!billingAddress.street1) newErrors['bill-addr1'] = 'Address is required';
+    if (!billingAddress.city) newErrors['bill-city'] = 'City is required';
+    if (!billingAddress.state_code) newErrors['bill-state'] = 'State is required';
+    if (!billingAddress.postcode) {
+      newErrors['bill-zip'] = 'ZIP code is required';
+    } else if (validateZipCode(billingAddress.postcode)) {
+      newErrors['bill-zip'] = validateZipCode(billingAddress.postcode);
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateStep3 = () => {
+    const newErrors: Record<string, string | null> = {};
+    if (!payment.cardholderName) newErrors['pay-name'] = 'Cardholder name is required';
+    if (!payment.cardNumber) {
+      newErrors['pay-card'] = 'Card number is required';
+    } else if (validateCreditCard(payment.cardNumber)) {
+      newErrors['pay-card'] = validateCreditCard(payment.cardNumber);
+    }
+    if (!payment.expiryDate) {
+      newErrors['pay-expiry'] = 'Expiry date is required';
+    } else if (validateExpiryDate(payment.expiryDate)) {
+      newErrors['pay-expiry'] = validateExpiryDate(payment.expiryDate);
+    }
+    if (!payment.cvv) {
+      newErrors['pay-cvv'] = 'CVV is required';
+    } else if (validateCVV(payment.cvv)) {
+      newErrors['pay-cvv'] = validateCVV(payment.cvv);
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleCalculateShipping = async () => {
-    if (!address.street1 || !address.city || !address.postcode) return;
+    if (!address.street1 || !address.city || !address.postcode) {
+      setErrors(prev => ({
+        ...prev,
+        'ship-addr1': !address.street1 ? 'Address is required' : null,
+        'ship-city': !address.city ? 'City is required' : null,
+        'ship-zip': !address.postcode ? 'ZIP code is required' : null,
+      }));
+      return;
+    }
     
     setIsCalculatingShipping(true);
     const res = await calculateShippingAction(address, cart);
@@ -101,17 +210,75 @@ export default function CheckoutPage() {
                 
                 <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                    <Input label="First Name *" placeholder="John" id="ship-first" value={address.first_name} onChange={(val) => setAddress({...address, first_name: val})} />
-                    <Input label="Last Name *" placeholder="Rivers" id="ship-last" value={address.last_name} onChange={(val) => setAddress({...address, last_name: val})} />
+                    <Input 
+                      label="First Name *" 
+                      placeholder="John" 
+                      id="ship-first" 
+                      value={address.first_name} 
+                      onChange={(val) => { setAddress({...address, first_name: val}); if (errors['ship-first']) setErrors({...errors, 'ship-first': null}); }} 
+                      error={errors['ship-first']}
+                    />
+                    <Input 
+                      label="Last Name *" 
+                      placeholder="Rivers" 
+                      id="ship-last" 
+                      value={address.last_name} 
+                      onChange={(val) => { setAddress({...address, last_name: val}); if (errors['ship-last']) setErrors({...errors, 'ship-last': null}); }} 
+                      error={errors['ship-last']}
+                    />
                   </div>
-                  <Input label="Email Address *" placeholder="john@example.com" id="ship-email" type="email" value={address.email} onChange={(val) => setAddress({...address, email: val})} />
-                  <Input label="Phone Number" placeholder="+1 (555) 000-0000" id="ship-phone" type="tel" value={address.phone} onChange={(val) => setAddress({...address, phone: val})} />
-                  <Input label="Address Line 1 *" placeholder="123 Publishing Way" id="ship-addr1" value={address.street1} onChange={(val) => setAddress({...address, street1: val})} />
+                  <Input 
+                    label="Email Address *" 
+                    placeholder="john@example.com" 
+                    id="ship-email" 
+                    type="email" 
+                    value={address.email} 
+                    onChange={(val) => { setAddress({...address, email: val}); if (errors['ship-email']) setErrors({...errors, 'ship-email': null}); }} 
+                    error={errors['ship-email']}
+                  />
+                  <Input 
+                    label="Phone Number" 
+                    placeholder="+1 (555) 000-0000" 
+                    id="ship-phone" 
+                    type="tel" 
+                    value={address.phone} 
+                    onChange={(val) => { setAddress({...address, phone: val}); if (errors['ship-phone']) setErrors({...errors, 'ship-phone': null}); }} 
+                    error={errors['ship-phone']}
+                  />
+                  <Input 
+                    label="Address Line 1 *" 
+                    placeholder="123 Publishing Way" 
+                    id="ship-addr1" 
+                    value={address.street1} 
+                    onChange={(val) => { setAddress({...address, street1: val}); if (errors['ship-addr1']) setErrors({...errors, 'ship-addr1': null}); }} 
+                    error={errors['ship-addr1']}
+                  />
                   <Input label="Address Line 2" placeholder="Apt, Suite, Floor (optional)" id="ship-addr2" />
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-                    <Input label="City *" placeholder="Dallas" id="ship-city" value={address.city} onChange={(val) => setAddress({...address, city: val})} />
-                    <Input label="State *" placeholder="TX" id="ship-state" value={address.state_code} onChange={(val) => setAddress({...address, state_code: val})} />
-                    <Input label="ZIP Code *" placeholder="75201" id="ship-zip" value={address.postcode} onChange={(val) => setAddress({...address, postcode: val})} />
+                    <Input 
+                      label="City *" 
+                      placeholder="Dallas" 
+                      id="ship-city" 
+                      value={address.city} 
+                      onChange={(val) => { setAddress({...address, city: val}); if (errors['ship-city']) setErrors({...errors, 'ship-city': null}); }} 
+                      error={errors['ship-city']}
+                    />
+                    <Input 
+                      label="State *" 
+                      placeholder="TX" 
+                      id="ship-state" 
+                      value={address.state_code} 
+                      onChange={(val) => { setAddress({...address, state_code: val}); if (errors['ship-state']) setErrors({...errors, 'ship-state': null}); }} 
+                      error={errors['ship-state']}
+                    />
+                    <Input 
+                      label="ZIP Code *" 
+                      placeholder="75201" 
+                      id="ship-zip" 
+                      value={address.postcode} 
+                      onChange={(val) => { setAddress({...address, postcode: val}); if (errors['ship-zip']) setErrors({...errors, 'ship-zip': null}); }} 
+                      error={errors['ship-zip']}
+                    />
                   </div>
                   <SelectInput label="Country *" id="ship-country" value={address.country_code} onChange={(val) => setAddress({...address, country_code: val})} options={['US', 'GB', 'CA', 'AU', 'DE', 'FR', 'IN']} />
 
@@ -145,7 +312,11 @@ export default function CheckoutPage() {
                     </div>
                   )}
 
-                  <Button size="lg" style={{ marginTop: '2rem' }} onClick={(e) => { e.preventDefault(); setStep(2); }}>
+                  <Button 
+                    size="lg" 
+                    style={{ marginTop: '2rem' }} 
+                    onClick={(e) => { e.preventDefault(); if (validateStep1()) setStep(2); }}
+                  >
                     Continue to Billing →
                   </Button>
                 </form>
@@ -191,25 +362,72 @@ export default function CheckoutPage() {
                 {!sameAsShipping && (
                   <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                      <Input label="First Name *" placeholder="John" id="bill-first" />
-                      <Input label="Last Name *" placeholder="Rivers" id="bill-last" />
+                      <Input 
+                        label="First Name *" 
+                        placeholder="John" 
+                        id="bill-first" 
+                        value={billingAddress.first_name}
+                        onChange={(val) => { setBillingAddress({...billingAddress, first_name: val}); if (errors['bill-first']) setErrors({...errors, 'bill-first': null}); }}
+                        error={errors['bill-first']}
+                      />
+                      <Input 
+                        label="Last Name *" 
+                        placeholder="Rivers" 
+                        id="bill-last" 
+                        value={billingAddress.last_name}
+                        onChange={(val) => { setBillingAddress({...billingAddress, last_name: val}); if (errors['bill-last']) setErrors({...errors, 'bill-last': null}); }}
+                        error={errors['bill-last']}
+                      />
                     </div>
                     <Input label="Company Name" placeholder="Your Company (optional)" id="bill-company" />
-                    <Input label="Address Line 1 *" placeholder="123 Business Blvd" id="bill-addr1" />
+                    <Input 
+                      label="Address Line 1 *" 
+                      placeholder="123 Business Blvd" 
+                      id="bill-addr1" 
+                      value={billingAddress.street1}
+                      onChange={(val) => { setBillingAddress({...billingAddress, street1: val}); if (errors['bill-addr1']) setErrors({...errors, 'bill-addr1': null}); }}
+                      error={errors['bill-addr1']}
+                    />
                     <Input label="Address Line 2" placeholder="Suite 400 (optional)" id="bill-addr2" />
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-                      <Input label="City *" placeholder="Dallas" id="bill-city" />
-                      <Input label="State *" placeholder="TX" id="bill-state" />
-                      <Input label="ZIP Code *" placeholder="75201" id="bill-zip" />
+                      <Input 
+                        label="City *" 
+                        placeholder="Dallas" 
+                        id="bill-city" 
+                        value={billingAddress.city}
+                        onChange={(val) => { setBillingAddress({...billingAddress, city: val}); if (errors['bill-city']) setErrors({...errors, 'bill-city': null}); }}
+                        error={errors['bill-city']}
+                      />
+                      <Input 
+                        label="State *" 
+                        placeholder="TX" 
+                        id="bill-state" 
+                        value={billingAddress.state_code}
+                        onChange={(val) => { setBillingAddress({...billingAddress, state_code: val}); if (errors['bill-state']) setErrors({...errors, 'bill-state': null}); }}
+                        error={errors['bill-state']}
+                      />
+                      <Input 
+                        label="ZIP Code *" 
+                        placeholder="75201" 
+                        id="bill-zip" 
+                        value={billingAddress.postcode}
+                        onChange={(val) => { setBillingAddress({...billingAddress, postcode: val}); if (errors['bill-zip']) setErrors({...errors, 'bill-zip': null}); }}
+                        error={errors['bill-zip']}
+                      />
                     </div>
-                    <SelectInput label="Country *" id="bill-country" options={['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'India', 'Other']} />
+                    <SelectInput label="Country *" id="bill-country" value={billingAddress.country_code} onChange={(val) => setBillingAddress({...billingAddress, country_code: val})} options={['US', 'GB', 'CA', 'AU', 'DE', 'FR', 'IN']} />
                     <Input label="VAT / Tax ID" placeholder="Optional for business orders" id="bill-vat" />
                   </form>
                 )}
 
                 <div style={{ display: 'flex', gap: '1.5rem', marginTop: '1rem' }}>
                   <Button variant="outline" onClick={() => setStep(1)} style={{ flex: 1 }}>← Back</Button>
-                  <Button onClick={() => setStep(3)} style={{ flex: 2 }}>Continue to Payment →</Button>
+                  <Button 
+                    onClick={() => { if (validateStep2()) setStep(3); }} 
+                    style={{ flex: 2 }}
+                  >
+                    Continue to Payment →
+                  </Button>
                 </div>
               </div>
               <OrderSummary cart={cart} subtotal={cartTotal} shipping={shipping} tax={tax} grandTotal={grandTotal} />
@@ -238,17 +456,61 @@ export default function CheckoutPage() {
                 </div>
 
                 <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                  <Input label="Cardholder Name *" placeholder="John Rivers" id="pay-name" />
+                  <Input 
+                    label="Cardholder Name *" 
+                    placeholder="John Rivers" 
+                    id="pay-name" 
+                    value={payment.cardholderName}
+                    onChange={(val) => { setPayment({...payment, cardholderName: val}); if (errors['pay-name']) setErrors({...errors, 'pay-name': null}); }}
+                    error={errors['pay-name']}
+                  />
                   <div style={{ position: 'relative' }}>
-                    <Input label="Card Number *" placeholder="1234  5678  9012  3456" id="pay-card" />
+                    <Input 
+                      label="Card Number *" 
+                      placeholder="1234  5678  9012  3456" 
+                      id="pay-card" 
+                      value={payment.cardNumber}
+                      onChange={(val) => { 
+                        const cleaned = val.replace(/\D/g, '').substring(0, 16);
+                        const formatted = cleaned.match(/.{1,4}/g)?.join('  ') || cleaned;
+                        setPayment({...payment, cardNumber: formatted}); 
+                        if (errors['pay-card']) setErrors({...errors, 'pay-card': null});
+                      }}
+                      error={errors['pay-card']}
+                    />
                     <div style={{ position: 'absolute', right: '1rem', top: '2.8rem', display: 'flex', gap: '0.5rem', opacity: 0.6 }}>
                       <div style={{ width: '32px', height: '20px', background: '#1a1aff', borderRadius: '4px' }}></div>
                       <div style={{ width: '32px', height: '20px', background: '#ff4d4d', borderRadius: '4px' }}></div>
                     </div>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem' }}>
-                    <Input label="Expiry Date *" placeholder="MM / YY" id="pay-expiry" />
-                    <Input label="CVV *" placeholder="•••" id="pay-cvv" />
+                    <Input 
+                      label="Expiry Date *" 
+                      placeholder="MM / YY" 
+                      id="pay-expiry" 
+                      value={payment.expiryDate}
+                      onChange={(val) => { 
+                        let cleaned = val.replace(/\D/g, '').substring(0, 4);
+                        if (cleaned.length > 2) {
+                          cleaned = cleaned.substring(0, 2) + ' / ' + cleaned.substring(2);
+                        }
+                        setPayment({...payment, expiryDate: cleaned}); 
+                        if (errors['pay-expiry']) setErrors({...errors, 'pay-expiry': null});
+                      }}
+                      error={errors['pay-expiry']}
+                    />
+                    <Input 
+                      label="CVV *" 
+                      placeholder="•••" 
+                      id="pay-cvv" 
+                      value={payment.cvv}
+                      onChange={(val) => { 
+                        const cleaned = val.replace(/\D/g, '').substring(0, 4);
+                        setPayment({...payment, cvv: cleaned}); 
+                        if (errors['pay-cvv']) setErrors({...errors, 'pay-cvv': null});
+                      }}
+                      error={errors['pay-cvv']}
+                    />
                   </div>
 
                   {/* Security Badge */}
@@ -259,7 +521,12 @@ export default function CheckoutPage() {
 
                   <div style={{ display: 'flex', gap: '1.5rem', marginTop: '1rem' }}>
                     <Button variant="outline" onClick={(e) => { e.preventDefault(); setStep(2); }} style={{ flex: 1 }}>← Back</Button>
-                    <Button size="lg" style={{ flex: 2 }} onClick={(e) => { e.preventDefault(); handlePlaceOrder(); }} disabled={isPlacingOrder}>
+                    <Button 
+                      size="lg" 
+                      style={{ flex: 2 }} 
+                      onClick={(e) => { e.preventDefault(); if (validateStep3()) handlePlaceOrder(); }} 
+                      disabled={isPlacingOrder}
+                    >
                       {isPlacingOrder ? 'Processing...' : `Place Order — $${grandTotal.toFixed(2)}`}
                     </Button>
                   </div>
@@ -328,23 +595,38 @@ function SectionTitle({ icon, title }: { icon: React.ReactNode, title: string })
    );
 }
 
-function Input({ label, placeholder, id, type = 'text', value, onChange }: { label: string, placeholder: string, id: string, type?: string, value?: string, onChange?: (val: string) => void }) {
+function Input({ label, placeholder, id, type = 'text', value, onChange, error, onBlur }: { 
+  label: string, 
+  placeholder: string, 
+  id: string, 
+  type?: string, 
+  value?: string, 
+  onChange?: (val: string) => void,
+  error?: string | null,
+  onBlur?: () => void
+}) {
    return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', position: 'relative' }}>
          <label htmlFor={id} style={{ fontSize: '0.82rem', color: 'var(--text-dim)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</label>
          <input 
             id={id} type={type} placeholder={placeholder} 
             value={value}
             onChange={(e) => onChange?.(e.target.value)}
+            onBlur={onBlur}
             style={{ 
-               background: 'var(--surface-light)', border: '1px solid var(--border-medium)', 
+               background: 'var(--surface-light)', border: `1px solid ${error ? '#ff4d4d' : 'var(--border-medium)'}`, 
                padding: '1rem 1.2rem', borderRadius: '12px', color: 'var(--text-main)', 
-               outline: 'none', fontSize: '1rem', transition: 'border-color 0.2s ease',
+               outline: 'none', fontSize: '1rem', transition: 'all 0.2s ease',
                width: '100%'
             }}
-            onFocus={(e) => e.target.style.borderColor = 'var(--primary-color)'}
-            onBlur={(e) => e.target.style.borderColor = 'var(--border-medium)'}
+            onFocus={(e) => {
+              if (!error) e.target.style.borderColor = 'var(--primary-color)';
+              e.target.style.boxShadow = error ? '0 0 0 2px rgba(255, 77, 77, 0.1)' : '0 0 0 2px rgba(255, 77, 109, 0.1)';
+            }}
          />
+         {error && (
+           <p style={{ fontSize: '0.75rem', color: '#ff4d4d', marginTop: '0.2rem', fontWeight: 500 }}>{error}</p>
+         )}
       </div>
    );
 }

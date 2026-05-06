@@ -13,6 +13,7 @@ interface BookProps {
   reviews: number;
   image: string;
   format: string;
+  descriptionHtml?: string;
 }
 
 export default function QuickViewModal({ book, isOpen, onClose }: { book: BookProps | null, isOpen: boolean, onClose: () => void }) {
@@ -73,9 +74,10 @@ export default function QuickViewModal({ book, isOpen, onClose }: { book: BookPr
                 </div>
             </div>
 
-            <p className="text-slate-600 leading-relaxed mb-8 flex-1 border-l-4 border-sky-400 pl-4 py-2 italic font-medium bg-sky-50/30 rounded-r-lg">
-                "Experience a tale of unimaginable depth and emotion. Digital Heartbeat explores the intersection of humanity and technology in a world that never sleeps..."
-            </p>
+            <div 
+              className="text-slate-600 leading-relaxed mb-8 flex-1 border-l-4 border-sky-400 pl-4 py-2 italic font-medium bg-sky-50/30 rounded-r-lg overflow-hidden prose prose-sm max-w-none"
+              dangerouslySetInnerHTML={{ __html: book.descriptionHtml || "<p>Explore a new journey in literature...</p>" }}
+            />
 
             {/* Actions */}
              <div className="mt-auto space-y-4">
