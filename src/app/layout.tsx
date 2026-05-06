@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import InteractiveProvider from "@/components/InteractiveProvider";
 import { CartProvider } from "@/components/CartContext";
+import { PayPalProvider } from "@/components/PayPalProvider";
 import CartDrawer from "@/components/CartDrawer";
 import ScriptLoader from "@/components/ScriptLoader";
 import Script from 'next/script';
@@ -25,10 +26,12 @@ export default function RootLayout({
       </head>
       <body className="antialiased" suppressHydrationWarning>
         <CartProvider>
-          <InteractiveProvider>
-            {children}
-            <CartDrawer />
-          </InteractiveProvider>
+          <PayPalProvider>
+            <InteractiveProvider>
+              {children}
+              <CartDrawer />
+            </InteractiveProvider>
+          </PayPalProvider>
         </CartProvider>
         <Script
           strategy="beforeInteractive"

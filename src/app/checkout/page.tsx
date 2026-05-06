@@ -5,6 +5,7 @@ import Button from '@/components/Button';
 import { useCart } from '@/components/CartContext';
 import Link from 'next/link';
 import { calculateShippingAction, createOrderAction } from './actions';
+import { PayPalButtons } from "@paypal/react-paypal-js";
 import { 
   validateEmail, 
   validatePhone, 
@@ -440,97 +441,47 @@ export default function CheckoutPage() {
               <div style={{ background: 'var(--surface)', padding: '3.5rem', borderRadius: '32px', border: '1px solid var(--border-medium)' }}>
                 <SectionTitle icon={
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                } title="Payment Details" />
+                } title="Payment" />
 
-                {/* Payment Method Selector */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '2.5rem' }}>
-                  <PaymentMethodCard icon={
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                  } label="Credit Card" selected={true} />
-                  <PaymentMethodCard icon={
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                  } label="PayPal" selected={false} />
-                  <PaymentMethodCard icon={
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-                  } label="Apple Pay" selected={false} />
+                <div style={{ marginBottom: '2.5rem' }}>
+                  <p style={{ fontSize: '1rem', color: 'var(--text-muted)', marginBottom: '2rem' }}>
+                    Please complete your payment via PayPal to finalize your order.
+                  </p>
+                  
+                  <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+                    <PayPalButtons 
+                      style={{ layout: "vertical", shape: "rect", label: "pay" }}
+                      createOrder={(data, actions) => {
+                        return actions.order.create({
+                          intent: "CAPTURE",
+                          purchase_units: [
+                            {
+                              amount: {
+                                currency_code: "USD",
+                                value: grandTotal.toFixed(2),
+                              },
+                            },
+                          ],
+                        });
+                      }}
+                      onApprove={async (data, actions) => {
+                        if (actions.order) {
+                          const details = await actions.order.capture();
+                          console.log("PayPal Transaction Success:", details);
+                          handlePlaceOrder();
+                        }
+                      }}
+                      onError={(err) => {
+                        console.error("PayPal Error:", err);
+                        alert("An error occurred with PayPal. Please try again.");
+                      }}
+                    />
+                  </div>
                 </div>
 
-                <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                  <Input 
-                    label="Cardholder Name *" 
-                    placeholder="John Rivers" 
-                    id="pay-name" 
-                    value={payment.cardholderName}
-                    onChange={(val) => { setPayment({...payment, cardholderName: val}); if (errors['pay-name']) setErrors({...errors, 'pay-name': null}); }}
-                    error={errors['pay-name']}
-                  />
-                  <div style={{ position: 'relative' }}>
-                    <Input 
-                      label="Card Number *" 
-                      placeholder="1234  5678  9012  3456" 
-                      id="pay-card" 
-                      value={payment.cardNumber}
-                      onChange={(val) => { 
-                        const cleaned = val.replace(/\D/g, '').substring(0, 16);
-                        const formatted = cleaned.match(/.{1,4}/g)?.join('  ') || cleaned;
-                        setPayment({...payment, cardNumber: formatted}); 
-                        if (errors['pay-card']) setErrors({...errors, 'pay-card': null});
-                      }}
-                      error={errors['pay-card']}
-                    />
-                    <div style={{ position: 'absolute', right: '1rem', top: '2.8rem', display: 'flex', gap: '0.5rem', opacity: 0.6 }}>
-                      <div style={{ width: '32px', height: '20px', background: '#1a1aff', borderRadius: '4px' }}></div>
-                      <div style={{ width: '32px', height: '20px', background: '#ff4d4d', borderRadius: '4px' }}></div>
-                    </div>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem' }}>
-                    <Input 
-                      label="Expiry Date *" 
-                      placeholder="MM / YY" 
-                      id="pay-expiry" 
-                      value={payment.expiryDate}
-                      onChange={(val) => { 
-                        let cleaned = val.replace(/\D/g, '').substring(0, 4);
-                        if (cleaned.length > 2) {
-                          cleaned = cleaned.substring(0, 2) + ' / ' + cleaned.substring(2);
-                        }
-                        setPayment({...payment, expiryDate: cleaned}); 
-                        if (errors['pay-expiry']) setErrors({...errors, 'pay-expiry': null});
-                      }}
-                      error={errors['pay-expiry']}
-                    />
-                    <Input 
-                      label="CVV *" 
-                      placeholder="•••" 
-                      id="pay-cvv" 
-                      value={payment.cvv}
-                      onChange={(val) => { 
-                        const cleaned = val.replace(/\D/g, '').substring(0, 4);
-                        setPayment({...payment, cvv: cleaned}); 
-                        if (errors['pay-cvv']) setErrors({...errors, 'pay-cvv': null});
-                      }}
-                      error={errors['pay-cvv']}
-                    />
-                  </div>
-
-                  {/* Security Badge */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.2rem 1.5rem', background: 'rgba(0, 245, 212, 0.05)', border: '1px solid rgba(0, 245, 212, 0.2)', borderRadius: '12px' }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00f5d4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Your payment is protected with <strong>256-bit SSL encryption</strong>. We never store card details.</p>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '1.5rem', marginTop: '1rem' }}>
-                    <Button variant="outline" onClick={(e) => { e.preventDefault(); setStep(2); }} style={{ flex: 1 }}>← Back</Button>
-                    <Button 
-                      size="lg" 
-                      style={{ flex: 2 }} 
-                      onClick={(e) => { e.preventDefault(); if (validateStep3()) handlePlaceOrder(); }} 
-                      disabled={isPlacingOrder}
-                    >
-                      {isPlacingOrder ? 'Processing...' : `Place Order — $${grandTotal.toFixed(2)}`}
-                    </Button>
-                  </div>
-                </form>
+                <div style={{ display: 'flex', gap: '1.5rem', marginTop: '2rem' }}>
+                  <Button variant="outline" onClick={(e) => { e.preventDefault(); setStep(2); }} style={{ flex: 1 }}>← Back to Billing</Button>
+                </div>
               </div>
               <OrderSummary cart={cart} subtotal={cartTotal} shipping={shipping} tax={tax} grandTotal={grandTotal} />
             </div>
@@ -658,7 +609,7 @@ function ShippingOption({ id, selected, onSelect, label, desc, price }: any) {
          style={{ 
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '1.2rem 1.5rem', borderRadius: '16px', cursor: 'pointer',
-            background: selected ? 'var(--primary-surface)' : 'var(--surface)',
+            background: selected ? 'rgba(255, 77, 109, 0.08)' : 'var(--surface)',
             border: `2px solid ${selected ? 'var(--primary-color)' : 'var(--border-medium)'}`,
             transition: 'all 0.3s ease'
          }}
