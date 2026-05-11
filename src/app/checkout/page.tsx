@@ -22,7 +22,7 @@ export default function CheckoutPage() {
   const [sameAsShipping, setSameAsShipping] = useState(true);
   const [shippingMethod, setShippingMethod] = useState('standard');
   const [shippingRates, setShippingRates] = useState<any[]>([]);
-  const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
+  // const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
   
   // Shipping Address State
   const [address, setAddress] = useState({
@@ -49,12 +49,12 @@ export default function CheckoutPage() {
   });
 
   // Payment Details State
-  const [payment, setPayment] = useState({
-    cardholderName: '',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: ''
-  });
+  // const [payment, setPayment] = useState({
+  //   cardholderName: '',
+  //   cardNumber: '',
+  //   expiryDate: '',
+  //   cvv: ''
+  // });
 
   // Validation States
   const [errors, setErrors] = useState<Record<string, string | null>>({});
@@ -104,52 +104,52 @@ export default function CheckoutPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const validateStep3 = () => {
-    const newErrors: Record<string, string | null> = {};
-    if (!payment.cardholderName) newErrors['pay-name'] = 'Cardholder name is required';
-    if (!payment.cardNumber) {
-      newErrors['pay-card'] = 'Card number is required';
-    } else if (validateCreditCard(payment.cardNumber)) {
-      newErrors['pay-card'] = validateCreditCard(payment.cardNumber);
-    }
-    if (!payment.expiryDate) {
-      newErrors['pay-expiry'] = 'Expiry date is required';
-    } else if (validateExpiryDate(payment.expiryDate)) {
-      newErrors['pay-expiry'] = validateExpiryDate(payment.expiryDate);
-    }
-    if (!payment.cvv) {
-      newErrors['pay-cvv'] = 'CVV is required';
-    } else if (validateCVV(payment.cvv)) {
-      newErrors['pay-cvv'] = validateCVV(payment.cvv);
-    }
+  // const validateStep3 = () => {
+  //   const newErrors: Record<string, string | null> = {};
+  //   if (!payment.cardholderName) newErrors['pay-name'] = 'Cardholder name is required';
+  //   if (!payment.cardNumber) {
+  //     newErrors['pay-card'] = 'Card number is required';
+  //   } else if (validateCreditCard(payment.cardNumber)) {
+  //     newErrors['pay-card'] = validateCreditCard(payment.cardNumber);
+  //   }
+  //   if (!payment.expiryDate) {
+  //     newErrors['pay-expiry'] = 'Expiry date is required';
+  //   } else if (validateExpiryDate(payment.expiryDate)) {
+  //     newErrors['pay-expiry'] = validateExpiryDate(payment.expiryDate);
+  //   }
+  //   if (!payment.cvv) {
+  //     newErrors['pay-cvv'] = 'CVV is required';
+  //   } else if (validateCVV(payment.cvv)) {
+  //     newErrors['pay-cvv'] = validateCVV(payment.cvv);
+  //   }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
 
-  const handleCalculateShipping = async () => {
-    if (!address.street1 || !address.city || !address.postcode) {
-      setErrors(prev => ({
-        ...prev,
-        'ship-addr1': !address.street1 ? 'Address is required' : null,
-        'ship-city': !address.city ? 'City is required' : null,
-        'ship-zip': !address.postcode ? 'ZIP code is required' : null,
-      }));
-      return;
-    }
+  // const handleCalculateShipping = async () => {
+  //   if (!address.street1 || !address.city || !address.postcode) {
+  //     setErrors(prev => ({
+  //       ...prev,
+  //       'ship-addr1': !address.street1 ? 'Address is required' : null,
+  //       'ship-city': !address.city ? 'City is required' : null,
+  //       'ship-zip': !address.postcode ? 'ZIP code is required' : null,
+  //     }));
+  //     return;
+  //   }
     
-    setIsCalculatingShipping(true);
-    const res = await calculateShippingAction(address, cart);
-    if (res.success) {
-      setShippingRates(res.rates);
-      if (res.rates.length > 0) {
-        setShippingMethod(res.rates[0].level);
-      }
-    }
-    setIsCalculatingShipping(false);
-  };
+  //   setIsCalculatingShipping(true);
+  //   const res = await calculateShippingAction(address, cart);
+  //   if (res.success) {
+  //     setShippingRates(res.rates);
+  //     if (res.rates.length > 0) {
+  //       setShippingMethod(res.rates[0].level);
+  //     }
+  //   }
+  //   setIsCalculatingShipping(false);
+  // };
 
-  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  // const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const handlePlaceOrder = async () => {
     setIsPlacingOrder(true);
     const res = await createOrderAction({
@@ -282,36 +282,6 @@ export default function CheckoutPage() {
                     />
                   </div>
                   <SelectInput label="Country *" id="ship-country" value={address.country_code} onChange={(val) => setAddress({...address, country_code: val})} options={['US', 'GB', 'CA', 'AU', 'DE', 'FR', 'IN']} />
-
-                  {/* Shipping Method Calculation Trigger */}
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={(e) => { e.preventDefault(); handleCalculateShipping(); }}
-                    disabled={isCalculatingShipping}
-                  >
-                    {isCalculatingShipping ? 'Calculating...' : 'Fetch Shipping Rates'}
-                  </Button>
-
-                  {/* Shipping Method */}
-                  {shippingRates.length > 0 && (
-                    <div style={{ marginTop: '1.5rem' }}>
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', fontWeight: 600, marginBottom: '1.2rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Shipping Method</p>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {shippingRates.map((rate) => (
-                          <ShippingOption 
-                            key={rate.level}
-                            id={rate.level} 
-                            selected={shippingMethod === rate.level} 
-                            onSelect={() => setShippingMethod(rate.level)}
-                            label={rate.level} 
-                            desc={`Est: ${rate.min_delivery_days}-${rate.max_delivery_days} days`} 
-                            price={`$${rate.total_price}`}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
                   <Button 
                     size="lg" 
@@ -598,51 +568,6 @@ function SelectInput({ label, id, options, value, onChange }: { label: string, i
          >
             {options.map(o => <option key={o} value={o}>{o}</option>)}
          </select>
-      </div>
-   );
-}
-
-function ShippingOption({ id, selected, onSelect, label, desc, price }: any) {
-   return (
-      <div 
-         onClick={onSelect}
-         style={{ 
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '1.2rem 1.5rem', borderRadius: '16px', cursor: 'pointer',
-            background: selected ? 'rgba(255, 77, 109, 0.08)' : 'var(--surface)',
-            border: `2px solid ${selected ? 'var(--primary-color)' : 'var(--border-medium)'}`,
-            transition: 'all 0.3s ease'
-         }}
-      >
-         <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
-            <div style={{ 
-               width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
-               border: `2px solid ${selected ? 'var(--primary-color)' : 'var(--border-medium)'}`,
-               background: selected ? 'var(--primary-color)' : 'transparent',
-               display: 'flex', alignItems: 'center', justifyContent: 'center'
-            }}>
-               {selected && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--surface)' }}></div>}
-            </div>
-            <div>
-               <p style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-main)' }}>{label}</p>
-               <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>{desc}</p>
-            </div>
-         </div>
-         <span style={{ fontWeight: 800, color: selected ? 'var(--primary-color)' : 'var(--text-main)' }}>{price}</span>
-      </div>
-   );
-}
-
-function PaymentMethodCard({ icon, label, selected }: { icon: React.ReactNode, label: string, selected: boolean }) {
-   return (
-      <div style={{ 
-         padding: '1.2rem', borderRadius: '16px', textAlign: 'center', cursor: 'pointer',
-         background: selected ? 'var(--primary-surface)' : 'var(--surface)',
-         border: `2px solid ${selected ? 'var(--primary-color)' : 'var(--border-medium)'}`,
-         transition: 'all 0.3s ease'
-      }}>
-         <div style={{ color: selected ? 'var(--primary-color)' : 'var(--text-muted)', marginBottom: '0.5rem', display: 'flex', justifyContent: 'center' }}>{icon}</div>
-         <p style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-main)' }}>{label}</p>
       </div>
    );
 }

@@ -34,12 +34,20 @@ export default function Bookstore() {
     if (activeGenre !== 'All Literature') {
       result = result.filter(b => b.genre === activeGenre);
     }
-    if (sortBy === 'Price: Low to High') result.sort((a, b) => a.price - b.price);
-    else if (sortBy === 'Price: High to Low') result.sort((a, b) => b.price - a.price);
+    if (sortBy === 'Price: Low to High') result.sort((a, b) => {
+      const pA = a.price?.paperback || a.price?.ebook || a.price?.hardcover || 0;
+      const pB = b.price?.paperback || b.price?.ebook || b.price?.hardcover || 0;
+      return pA - pB;
+    });
+    else if (sortBy === 'Price: High to Low') result.sort((a, b) => {
+      const pA = a.price?.paperback || a.price?.ebook || a.price?.hardcover || 0;
+      const pB = b.price?.paperback || b.price?.ebook || b.price?.hardcover || 0;
+      return pB - pA;
+    });
     else if (sortBy === 'Customer Review') result.sort((a, b) => b.rating - a.rating);
     
     return result;
-  }, [query, activeGenre, sortBy]);
+  }, [books, query, activeGenre, sortBy]);
 
   const handleQuickView = (book: any) => {
     setSelectedBook(book);
@@ -152,11 +160,7 @@ export default function Bookstore() {
             {filteredBooks.map((book, idx) => (
               <div key={book.id} className="animate-in fade-in slide-in-from-bottom-4 duration-500" style={{ animationDelay: `${idx * 50}ms` }}>
                 <BookCard 
-                  book={{
-                    ...book, 
-                    price: book.price.paperback || book.price.kindle || 0,
-                    format: book.price.kindle && !book.price.paperback ? 'eBook' : 'Paperback'
-                  }} 
+                  book={book} 
                   onQuickView={handleQuickView} 
                 />
               </div>

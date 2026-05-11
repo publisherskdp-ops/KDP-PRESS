@@ -4,12 +4,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ShoppingCart, LogIn, Sparkles, BookMarked, Menu, X, PlusCircle } from 'lucide-react';
 import { useCart } from './CartContext';
-import PublishBookModal from './PublishBookModal';
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -77,13 +75,13 @@ const Header: React.FC = () => {
               <LogIn size={18} />
               Login
             </Link>
-            <button 
-              onClick={() => setIsPublishModalOpen(true)}
+            <Link 
+              href="/publish"
               className="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-black shadow-xl shadow-slate-900/10 hover:shadow-slate-900/20 hover:-translate-y-0.5 transition-all active:scale-95 uppercase tracking-widest flex items-center gap-2"
             >
               <PlusCircle size={18} />
               Publish Your Book
-            </button>
+            </Link>
           </div>
 
           <button
@@ -110,22 +108,16 @@ const Header: React.FC = () => {
           <div className="h-[1px] bg-slate-100" />
           <div className="flex flex-col gap-3">
             <Link href="/auth/login" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-4 text-center font-black text-slate-500 uppercase">Login</Link>
-            <button 
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                setIsPublishModalOpen(true);
-              }} 
+            <Link 
+              href="/publish"
+              onClick={() => setIsMobileMenuOpen(false)} 
               className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase text-center flex items-center justify-center gap-2"
             >
               <PlusCircle size={20} />
               Publish Your Book
-            </button>
+            </Link>
           </div>
         </div>
-      )}
-
-      {isPublishModalOpen && (
-        <PublishBookModal onClose={() => setIsPublishModalOpen(false)} />
       )}
     </header>
   );

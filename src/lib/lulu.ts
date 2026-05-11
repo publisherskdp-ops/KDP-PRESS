@@ -1,4 +1,3 @@
-
 export interface LuluAccessToken {
   access_token: string;
   expires_in: number;
@@ -31,7 +30,7 @@ class LuluService {
   }
 
   /**
-   * Fetches a new access token using Client Credentials Flow
+   * Fetches a new access token using Client Credentials Flow with OAuth2
    */
   async getAccessToken(): Promise<string> {
     if (this.accessToken && this.tokenExpiry && Date.now() < this.tokenExpiry) {
@@ -53,14 +52,15 @@ class LuluService {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Lulu Auth Error:', errorData);
-        throw new Error(`Failed to authenticate with Lulu: ${response.statusText}`);
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Lulu Authentication Error:', errorData);
+        throw new Error(`Failed to authenticate with Lulu API: ${response.statusText}`);
       }
 
       const data: LuluAccessToken = await response.json();
       this.accessToken = data.access_token;
-      // Set expiry slightly earlier than actual to avoid race conditions
+      
+      // Set local expiry slightly earlier (60 seconds) to avoid network latency race conditions
       this.tokenExpiry = Date.now() + (data.expires_in - 60) * 1000;
       
       return this.accessToken;
@@ -71,7 +71,7 @@ class LuluService {
   }
 
   /**
-   * Helper for authenticated API calls
+   * Helper utility for signing and executing HTTP requests securely
    */
   private async request(endpoint: string, options: RequestInit = {}) {
     const token = await this.getAccessToken();
@@ -86,16 +86,22 @@ class LuluService {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error(`Lulu API Error (${endpoint}):`, errorData);
+      const errorData = await response.json().catch(() => ({}));
+      console.error(`[LULU API ERROR] Endpoint: ${endpoint}`, {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData
+      });
       throw new Error(`Lulu API request failed: ${response.statusText}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log(`[LULU API SUCCESS] Endpoint: ${endpoint}`);
+    return data;
   }
 
   /**
-   * Calculate shipping costs for a set of items
+   * Calculate exact physical shipping costs for a set of print items
    */
   async calculateShipping(shippingAddress: any, lineItems: any[]) {
     return this.request('/calculations/shipping/', {
@@ -108,19 +114,21 @@ class LuluService {
   }
 
   /**
-   * Create a new print job
+   * Registers a Print-On-Demand (POD) job under the publisher account
    */
-  async createPrintJob(jobData: Partial<LuluPrintJob>) {
+  async registerPrintJob(jobData: Partial<LuluPrintJob>): Promise<LuluPrintJob> {
     return this.request('/print-jobs/', {
       method: 'POST',
       body: JSON.stringify(jobData),
     });
   }
 
+  
+
   /**
-   * Get details of a print job
+   * Fetches full status details of a specific print job
    */
-  async getPrintJob(id: number) {
+  async getPrintJob(id: number): Promise<LuluPrintJob> {
     return this.request(`/print-jobs/${id}/`);
   }
 }

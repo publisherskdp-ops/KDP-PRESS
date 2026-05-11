@@ -9,15 +9,21 @@ interface BookProps {
   title: string;
   author: string;
   genre: string;
-  price: number;
+  price: {
+    paperback: number;
+    ebook?: number;
+    hardcover?: number;
+  };
   rating: number;
   reviews: number;
   image: string;
-  format: string;
 }
 
-export default function BookCard({ book, onQuickView }: { book: BookProps, onQuickView: (b: BookProps) => void }) {
+export default function BookCard({ book, onQuickView }: { book: any, onQuickView: (b: any) => void }) {
   const { addToCart } = useCart();
+  
+  // Default price to show is paperback
+  const displayPrice = book.price.paperback || book.price.ebook || book.price.hardcover || 0;
   
   return (
     <div className="group relative flex flex-col h-full glass-card rounded-2xl overflow-hidden hover-perspective p-4 border border-white/40 shadow-sm hover:shadow-2xl transition-all duration-500">
@@ -32,7 +38,7 @@ export default function BookCard({ book, onQuickView }: { book: BookProps, onQui
       <div className="relative w-full aspect-[2/3] rounded-xl overflow-hidden mb-5 bg-gradient-to-br from-slate-100 to-slate-200">
         <div 
           style={{ backgroundImage: `url(${book.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }} 
-          className="absolute inset-0 mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out"
+          className="absolute inset-0 group-hover:scale-110 transition-transform duration-700 ease-out"
         />
         
         {/* Quick Action Overlay */}
@@ -48,7 +54,7 @@ export default function BookCard({ book, onQuickView }: { book: BookProps, onQui
             onClick={() => addToCart({
               id: book.id,
               title: book.title,
-              price: book.price,
+              price: displayPrice,
               quantity: 1,
               image: book.image
             })}
@@ -74,15 +80,15 @@ export default function BookCard({ book, onQuickView }: { book: BookProps, onQui
             <span className="ml-1 text-sm font-bold text-slate-800">{book.rating}</span>
           </div>
           <div className="h-3 w-[1px] bg-slate-200" />
-          <span className="text-xs text-slate-500 font-semibold uppercase">{book.format}</span>
+          <span className="text-xs text-slate-500 font-semibold uppercase">Multiple Formats</span>
         </div>
 
         {/* Pricing & CTA */}
         <div className="mt-auto flex items-center justify-between">
           <div className="flex items-start">
             <span className="text-sm font-bold text-sky-600 mt-[2px]">$</span>
-            <span className="text-2xl font-black text-slate-900">{Math.floor(book.price)}</span>
-            <span className="text-sm font-bold text-slate-900 mt-[2px]">{(book.price % 1).toFixed(2).substring(2)}</span>
+            <span className="text-2xl font-black text-slate-900">{Math.floor(displayPrice)}</span>
+            <span className="text-sm font-bold text-slate-900 mt-[2px]">{(displayPrice % 1).toFixed(2).substring(2)}</span>
           </div>
           <button className="text-xs font-bold uppercase tracking-wider text-sky-600 hover:underline">
             Details

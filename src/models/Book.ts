@@ -9,17 +9,30 @@ export interface IBook extends Document {
   rating: number;
   reviews: number;
   pricePaperback: number;
-  priceKindle?: number;
+  priceEbook?: number;
   priceHardcover?: number;
-  image: string;
+  image: string; // Front Cover
+  coverBack?: string;
+  manuscriptUrl?: string; // Interior PDF
+  luluPaperbackId?: string; // Lulu POD ID for Paperback
+  luluHardcoverId?: string; // Lulu POD ID for Hardcover
   descriptionHtml: string;
   status: string;
   language?: string;
   published?: string;
   imprint?: string;
   isbn?: string;
-  trimSize?: string;
   pageCount?: number;
+  
+  // Format-Specific Physical Specifications
+  paperbackTrimSize?: string;
+  paperbackCoverFinish?: string;
+  paperbackInteriorColor?: string;
+  
+  hardcoverTrimSize?: string;
+  hardcoverCoverFinish?: string;
+  hardcoverInteriorColor?: string;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -34,22 +47,33 @@ const BookSchema: Schema = new Schema(
     rating: { type: Number, default: 0 },
     reviews: { type: Number, default: 0 },
     pricePaperback: { type: Number, default: 0 },
-    priceKindle: { type: Number },
+    priceEbook: { type: Number },
     priceHardcover: { type: Number },
     image: { type: String, default: '/assets/images/placeholder-book.png' },
+    coverBack: { type: String },
+    manuscriptUrl: { type: String },
+    luluPaperbackId: { type: String },
+    luluHardcoverId: { type: String },
     descriptionHtml: { type: String, default: '<p>No description provided yet.</p>' },
     status: { type: String, default: 'LIVE', index: true },
     language: { type: String },
     published: { type: String },
     imprint: { type: String },
     isbn: { type: String },
-    trimSize: { type: String },
     pageCount: { type: Number },
+
+    // Format-Specific Customizations
+    paperbackTrimSize: { type: String, default: '6 x 9' },
+    paperbackCoverFinish: { type: String, default: 'Gloss' },
+    paperbackInteriorColor: { type: String, default: 'Black & White Standard' },
+
+    hardcoverTrimSize: { type: String, default: '6 x 9' },
+    hardcoverCoverFinish: { type: String, default: 'Gloss' },
+    hardcoverInteriorColor: { type: String, default: 'Black & White Standard' },
   },
   {
     timestamps: true,
   }
 );
 
-// Prevent model recompilation in development
 export default mongoose.models.Book || mongoose.model<IBook>('Book', BookSchema);
