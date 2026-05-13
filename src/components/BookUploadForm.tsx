@@ -6,34 +6,43 @@ import { useBookshelfStore } from "@/lib/store";
 
 interface BookUploadFormProps {
   format?: 'kindle' | 'paperback' | 'hardcover';
+  initialData?: any; // <-- Added prop definition
   onClose?: () => void;
 }
 
-export default function BookUploadForm({ format = 'kindle', onClose }: BookUploadFormProps) {
+export default function BookUploadForm({ format = 'kindle', initialData, onClose }: BookUploadFormProps) {
   const [step, setStep] = useState(1);
   const [uploadProgress, setUploadProgress] = useState(0);
   const addBook = useBookshelfStore(state => state.addBook);
 
   const formatText = format === 'kindle' ? 'Kindle eBook' : format.charAt(0).toUpperCase() + format.slice(1);
 
-  const { register, control, handleSubmit, formState: { errors } } = useForm({
-    defaultValues: {
-      title: '', subtitle: '', 
-      series: '', editionNumber: '',
-      primaryAuthor: '',
-      contributors: [{ name: '', role: 'Author' }],
-      descriptionHtml: '',
-      publishingRights: 'yes',
-      primaryAudienceSexuallyExplicit: 'no',
-      readingAgeMin: 'Select', readingAgeMax: 'Select',
-      primaryMarketplace: 'Amazon.com',
-      categories: [], keywords: ['','','','','','',''],
-      preOrder: 'release_now',
-      
-      drm: 'no',
-      manuscript: null, cover: null, aiGenerated: 'no', isbn: '', publisher: '',
-      
-      kdpSelect: 'yes', territories: 'all', royalty: '70'
+const { register, control, handleSubmit, formState: { errors } } = useForm({    values: {
+      title: initialData?.title || '', 
+      subtitle: initialData?.subtitle || '',
+      email: initialData?.email || '', 
+      series: initialData?.series || '', 
+      editionNumber: initialData?.editionNumber || '',
+      primaryAuthor: initialData?.author || '', // Mapping book.author to form property
+      contributors: initialData?.contributors || [{ name: '', role: 'Author' }],
+      descriptionHtml: initialData?.descriptionHtml || '',
+      publishingRights: initialData?.publishingRights || 'yes',
+      primaryAudienceSexuallyExplicit: initialData?.primaryAudienceSexuallyExplicit || 'no',
+      readingAgeMin: initialData?.readingAgeMin || 'Select', 
+      readingAgeMax: initialData?.readingAgeMax || 'Select',
+      primaryMarketplace: initialData?.primaryMarketplace || 'Amazon.com',
+      categories: initialData?.categories || [], 
+      keywords: initialData?.keywords || ['', '', '', '', '', '', ''],
+      preOrder: initialData?.preOrder || 'release_now',
+      drm: initialData?.drm || 'no',
+      manuscript: null, 
+      cover: initialData?.image || null, 
+      aiGenerated: initialData?.aiGenerated || 'no', 
+      isbn: initialData?.isbn || '', 
+      publisher: initialData?.publisher || '',
+      kdpSelect: initialData?.kdpSelect || 'yes', 
+      territories: initialData?.territories || 'all', 
+      royalty: initialData?.[format]?.price ? '70' : '35' // Example logic mapping royalty percentage
     }
   });
 
@@ -134,22 +143,6 @@ export default function BookUploadForm({ format = 'kindle', onClose }: BookUploa
                </div>
             </div>
             
-            <div className="bg-white border border-slate-200 shadow-sm p-6 rounded flex gap-8">
-               <div className="w-1/4 font-bold text-slate-800">Series</div>
-               <div className="w-3/4">
-                  <p className="text-slate-600 mb-4">Are you writing a book within a continuous storyline or world? Series pages collect your interrelated publications so readers can easily discover and follow the entire narrative arc.</p>
-                  <button type="button" className="px-4 py-1.5 border border-slate-300 rounded text-slate-700 font-bold bg-slate-50 hover:bg-slate-100 shadow-sm transition">Add series details</button>
-               </div>
-            </div>
-
-            <div className="bg-white border border-slate-200 shadow-sm p-6 rounded flex gap-8">
-               <div className="w-1/4 font-bold text-slate-800">Edition Number</div>
-               <div className="w-3/4">
-                  <p className="text-slate-600 mb-2">Provide an edition number if this title is an updated version of a previously published book. <span className="text-sky-700 hover:underline cursor-pointer">Learn what qualifies as a new edition</span></p>
-                  <label className="font-bold text-slate-800 block mb-1">Edition Number <span className="text-slate-400 font-normal">(Optional)</span></label>
-                  <input type="number" {...register("editionNumber")} className="border border-slate-300 rounded p-2 w-32 shadow-sm focus:ring-1 focus:ring-sky-500" />
-               </div>
-            </div>
 
             <div className="bg-white border border-slate-200 shadow-sm p-6 rounded flex gap-8">
                <div className="w-1/4 font-bold text-slate-800">Author</div>
@@ -157,28 +150,8 @@ export default function BookUploadForm({ format = 'kindle', onClose }: BookUploa
                   <label className="font-bold text-slate-800 block mb-1">Primary Author or Contributor <span className="text-red-600">*</span></label>
                   <div className="flex gap-2">
                      <input {...register("primaryAuthor")} placeholder="First Name" className="border border-slate-300 rounded p-2 w-1/2 shadow-sm focus:ring-1 focus:ring-sky-500" />
-                     <input placeholder="Last Name" className="border border-slate-300 rounded p-2 w-1/2 shadow-sm focus:ring-1 focus:ring-sky-500" />
+                     <input {...register("email")} placeholder="Email" className="border border-slate-300 rounded p-2 w-1/2 shadow-sm focus:ring-1 focus:ring-sky-500" />
                   </div>
-               </div>
-            </div>
-
-            <div className="bg-white border border-slate-200 shadow-sm p-6 rounded flex gap-8">
-               <div className="w-1/4 font-bold text-slate-800">Contributors</div>
-               <div className="w-3/4 space-y-4">
-                  <p className="text-slate-600">Add the people who worked on this book. <span className="text-sky-700 hover:underline cursor-pointer">Learn more about contributor roles</span></p>
-                  {fields.map((field, index) => (
-                    <div key={field.id} className="flex gap-2 items-center">
-                       <select {...register(`contributors.${index}.role`)} className="border border-slate-300 rounded p-2 w-1/4 bg-white shadow-sm focus:ring-1 focus:ring-sky-500">
-                          <option value="Author">Author</option>
-                          <option value="Editor">Editor</option>
-                          <option value="Illustrator">Illustrator</option>
-                       </select>
-                       <input {...register(`contributors.${index}.name`)} placeholder="First Name" className="border border-slate-300 rounded p-2 w-1/4 shadow-sm focus:ring-1 focus:ring-sky-500" />
-                       <input placeholder="Last Name" className="border border-slate-300 rounded p-2 w-1/4 shadow-sm focus:ring-1 focus:ring-sky-500" />
-                       <button type="button" onClick={() => remove(index)} className="px-3 py-1.5 border border-slate-300 text-slate-700 font-bold bg-slate-50 hover:bg-slate-100 rounded shadow-sm">Remove</button>
-                    </div>
-                  ))}
-                  <button type="button" onClick={() => append({ name: '', role: 'Author'})} className="px-4 py-1.5 border border-slate-300 rounded text-slate-700 font-bold bg-slate-50 hover:bg-slate-100 shadow-sm transition">Add another</button>
                </div>
             </div>
 
@@ -195,47 +168,6 @@ export default function BookUploadForm({ format = 'kindle', onClose }: BookUploa
                         <select className="bg-transparent text-sm p-1 outline-none text-slate-600"><option>Format</option></select>
                      </div>
                      <textarea {...register("descriptionHtml")} rows={8} className="w-full p-3 focus:outline-none bg-white font-mono text-sm" placeholder="<p>Enter your description here...</p>"></textarea>
-                  </div>
-               </div>
-            </div>
-
-            <div className="bg-white border border-slate-200 shadow-sm p-6 rounded flex gap-8">
-               <div className="w-1/4 font-bold text-slate-800">Primary Audience</div>
-               <div className="w-3/4">
-                  <div className="bg-sky-50 border border-sky-200 rounded p-4 text-sky-800 mb-4 flex gap-2 font-medium">
-                     <span className="text-sky-600 font-bold text-lg">i</span>
-                     Your primary audience range must relate to the <i>content target</i>. Sexually explicit images cannot be marked for children.
-                  </div>
-                  
-                  <label className="font-bold text-slate-800 block mb-2">Sexually explicit images or title?</label>
-                  <p className="text-slate-600 mb-2">Does this book show an illustration or photograph involving explicit sexual situations?</p>
-                  <div className="flex gap-4 mb-6">
-                     <label className="flex items-center gap-1 cursor-pointer"><input type="radio" value="yes" {...register("primaryAudienceSexuallyExplicit")} /> Yes</label>
-                     <label className="flex items-center gap-1 cursor-pointer"><input type="radio" value="no" {...register("primaryAudienceSexuallyExplicit")} /> No</label>
-                  </div>
-
-                  <label className="font-bold text-slate-800 block mb-2">Reading age (Optional)</label>
-                  <div className="flex gap-4">
-                     <div className="w-1/2">
-                       <label className="text-slate-600 block mb-1">Minimum</label>
-                       <select className="border border-slate-300 rounded p-2 w-full bg-white shadow-sm focus:ring-1 focus:ring-sky-500"><option>Select</option></select>
-                     </div>
-                     <div className="w-1/2">
-                       <label className="text-slate-600 block mb-1">Maximum</label>
-                       <select className="border border-slate-300 rounded p-2 w-full bg-white shadow-sm focus:ring-1 focus:ring-sky-500"><option>Select</option></select>
-                     </div>
-                  </div>
-               </div>
-            </div>
-
-            <div className="bg-white border border-slate-200 shadow-sm p-6 rounded flex gap-8">
-               <div className="w-1/4 font-bold text-slate-800">Keywords</div>
-               <div className="w-3/4">
-                  <p className="text-slate-600 mb-4">Choose up to 7 search keywords that describe your book. Search terms help readers easily find your book.</p>
-                  <div className="grid grid-cols-2 gap-4">
-                     {[0,1,2,3,4,5,6].map(i => (
-                        <input key={i} {...register(`keywords.${i}`)} className="border border-slate-300 rounded p-2 shadow-sm focus:ring-1 focus:ring-sky-500 w-full" />
-                     ))}
                   </div>
                </div>
             </div>
@@ -286,32 +218,12 @@ export default function BookUploadForm({ format = 'kindle', onClose }: BookUploa
                </div>
             </div>
 
-            <div className="bg-white border border-slate-200 shadow-sm p-6 rounded flex gap-8">
-               <div className="w-1/4 font-bold text-slate-800">AI-Generated Content</div>
-               <div className="w-3/4">
-                  <p className="text-slate-600 mb-4">Amazon is collecting information about the use of Artificial Intelligence (AI) tools in creating content. <span className="text-sky-700 hover:underline cursor-pointer">What is AI-generated content?</span></p>
-                  <div className="bg-slate-50 border border-slate-200 p-4 rounded space-y-2">
-                     <label className="flex items-center gap-2 font-bold cursor-pointer"><input type="radio" value="yes" {...register("aiGenerated")} /> Yes</label>
-                     <label className="flex items-center gap-2 font-bold cursor-pointer"><input type="radio" value="no" {...register("aiGenerated")} /> No</label>
-                  </div>
-               </div>
-            </div>
 
           </div>
         )}
 
         {step === 3 && (
           <div className="space-y-6 text-sm">
-             
-            <div className="bg-white border border-slate-200 shadow-sm p-6 rounded flex gap-8">
-               <div className="w-1/4 font-bold text-slate-800">KDP Select Enrollment</div>
-               <div className="w-3/4">
-                  <strong className="block mb-2">Reach more readers. Maximize your sales potential.</strong>
-                  <p className="text-slate-600 mb-4">KDP Select is a free program offering to authors and publishers that helps you reach more readers and earn more money while keeping 100% control.</p>
-                  <button type="button" className="bg-amber-500 hover:bg-amber-600 border border-amber-600 rounded px-6 py-1.5 font-bold text-slate-900 shadow-sm transition">Enroll in KDP Select</button>
-               </div>
-            </div>
-            
             <div className="bg-white border border-slate-200 shadow-sm p-6 rounded flex gap-8">
                <div className="w-1/4 font-bold text-slate-800">Pricing, royalty, and distribution</div>
                <div className="w-3/4">

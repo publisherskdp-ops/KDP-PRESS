@@ -59,8 +59,8 @@ const FormatRow = ({ label, data, onSetup }: { label: string, data?: FormatData,
               <button
                 onClick={onSetup}
                 className={`px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all active:scale-95 flex items-center gap-2 ${data.status === 'DRAFT'
-                    ? 'bg-amber-500 text-slate-900 shadow-lg shadow-amber-500/20 hover:bg-amber-600'
-                    : 'bg-white border border-slate-200 text-slate-900 hover:bg-slate-50'
+                  ? 'bg-amber-500 text-slate-900 shadow-lg shadow-amber-500/20 hover:bg-amber-600'
+                  : 'bg-white border border-slate-200 text-slate-900 hover:bg-slate-50'
                   }`}
               >
                 {data.status === 'DRAFT' ? 'Continue' : 'Edit'}
@@ -130,7 +130,8 @@ export default function Dashboard() {
       {activeUploadFormat ? (
         <main className="flex-1 max-w-[1200px] mx-auto py-12 px-6 w-full animate-in fade-in zoom-in-95 duration-500">
           <BookUploadForm
-            format={activeUploadFormat}
+            format={activeUploadFormat.format}
+            initialData={activeUploadFormat.bookData}
             onClose={() => setActiveUploadFormat(null)}
           />
         </main>
@@ -217,7 +218,7 @@ export default function Dashboard() {
                             <div className="flex items-center gap-2">
                               <h3 className="text-2xl font-black text-slate-900 leading-tight">{book.title}</h3>
                               <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${book.status === 'LIVE' ? 'bg-emerald-100 text-emerald-600' :
-                                  book.status === 'PENDING' ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 text-slate-400'
+                                book.status === 'PENDING' ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 text-slate-400'
                                 }`}>
                                 {book.status}
                               </span>
@@ -240,9 +241,21 @@ export default function Dashboard() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-y-2 gap-x-12">
-                          <FormatRow label="Kindle eBook" data={book.kindle} onSetup={() => setActiveUploadFormat('kindle')} />
-                          <FormatRow label="Paperback" data={book.paperback} onSetup={() => setActiveUploadFormat('paperback')} />
-                          <FormatRow label="Hardcover" data={book.hardcover} onSetup={() => setActiveUploadFormat('hardcover')} />
+                          <FormatRow
+                            label="Kindle eBook"
+                            data={book.kindle}
+                            onSetup={() => setActiveUploadFormat({ format: 'kindle', bookData: book })}
+                          />
+                          <FormatRow
+                            label="Paperback"
+                            data={book.paperback}
+                            onSetup={() => setActiveUploadFormat({ format: 'paperback', bookData: book })}
+                          />
+                          <FormatRow
+                            label="Hardcover"
+                            data={book.hardcover}
+                            onSetup={() => setActiveUploadFormat({ format: 'hardcover', bookData: book })}
+                          />
                         </div>
                       </div>
                     </div>
