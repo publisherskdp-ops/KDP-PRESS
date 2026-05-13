@@ -5,6 +5,7 @@ export interface IBook extends Document {
   title: string;
   subtitle?: string;
   author: string;
+  email?: string;
   genre: string;
   rating: number;
   reviews: number;
@@ -23,6 +24,7 @@ export interface IBook extends Document {
   imprint?: string;
   isbn?: string;
   pageCount?: number;
+  specification?: 'ebook' | 'paperback' | 'hardcover' | 'all';
   
   // Format-Specific Physical Specifications
   paperbackTrimSize?: string;
@@ -43,6 +45,7 @@ const BookSchema: Schema = new Schema(
     title: { type: String, required: true },
     subtitle: { type: String },
     author: { type: String, required: true },
+    email: { type: String },
     genre: { type: String, required: true },
     rating: { type: Number, default: 0 },
     reviews: { type: Number, default: 0 },
@@ -60,7 +63,8 @@ const BookSchema: Schema = new Schema(
     published: { type: String },
     imprint: { type: String },
     isbn: { type: String },
-    pageCount: { type: Number },
+  pageCount: { type: Number },
+    specification: { type: String, enum: ['ebook', 'paperback', 'hardcover', 'all'], default: 'ebook' },
 
     // Format-Specific Customizations
     paperbackTrimSize: { type: String, default: '6 x 9' },

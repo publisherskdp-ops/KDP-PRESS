@@ -1,15 +1,10 @@
 'use client';
 
-import { useBookshelfStore, FormatData } from "@/lib/store";
-import { useAuthStore } from "@/lib/authStore";
 import BookUploadForm from "@/components/BookUploadForm";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import React, { useState, useEffect, useRef } from "react";
 import { getDashboardBooksAction, updateBookCoverAction } from "@/app/bookstore/actions";
 import Image from "next/image";
 import {
-  Plus,
   Search,
   MoreHorizontal,
   CheckCircle2,
@@ -17,73 +12,304 @@ import {
   FileEdit,
   BarChart3,
   Sparkles,
-  ArrowUpRight
+  BookOpen,
+  Upload,
+  Eye,
+  Megaphone,
+  X,
+  Tag,
+  DollarSign,
+  Users
 } from "lucide-react";
 
-const FormatRow = ({ label, data, onSetup }: { label: string, data?: FormatData, onSetup: () => void }) => {
-  if (!data) return null;
+// ─── Types ───────────────────────────────────────────────────────────────────
+type BookStatus = "PENDING" | "LIVE" | "DRAFT" | string;
+type TabKey = "ALL" | "IN_REVIEW";
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+const statusConfig: Record<string, { label: string; dot: string; bg: string; text: string }> = {
+  LIVE:    { label: "Live",    dot: "bg-emerald-500", bg: "bg-emerald-50",  text: "text-emerald-700" },
+  PENDING: { label: "Review",  dot: "bg-amber-500",   bg: "bg-amber-50",   text: "text-amber-700"   },
+  DRAFT:   { label: "Draft",   dot: "bg-slate-400",   bg: "bg-slate-100",  text: "text-slate-500"   },
+};
+const getStatus = (s: string) => statusConfig[s] ?? statusConfig.DRAFT;
+
+const fmt = (n: number | string | undefined) =>
+  n ? `$${Number(n).toFixed(2)}` : "—";
+
+// ─── Sub-components ──────────────────────────────────────────────────────────
+
+function StatCard({
+  icon,
+  label,
+  value,
+  sub,
+  accent,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string | number;
+  sub: string;
+  accent: "blue" | "amber" | "green";
+}) {
+  const accents = {
+    blue:  { icon: "text-blue-500 bg-blue-50",  border: "hover:border-blue-200" },
+    amber: { icon: "text-amber-500 bg-amber-50", border: "hover:border-amber-200" },
+    green: { icon: "text-emerald-500 bg-emerald-50", border: "hover:border-emerald-200" },
+  };
+  const a = accents[accent];
   return (
-    <div className="py-5 border-b border-slate-100 last:border-0 group transition-all">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h4 className="font-black text-slate-400 text-[10px] uppercase tracking-widest">{label}</h4>
-          {data.status === 'NONE' ? (
-            <p className="text-sm font-medium text-slate-300 italic">Not initialized</p>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span className={`text-sm font-bold ${data.status === 'LIVE' ? 'text-green-600' : data.status === 'PENDING' ? 'text-amber-600' : 'text-slate-900'}`}>
-                {data.status === 'LIVE' ? 'Live on Store' : data.status === 'PENDING' ? 'Pending Approval' : data.status === 'IN_REVIEW' ? 'In Review' : 'Draft Edition'}
+    <div
+      className={`group bg-white border border-slate-100 rounded-2xl p-5 flex items-center gap-4 transition-all duration-200 hover:shadow-md ${a.border} cursor-default`}
+    >
+      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${a.icon}`}>
+        {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<any>, { size: 20 }) : icon}
+      </div>
+      <div className="min-w-0">
+        <p className="text-2xl font-bold text-slate-900 leading-none">{value}</p>
+        <p className="text-xs text-slate-400 mt-1 font-medium">{label}</p>
+      </div>
+      <span className="ml-auto text-[10px] font-semibold uppercase tracking-wider text-slate-300 group-hover:text-slate-400 transition-colors">
+        {sub}
+      </span>
+    </div>
+  );
+}
+
+function FormatPill({
+  label,
+  price,
+  spec,
+  accent,
+}: {
+  label: string;
+  price: string;
+  spec: string;
+  accent: string;
+}) {
+  return (
+    <div className="flex flex-col gap-0.5 min-w-0">
+      <span className={`text-[9px] font-bold uppercase tracking-widest ${accent}`}>{label}</span>
+      <span className="text-sm font-bold text-slate-800 truncate">{price}</span>
+      <span className="text-[10px] text-slate-400 truncate">{spec}</span>
+    </div>
+  );
+}
+
+function EmptyState({ query }: { query: string }) {
+  return (
+    <div className="py-16 flex flex-col items-center gap-4 text-center px-4">
+      <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-300">
+        <BookOpen size={28} />
+      </div>
+      <div>
+        <p className="font-semibold text-slate-700">
+          {query ? "No results found" : "No manuscripts yet"}
+        </p>
+        <p className="text-sm text-slate-400 mt-1">
+          {query ? `Nothing matched "${query}"` : "Upload your first book to get started."}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function SkeletonCard() {
+  return (
+    <div className="bg-white border border-slate-100 rounded-2xl p-6 flex gap-6 animate-pulse">
+      <div className="w-24 h-36 bg-slate-100 rounded-xl shrink-0" />
+      <div className="flex-1 space-y-3 py-1">
+        <div className="h-5 bg-slate-100 rounded w-1/3" />
+        <div className="h-3 bg-slate-100 rounded w-1/4" />
+        <div className="h-3 bg-slate-100 rounded w-1/2 mt-4" />
+        <div className="h-3 bg-slate-100 rounded w-1/3" />
+      </div>
+    </div>
+  );
+}
+
+// ─── Book Row ─────────────────────────────────────────────────────────────────
+function BookRow({
+  book,
+  onEdit,
+  onUpdateCover,
+  updatingCover,
+}: {
+  book: any;
+  onEdit: () => void;
+  onUpdateCover: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  updatingCover: boolean;
+}) {
+  const s = getStatus(book.status);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <div className="group bg-white border border-slate-100 hover:border-slate-200 rounded-2xl overflow-hidden transition-all duration-200 hover:shadow-md flex flex-col md:flex-row">
+      {/* Cover image container */}
+      <div
+        className="relative w-full md:w-32 aspect-[3/4] md:aspect-auto bg-slate-50 shrink-0 cursor-pointer min-h-[160px] md:min-h-0"
+        onClick={() => fileRef.current?.click()}
+        title="Click to update cover"
+      >
+        {book.image ? (
+          <Image src={book.image} alt={book.title} fill className="object-cover" />
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-slate-300 p-4 text-center">
+            <Sparkles size={20} />
+            <span className="text-[9px] font-bold uppercase tracking-widest">No Cover</span>
+          </div>
+        )}
+        <div className="absolute inset-0 bg-slate-900/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+          <Upload size={16} className="text-white" />
+        </div>
+        {updatingCover && (
+          <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
+            <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin" />
+          </div>
+        )}
+        <input
+          type="file"
+          ref={fileRef}
+          className="hidden"
+          accept="image/*"
+          onChange={onUpdateCover}
+        />
+      </div>
+
+      {/* Main Metadata and Actions Content block */}
+      <div className="flex-1 p-5 md:p-6 flex flex-col gap-4 min-w-0">
+        
+        {/* Header Metadata block */}
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="text-base font-bold text-slate-900 truncate max-w-md">{book.title}</h3>
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${s.bg} ${s.text}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
+                {s.label}
               </span>
-              {data.status === 'LIVE' && <CheckCircle2 size={14} className="text-green-500" />}
             </div>
-          )}
+            
+            <p className="text-xs text-slate-400 mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1">
+              By <span className="text-slate-600 font-medium">{book.author}</span>
+              <span className="text-slate-200">·</span>
+              <span>{book.language?.toUpperCase() || "EN"}</span>
+              <span className="text-slate-200">·</span>
+              <span>{book.pageCount || 0} pages</span>
+              <span className="text-slate-200">·</span>
+              <span className="font-mono text-slate-300 text-[11px]">{book.id.substring(0, 8)}</span>
+            </p>
+
+            {/* Expanded attributes block */}
+            <div className="flex flex-wrap items-center gap-2 mt-2.5">
+              {book.genre && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-50 text-slate-500 text-[10px] font-medium border border-slate-100">
+                  <Tag size={10} />
+                  {book.genre}
+                </span>
+              )}
+              {book.audience && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-50 text-slate-500 text-[10px] font-medium border border-slate-100">
+                  <Users size={10} />
+                  {book.audience}
+                </span>
+              )}
+              {book.estRoyalty && (
+                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[10px] font-semibold border border-emerald-100/50">
+                  <DollarSign size={10} />
+                  {book.estRoyalty} Royalty Est.
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Action trigger tools */}
+          <div className="flex items-center gap-2 self-end sm:self-start shrink-0">
+            <button
+              onClick={onEdit}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-lg transition-all border border-slate-100"
+            >
+              <FileEdit size={13} />
+              Edit
+            </button>
+            <button className="p-1.5 text-slate-300 hover:text-slate-600 rounded-lg hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100">
+              <MoreHorizontal size={16} />
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          {data.price && (
-            <div className="text-right hidden md:block">
-              <span className="block text-[10px] font-black text-slate-400 uppercase tracking-tighter">List Price</span>
-              <span className="text-sm font-black text-slate-900">${data.price.toFixed(2)}</span>
-            </div>
-          )}
+        {/* Dynamic Pricing Layout Matrix */}
+        <div className="grid grid-cols-3 gap-3 md:gap-4 py-3 border-y border-slate-100">
+          <FormatPill
+            label="E-Book"
+            price={fmt(book.priceEbook)}
+            spec="Digital"
+            accent="text-blue-500"
+          />
+          <FormatPill
+            label="Paperback"
+            price={fmt(book.pricePaperback)}
+            spec={`${book.paperbackTrimSize || "6×9"} · ${book.paperbackCoverFinish || "Gloss"}`}
+            accent="text-amber-500"
+          />
+          <FormatPill
+            label="Hardcover"
+            price={fmt(book.priceHardcover)}
+            spec={`${book.hardcoverTrimSize || "6×9"} · ${book.hardcoverCoverFinish || "Gloss"}`}
+            accent="text-emerald-500"
+          />
+        </div>
 
-          <div className="flex items-center gap-2">
-            {data.status === 'NONE' ? (
-              <button
-                onClick={onSetup}
-                className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-slate-600 hover:bg-sky-600 hover:text-white hover:border-sky-600 transition-all active:scale-95"
-              >
-                + Create
-              </button>
-            ) : (
-              <button
-                onClick={onSetup}
-                className={`px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all active:scale-95 flex items-center gap-2 ${data.status === 'DRAFT'
-                  ? 'bg-amber-500 text-slate-900 shadow-lg shadow-amber-500/20 hover:bg-amber-600'
-                  : 'bg-white border border-slate-200 text-slate-900 hover:bg-slate-50'
-                  }`}
-              >
-                {data.status === 'DRAFT' ? 'Continue' : 'Edit'}
-                <ArrowUpRight size={14} />
-              </button>
+        {/* Interactive Footer element metrics */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[11px] mt-1">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-slate-400">
+            <span>
+              Created{" "}
+              <span className="text-slate-600 font-medium">
+                {new Date(book.createdAt).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </span>
+            </span>
+            {book.isbn && (
+              <>
+                <span className="text-slate-200 hidden sm:inline">·</span>
+                <span>
+                  ISBN-13 <span className="text-slate-600 font-mono font-medium">{book.isbn}</span>
+                </span>
+              </>
             )}
-            <button className="p-2 text-slate-300 hover:text-slate-900 transition-colors">
-              <MoreHorizontal size={18} />
+          </div>
+          <div className="flex items-center gap-3 sm:justify-end">
+            <button className="flex items-center gap-1 text-blue-500 hover:text-blue-600 font-semibold transition-colors">
+              <Eye size={12} />
+              Store
+            </button>
+            <span className="text-slate-200">·</span>
+            <button className="flex items-center gap-1 text-blue-500 hover:text-blue-600 font-semibold transition-colors">
+              <Megaphone size={12} />
+              Promote
             </button>
           </div>
         </div>
       </div>
     </div>
   );
-};
+}
 
+// ─── Main Dashboard ───────────────────────────────────────────────────────────
 export default function Dashboard() {
   const [books, setBooks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeUploadFormat, setActiveUploadFormat] = useState<'kindle' | 'paperback' | 'hardcover' | null>(null);
+  const [activeUploadFormat, setActiveUploadFormat] = useState<{
+    format: "kindle" | "paperback" | "hardcover";
+    bookData: any;
+  } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState<TabKey>("ALL");
   const [updatingCoverSlug, setUpdatingCoverSlug] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchBooks = async () => {
     setLoading(true);
@@ -96,15 +322,12 @@ export default function Dashboard() {
     fetchBooks();
   }, []);
 
-
   const handleCoverUpdate = async (slug: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setUpdatingCoverSlug(slug);
     const formData = new FormData();
-    formData.append('image', file);
-
+    formData.append("image", file);
     const result = await updateBookCoverAction(slug, formData);
     if (result.success) {
       await fetchBooks();
@@ -114,193 +337,148 @@ export default function Dashboard() {
     setUpdatingCoverSlug(null);
   };
 
-  const filteredBooks = books.filter(b => b.title.toLowerCase().includes(searchQuery.toLowerCase()));
-
-  const stats = {
-    total: books.length,
-    pending: books.filter(b => b.status === 'PENDING').length,
-    approved: books.filter(b => b.status === 'LIVE').length,
-    draft: books.filter(b => b.status === 'DRAFT').length
+  const tabFilter: Record<TabKey, (b: any) => boolean> = {
+    ALL:       () => true,
+    IN_REVIEW: (b) => b.status === "PENDING",
   };
 
-  return (
-    <div className="min-h-screen bg-[#FDFCFB] text-slate-900 selection:bg-sky-100 flex flex-col pt-20">
+  const filteredBooks = books
+    .filter(tabFilter[activeTab])
+    .filter((b) => b.title.toLowerCase().includes(searchQuery.toLowerCase()));
 
+  const stats = {
+    total:   books.length,
+    pending: books.filter((b) => b.status === "PENDING").length,
+    live:    books.filter((b) => b.status === "LIVE").length,
+  };
 
-      {activeUploadFormat ? (
-        <main className="flex-1 max-w-[1200px] mx-auto py-12 px-6 w-full animate-in fade-in zoom-in-95 duration-500">
+  const tabs: { key: TabKey; label: string; count?: number }[] = [
+    { key: "ALL",       label: "All",       count: books.length },
+    { key: "IN_REVIEW", label: "In Review", count: stats.pending },
+  ];
+
+  if (activeUploadFormat) {
+    return (
+      <div className="w-full min-h-screen bg-slate-50 flex flex-col pt-16 md:pt-20">
+        <main className="flex-1 max-w-4xl mx-auto py-8 md:py-12 px-4 md:px-6 w-full">
+          <button
+            onClick={() => setActiveUploadFormat(null)}
+            className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 mb-6 md:mb-8 transition-colors font-medium"
+          >
+            <X size={16} />
+            Back to Dashboard
+          </button>
           <BookUploadForm
             format={activeUploadFormat.format}
             initialData={activeUploadFormat.bookData}
             onClose={() => setActiveUploadFormat(null)}
           />
         </main>
-      ) : (
-        <>
-          <main className="flex-1 max-w-[1400px] mx-auto py-12 px-6 w-full space-y-10">
-            {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <StatPreview icon={<BarChart3 />} label="Total Projects" value={`${stats.total}`} trend="Books" />
-              <StatPreview icon={<Clock />} label="Pending Review" value={`${stats.pending}`} trend="In Queue" />
-              <StatPreview icon={<CheckCircle2 />} label="Approved" value={`${stats.approved}`} trend="Live" />
-              <StatPreview icon={<FileEdit />} label="Drafts" value={`${stats.draft}`} trend="In Progress" />
-            </div>
+      </div>
+    );
+  }
 
-            {/* Bookshelf Section */}
-            <div className="space-y-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div className="flex items-center gap-4 text-sm font-bold text-slate-400 uppercase tracking-widest">
-                  <span className="text-slate-900 border-b-2 border-sky-600 pb-1">All Manuscripts</span>
-                  <span className="hover:text-slate-900 cursor-pointer transition-colors pb-1">In Review</span>
-                  <span className="hover:text-slate-900 cursor-pointer transition-colors pb-1">Archived</span>
-                </div>
-
-                <div className="relative group w-full md:w-80">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-sky-600 transition-colors" size={16} />
-                  <input
-                    type="text"
-                    placeholder="Find a manuscript..."
-                    className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-sky-500/20 transition-all font-medium text-sm"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              {/* Bookshelf List */}
-              {filteredBooks.length > 0 ? (
-                <div className="space-y-6">
-                  {filteredBooks.map((book, idx) => (
-                    <div key={book.id} className="glass-card rounded-[2.5rem] overflow-hidden border border-white shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col md:flex-row animate-in fade-in slide-in-from-bottom-4" style={{ animationDelay: `${idx * 100}ms` }}>
-                      {/* Left Cover Teaser */}
-                      <div className="w-full md:w-48 aspect-[2/3] bg-slate-50 border-r border-slate-100 p-8 flex flex-col items-center justify-center relative group">
-                        <div className="absolute inset-0 bg-sky-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        {book.image ? (
-                          <div
-                            className={`w-full h-full bg-white shadow-2xl border border-slate-200 rounded-lg relative z-10 transform group-hover:scale-105 transition-transform duration-500 overflow-hidden ${updatingCoverSlug === book.id ? 'opacity-50' : ''}`}
-                          >
-                            <Image
-                              src={book.image}
-                              alt={book.title}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        ) : (
-                          <div className="w-full h-full bg-slate-100 border-2 border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center text-slate-300 gap-2 relative z-10 transition-colors group-hover:border-sky-200 group-hover:text-sky-300">
-                            <Sparkles size={24} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">No Cover</span>
-                          </div>
-                        )}
-
-                        <button
-                          onClick={() => {
-                            setUpdatingCoverSlug(book.id);
-                            fileInputRef.current?.click();
-                          }}
-                          className="absolute inset-0 z-20 flex items-center justify-center bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity text-white text-[10px] font-black uppercase tracking-widest backdrop-blur-sm"
-                        >
-                          {updatingCoverSlug === book.id ? 'Uploading...' : 'Update Cover'}
-                        </button>
-                      </div>
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        className="hidden"
-                        accept=".pdf"
-                        onChange={(e) => updatingCoverSlug && handleCoverUpdate(updatingCoverSlug, e)}
-                      />
-
-                      {/* Right Data Section */}
-                      <div className="flex-1 p-8 md:p-10 relative">
-                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-10">
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <h3 className="text-2xl font-black text-slate-900 leading-tight">{book.title}</h3>
-                              <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${book.status === 'LIVE' ? 'bg-emerald-100 text-emerald-600' :
-                                book.status === 'PENDING' ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 text-slate-400'
-                                }`}>
-                                {book.status}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <p className="text-sm text-slate-400 font-bold uppercase tracking-widest flex items-center gap-1">
-                                Author: <span className="text-slate-900 italic font-medium">{book.author}</span>
-                              </p>
-                              <div className="h-4 w-[1px] bg-slate-200" />
-                              <p className="text-xs text-sky-600 font-black uppercase tracking-widest flex items-center gap-1">
-                                ID: {book.id.substring(0, 8)}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <button className="px-6 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-slate-600 hover:bg-slate-900 hover:text-white transition-all">
-                              Manage Title
-                            </button>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-y-2 gap-x-12">
-                          <FormatRow
-                            label="Kindle eBook"
-                            data={book.kindle}
-                            onSetup={() => setActiveUploadFormat({ format: 'kindle', bookData: book })}
-                          />
-                          <FormatRow
-                            label="Paperback"
-                            data={book.paperback}
-                            onSetup={() => setActiveUploadFormat({ format: 'paperback', bookData: book })}
-                          />
-                          <FormatRow
-                            label="Hardcover"
-                            data={book.hardcover}
-                            onSetup={() => setActiveUploadFormat({ format: 'hardcover', bookData: book })}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="py-24 text-center glass-card rounded-[3rem] border-dashed border-2 border-slate-200 bg-transparent">
-                  <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto text-slate-300 mb-6">
-                    <Search size={40} />
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-900">No manuscripts found</h3>
-                  <p className="text-slate-400 font-medium">Clear your search or create a new title to get started.</p>
-                </div>
-              )}
-            </div>
-          </main>
-        </>
-      )}
-
-      <Footer />
-    </div>
-  );
-}
-
-function StatPreview({ icon, label, value, trend }: { icon: React.ReactNode, label: string, value: string, trend: string }) {
   return (
-    <div className="group p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all duration-500">
-      <div className="flex items-center justify-between mb-6">
-        <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-all">
-          {React.isValidElement(icon) ? (
-            React.cloneElement(icon, {
-              size: 24
-            } as any)
+    /* FIXED: Combined layout wrappers with cohesive bg-slate-50 to eradicate outer layout canvas spacing */
+    <div >
+      <main className="w-full max-w-1xl py-6 md:py-10 px-4 sm:px-6 md:px-8 space-y-6 md:space-y-8 flex-1">
+
+        {/* Page Title & Header Actions Banner */}
+        <div className="flex flex-row items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
+            <p className="text-xs md:text-sm text-slate-400 mt-0.5">Manage and track your manuscripts</p>
+          </div>
+          {/* <button
+            onClick={() => se tActiveUploadFormat({ format: "kindle", bookData: null })}
+            className="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 bg-slate-900 text-white text-xs md:text-sm font-semibold rounded-xl hover:bg-slate-700 transition-all shadow-sm shrink-0"
+          >
+            <Plus size={15} />
+            New Title
+          </button> */}
+        </div>
+
+        {/* Summary Metric Stats Display Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <StatCard icon={<BarChart3 />}    label="Total Manuscripts" value={stats.total}   sub="Books"    accent="blue"  />
+          <StatCard icon={<Clock />}        label="Pending Review"    value={stats.pending} sub="In Queue" accent="amber" />
+          <StatCard icon={<CheckCircle2 />} label="Live on Store"     value={stats.live}    sub="Published" accent="green" />
+        </div>
+
+        {/* Toolbar Filter & Live Query Actions Strip */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-1">
+          {/* Filtering Tab Group Controls */}
+          <div className="flex items-center gap-1 bg-white border border-slate-100 rounded-xl p-1 overflow-x-auto no-scrollbar max-w-full">
+            {tabs.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setActiveTab(t.key)}
+                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all shrink-0 ${
+                  activeTab === t.key
+                    ? "bg-slate-900 text-white shadow-sm"
+                    : "text-slate-400 hover:text-slate-700"
+                }`}
+              >
+                {t.label}
+                {t.count !== undefined && (
+                  <span className={`ml-1.5 text-[10px] ${activeTab === t.key ? "opacity-60" : "text-slate-300"}`}>
+                    {t.count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Search Query Control Box */}
+          <div className="relative flex-1 max-w-sm w-full">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search manuscripts…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-8 py-2 bg-white border border-slate-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-300 transition-all placeholder:text-slate-300"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          <span className="text-xs text-slate-400 sm:ml-auto whitespace-nowrap">
+            {filteredBooks.length} result{filteredBooks.length !== 1 ? "s" : ""}
+          </span>
+        </div>
+
+        {/* Core Book List Container Section */}
+        <div className="space-y-3 md:space-y-4">
+          {loading ? (
+            <>
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </>
+          ) : filteredBooks.length > 0 ? (
+            filteredBooks.map((book) => (
+              <BookRow
+                key={book.id}
+                book={book}
+                onEdit={() => setActiveUploadFormat({ format: "KDP", bookData: book })}
+                onUpdateCover={(e) => handleCoverUpdate(book.id, e)}
+                updatingCover={updatingCoverSlug === book.id}
+              />
+            ))
           ) : (
-            icon
+            <div className="bg-white border border-slate-100 rounded-2xl">
+              <EmptyState query={searchQuery} />
+            </div>
           )}
         </div>
-        <div className="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black rounded-lg uppercase tracking-widest">
-          {trend}
-        </div>
-      </div>
-      <div className="space-y-1">
-        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</span>
-        <p className="text-3xl font-black text-slate-900 tracking-tighter">{value}</p>
-      </div>
+      </main>
     </div>
   );
 }

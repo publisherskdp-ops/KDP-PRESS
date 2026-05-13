@@ -93,6 +93,7 @@ export async function getDashboardBooksAction() {
       title: book.title,
       subtitle: book.subtitle,
       author: book.author,
+      email: book.email,
       genre: book.genre,
       rating: book.rating,
       reviews: book.reviews,
@@ -105,6 +106,10 @@ export async function getDashboardBooksAction() {
       descriptionHtml: book.descriptionHtml,
       isbn: book.isbn,
       language: book.language,
+      specification: book.specification,
+      priceEbook: book.priceEbook,
+      pricePaperback: book.pricePaperback,
+      priceHardcover: book.priceHardcover,
       
       // Technical Specs
       paperbackTrimSize: book.paperbackTrimSize,
@@ -134,16 +139,77 @@ export async function getDashboardBooksAction() {
   }
 }
 
-export async function updateBookDetailsAction(slug: string, updateData: any) {
+export async function updateBookDetailsAction(slug: string, rawFormData: FormData) {
   try {
     await dbConnect();
-    const book = await Book.findOneAndUpdate({ slug }, updateData, { new: true });
-    
+    const book = await Book.findOne({ slug });
     if (!book) throw new Error("Book not found");
 
+    const data: any = {};
+    rawFormData.forEach((value, key) => {
+      data[key] = value;
+    });
+
+    // 0. Handle File Saving
+    const authorFolder = (data.fullName || book.author).replace(/\s+/g, '-');
+    const titleFolder = (data.title || book.title).replace(/\s+/g, '-');
+    const bookFolderName = `${authorFolder}-${titleFolder}`.replace(/[^a-zA-Z0-9-]/g, '');
+    const uploadDir = join(process.cwd(), 'public', 'library', bookFolderName);
+
+    const saveFile = async (file: any, prefix: string) => {
+      if (!file || typeof file === 'string' || !(file instanceof File) || file.size === 0) return null;
+      
+      await fs.mkdir(uploadDir, { recursive: true });
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const fileName = `${prefix}-${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
+      const filePath = join(uploadDir, fileName);
+      await fs.writeFile(filePath, buffer);
+      return `/library/${bookFolderName}/${fileName}`;
+    };
+
+    const imageFile = rawFormData.get('image') as File;
+    const manuscriptFile = rawFormData.get('manuscriptUrl') as File;
+
+    const imageUrl = await saveFile(imageFile, 'front');
+    const manuscriptUrl = await saveFile(manuscriptFile, 'ms');
+
+    const updateFields: any = {};
+    
+    // Explicitly pick fields from form data to avoid schema pollution
+    if (data.title) updateFields.title = data.title;
+    if (data.subtitle) updateFields.subtitle = data.subtitle;
+    if (data.fullName) updateFields.author = data.fullName;
+    if (data.email) updateFields.email = data.email;
+    if (data.descriptionHtml) updateFields.descriptionHtml = data.descriptionHtml;
+    if (data.isbn) updateFields.isbn = data.isbn;
+    if (data.language) updateFields.language = data.language;
+    if (data.specification) updateFields.specification = data.specification;
+    if (data.pageCount) updateFields.pageCount = Number(data.pageCount);
+    
+    // Pricing
+    if (data.priceEbook !== undefined) updateFields.priceEbook = Number(data.priceEbook);
+    if (data.pricePaperback !== undefined) updateFields.pricePaperback = Number(data.pricePaperback);
+    if (data.priceHardcover !== undefined) updateFields.priceHardcover = Number(data.priceHardcover);
+
+    // Physical Specifications
+    if (data.paperbackTrimSize) updateFields.paperbackTrimSize = data.paperbackTrimSize;
+    if (data.paperbackCoverFinish) updateFields.paperbackCoverFinish = data.paperbackCoverFinish;
+    if (data.paperbackInteriorColor) updateFields.paperbackInteriorColor = data.paperbackInteriorColor;
+    if (data.hardcoverTrimSize) updateFields.hardcoverTrimSize = data.hardcoverTrimSize;
+    if (data.hardcoverCoverFinish) updateFields.hardcoverCoverFinish = data.hardcoverCoverFinish;
+    if (data.hardcoverInteriorColor) updateFields.hardcoverInteriorColor = data.hardcoverInteriorColor;
+
+    if (imageUrl) updateFields.image = imageUrl;
+    if (manuscriptUrl) updateFields.manuscriptUrl = manuscriptUrl;
+
+    console.log("🛠️ Updating book with fields:", Object.keys(updateFields));
+    Object.assign(book, updateFields);
+    await book.save();
+
+    console.log("✅ UPDATE SUCCESS: Book updated successfully");
     revalidatePath('/dashboard');
     revalidatePath('/bookstore');
-    revalidatePath(`/bookstore/${slug}`);
 
     return { success: true, book: JSON.parse(JSON.stringify(book)) };
   } catch (error: any) {
@@ -325,6 +391,7 @@ export async function publishBookAction(rawFormData: FormData) {
       title: data.title,
       subtitle: data.subtitle,
       author: data.fullName,
+      email: data.email,
       genre: data.genre,
       descriptionHtml: data.descriptionHtml || '<p>No description provided yet.</p>',
       pricePaperback,
@@ -333,6 +400,7 @@ export async function publishBookAction(rawFormData: FormData) {
       isbn: data.isbn,
       pageCount: data.pageCount,
       language: data.language || 'English',
+      specification: data.specification,
       image: imageUrl || '/assets/images/placeholder-book.png',
       coverBack: coverBackUrl,
       manuscriptUrl: manuscriptUrl,
