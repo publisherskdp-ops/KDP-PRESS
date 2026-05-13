@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useBookshelfStore } from "@/lib/store";
 import { publishBookAction, updateBookDetailsAction } from "@/app/bookstore/actions";
 import { useRouter } from "next/navigation";
+import { CheckCircle2, FileText, Image as ImageIcon, Upload } from "lucide-react";
 
 interface BookUploadFormProps {
    initialData?: any; // <-- Added prop definition
@@ -39,6 +40,7 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
          drm: initialData?.drm || 'no',
          manuscript: null,
          cover: initialData?.image || null,
+         coverPdf: initialData?.coverPdf || null,
          aiGenerated: initialData?.aiGenerated || 'no',
          isbn: initialData?.isbn || '',
          publisher: initialData?.publisher || '',
@@ -60,7 +62,8 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
 
          priceEbook: initialData?.priceEbook || 0,
          pricePaperback: initialData?.pricePaperback || 0,
-         priceHardcover: initialData?.priceHardcover || 0
+         priceHardcover: initialData?.priceHardcover || 0,
+         status: initialData?.status || 'PENDING'
       }
    });
 
@@ -94,11 +97,13 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
                // Map to specific backend keys if needed
                if (key === 'manuscript') formData.append('manuscriptUrl', data[key][0]);
                if (key === 'cover') formData.append('image', data[key][0]);
+               if (key === 'coverPdf') formData.append('coverPdf', data[key][0]);
             }
          } else if (data[key] !== null && data[key] !== undefined) {
             formData.append(key, data[key]);
             // Map primaryAuthor to fullName for backend compatibility
             if (key === 'primaryAuthor') formData.append('fullName', data[key]);
+            if (key === 'status') formData.set('status', data[key]); // Ensure status is explicitly set
          }
       });
 
@@ -191,33 +196,63 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
                      </div>
                   </div>
 
-                  <div className="bg-white border border-slate-200 shadow-sm p-6 rounded flex gap-8">
-                     <div className="w-1/4 font-bold text-slate-800">Author</div>
-                     <div className="w-3/4">
-                        <label className="font-bold text-slate-800 block mb-1">Primary Author or Contributor <span className="text-red-600">*</span></label>
-                        <div className="flex gap-2">
-                           <input {...register("primaryAuthor")} placeholder="First Name" className="border border-slate-300 rounded p-2 w-1/2 shadow-sm focus:ring-1 focus:ring-sky-500" />
-                           <input {...register("email")} placeholder="Email" className="border border-slate-300 rounded p-2 w-1/2 shadow-sm focus:ring-1 focus:ring-sky-500" />
-                        </div>
-                     </div>
-                  </div>
+                   <div className="bg-white border border-slate-200 shadow-sm p-6 rounded flex gap-8">
+                      <div className="w-1/4 font-bold text-slate-800">Author & Contact</div>
+                      <div className="w-3/4">
+                         <div className="grid grid-cols-2 gap-4">
+                            <div>
+                               <label className="font-bold text-slate-800 block mb-1">Author Name <span className="text-red-600">*</span></label>
+                               <input {...register("primaryAuthor")} placeholder="Full Name (e.g. John Doe)" className="border border-slate-300 rounded p-2 w-full shadow-sm focus:ring-1 focus:ring-sky-500" />
+                            </div>
+                            <div>
+                               <label className="font-bold text-slate-800 block mb-1">Contact Email <span className="text-red-600">*</span></label>
+                               <input {...register("email")} placeholder="email@example.com" className="border border-slate-300 rounded p-2 w-full shadow-sm focus:ring-1 focus:ring-sky-500" />
+                            </div>
+                         </div>
+                      </div>
+                   </div>
 
-                  <div className="bg-white border border-slate-200 shadow-sm p-6 rounded flex gap-8">
-                     <div className="w-1/4 font-bold text-slate-800">Description</div>
-                     <div className="w-3/4">
-                        <p className="text-slate-600 mb-2">Summarize your book. This will be your product description on Amazon and cannot contain images. <span className="text-sky-700 hover:underline cursor-pointer">How to format your description</span></p>
-                        <div className="border border-slate-300 rounded overflow-hidden shadow-sm">
-                           <div className="bg-slate-50 border-b border-slate-300 p-2 flex gap-2">
-                              <button type="button" className="px-2 font-bold hover:bg-slate-200 rounded">B</button>
-                              <button type="button" className="px-2 italic hover:bg-slate-200 rounded">I</button>
-                              <button type="button" className="px-2 underline hover:bg-slate-200 rounded">U</button>
-                              <span className="w-px bg-slate-300 block"></span>
-                              <select className="bg-transparent text-sm p-1 outline-none text-slate-600"><option>Format</option></select>
-                           </div>
-                           <textarea {...register("descriptionHtml")} rows={8} className="w-full p-3 focus:outline-none bg-white font-mono text-sm" placeholder="<p>Enter your description here...</p>"></textarea>
-                        </div>
-                     </div>
-                  </div>
+                   <div className="bg-white border border-slate-200 shadow-sm p-6 rounded flex gap-8">
+                      <div className="w-1/4 font-bold text-slate-800">Description</div>
+                      <div className="w-3/4">
+                         <p className="text-slate-600 mb-2">Summarize your book. This will be your product description on Amazon and cannot contain images. <span className="text-sky-700 hover:underline cursor-pointer">How to format your description</span></p>
+                         <div className="border border-slate-300 rounded overflow-hidden shadow-sm">
+                            <div className="bg-slate-50 border-b border-slate-300 p-2 flex gap-2">
+                               <button type="button" className="px-2 font-bold hover:bg-slate-200 rounded">B</button>
+                               <button type="button" className="px-2 italic hover:bg-slate-200 rounded">I</button>
+                               <button type="button" className="px-2 underline hover:bg-slate-200 rounded">U</button>
+                               <span className="w-px bg-slate-300 block"></span>
+                               <select className="bg-transparent text-sm p-1 outline-none text-slate-600"><option>Format</option></select>
+                            </div>
+                            <textarea {...register("descriptionHtml")} rows={8} className="w-full p-3 focus:outline-none bg-white font-mono text-sm" placeholder="<p>Enter your description here...</p>"></textarea>
+                         </div>
+                      </div>
+                   </div>
+
+                   <div className="bg-white border border-slate-200 shadow-sm p-6 rounded flex gap-8">
+                      <div className="w-1/4 font-bold text-slate-800">Publishing Status</div>
+                      <div className="w-3/4">
+                         <p className="text-slate-600 mb-4">Choose whether the book should be live on the store or in review status.</p>
+                         <div className="flex gap-4">
+                            <label className={`flex-1 flex items-center justify-center gap-2 p-4 border rounded-xl cursor-pointer transition-all ${watch('status') === 'LIVE' ? 'bg-emerald-50 border-emerald-500 ring-2 ring-emerald-500/20' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
+                               <input type="radio" value="LIVE" {...register("status")} className="hidden" />
+                               <div className={`w-4 h-4 rounded-full border-4 ${watch('status') === 'LIVE' ? 'border-emerald-500 bg-white' : 'border-slate-200'}`} />
+                               <div className="text-left">
+                                  <span className="block font-bold text-slate-800">LIVE</span>
+                                  <span className="text-[10px] text-slate-500">Visible on Storefront</span>
+                               </div>
+                            </label>
+                            <label className={`flex-1 flex items-center justify-center gap-2 p-4 border rounded-xl cursor-pointer transition-all ${watch('status') === 'PENDING' ? 'bg-amber-50 border-amber-500 ring-2 ring-amber-500/20' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
+                               <input type="radio" value="PENDING" {...register("status")} className="hidden" />
+                               <div className={`w-4 h-4 rounded-full border-4 ${watch('status') === 'PENDING' ? 'border-amber-500 bg-white' : 'border-slate-200'}`} />
+                               <div className="text-left">
+                                  <span className="block font-bold text-slate-800">IN REVIEW</span>
+                                  <span className="text-[10px] text-slate-500">Hidden from Public</span>
+                               </div>
+                            </label>
+                         </div>
+                      </div>
+                   </div>
 
                </div>
             )}
@@ -288,45 +323,97 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
                <div className="space-y-6 text-sm">
 
                   <div className="bg-white border border-slate-200 shadow-sm p-6 rounded flex gap-8">
-                     <div className="w-1/4 font-bold text-slate-800">Manuscript</div>
-                     <div className="w-3/4">
-                        <p className="text-slate-600 mb-4">Upload your manuscript file. We only accept PDF format for final publishing. <span className="text-sky-700 hover:underline cursor-pointer">See all supported formats</span></p>
-                        <input type="file" {...register("manuscript")} accept=".pdf" className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 mb-6" />
+                     <div className="w-1/4 font-bold text-slate-800">Book Publishing Assets</div>
+                     <div className="w-3/4 space-y-8">
+                        {/* Manuscript Section */}
+                        <div className="space-y-4">
+                           <label className="font-bold text-slate-700 block text-xs uppercase tracking-wider">1. Book Manuscript (Internal PDF)</label>
+                           <p className="text-slate-600 mb-2 text-xs">Upload the interior content of your book in PDF format.</p>
+                           <input type="file" {...register("manuscript")} accept=".pdf" className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" />
 
-                        <div className="border border-green-500 rounded p-4 bg-green-50 text-green-900 font-medium flex gap-2 items-start mb-8">
-                           <span className="text-green-600 font-bold bg-white rounded-full w-5 h-5 flex items-center justify-center border border-green-500">✓</span>
-                           <div>
-                              <strong className="block text-base">Manuscript "Your_Book_Final.docx" uploaded successfully!</strong>
-                              <span className="text-xs font-normal">Uploaded on April 9, 2026. File processing complete. Manuscript check complete.</span>
-                           </div>
-                        </div>
-
-                        <strong className="block mb-2">Digital Rights Management (DRM)</strong>
-                        <p className="text-slate-600 mb-2">DRM protects the rights of copyright holders and prevents unauthorized distribution of your file.</p>
-                        <div className="space-y-2">
-                           <label className="flex items-center gap-2 cursor-pointer"><input type="radio" value="yes" {...register("drm")} /> Yes, apply Digital Rights Management</label>
-                           <label className="flex items-center gap-2 cursor-pointer"><input type="radio" value="no" {...register("drm")} /> No, do not apply Digital Rights Management</label>
-                        </div>
-                     </div>
-                  </div>
-
-                  <div className="bg-white border border-slate-200 shadow-sm p-6 rounded flex gap-8">
-                     <div className="w-1/4 font-bold text-slate-800">Front Book Cover</div>
-                     <div className="w-3/4 space-y-4">
-                        <div className="bg-slate-50 border border-slate-200 rounded p-4">
-                           <p className="text-slate-600 mb-4">Upload your book cover. We require a PDF file for high-quality printing.</p>
-                           <input type="file" {...register("cover")} accept=".pdf" className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" />
-                           {initialData?.image && !watch('cover')?.[0] && (
-                              <div className="mt-4">
-                                 <p className="text-xs text-slate-400 mb-1">Current Cover:</p>
-                                 <img src={initialData.image} alt="Current Cover" className="w-24 h-36 object-cover rounded shadow" />
+                           {(initialData?.manuscriptUrl || watch('manuscript')?.[0]) && (
+                              <div className="border border-green-500 rounded p-4 bg-green-50 text-green-900 font-medium flex gap-2 items-start">
+                                 <CheckCircle2 className="text-green-600 mt-1" size={18} />
+                                 <div>
+                                    <strong className="block text-base">Manuscript {watch('manuscript')?.[0]?.name || 'Current File'} {watch('manuscript')?.[0] ? 'selected' : 'active'}</strong>
+                                    <span className="text-xs font-normal">
+                                       {initialData?.manuscriptUrl ? `Current file: ${initialData.manuscriptUrl.split('/').pop()}` : 'File ready for processing.'}
+                                    </span>
+                                 </div>
                               </div>
                            )}
                         </div>
+
+                        <div className="h-px bg-slate-100 w-full" />
+
+                        {/* Cover PDF Section */}
+                        <div className="space-y-4">
+                           <label className="font-bold text-slate-700 block text-xs uppercase tracking-wider">2. Book Cover (Print-Ready PDF)</label>
+                           <p className="text-slate-600 mb-2 text-xs">Upload your full book cover PDF for high-quality printing.</p>
+                           <input type="file" {...register("coverPdf")} accept=".pdf" className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" />
+                           
+                           {(initialData?.coverPdf || watch('coverPdf')?.[0]) && (
+                              <div className="border border-sky-500 rounded p-4 bg-sky-50 text-sky-900 font-medium flex gap-2 items-start">
+                                 <CheckCircle2 className="text-sky-600 mt-1" size={18} />
+                                 <div>
+                                    <strong className="block text-base">Cover PDF {watch('coverPdf')?.[0]?.name || 'Current File'} {watch('coverPdf')?.[0] ? 'selected' : 'active'}</strong>
+                                    <span className="text-xs font-normal">
+                                       {initialData?.coverPdf ? `Current file: ${initialData.coverPdf.split('/').pop()}` : 'File ready for printing.'}
+                                    </span>
+                                 </div>
+                              </div>
+                           )}
+                        </div>
+
+                        {/* Storefront Image Section - Only shown on Edit */}
+                        {initialData?.id && (
+                           <>
+                              <div className="h-px bg-slate-100 w-full" />
+                              <div className="space-y-4">
+                                 <label className="font-bold text-slate-700 block text-xs uppercase tracking-wider">3. Storefront Display Image (Book Front Image)</label>
+                                 <p className="text-slate-600 mb-2 text-xs">This image is what customers see on the Amazon and website storefront. JPG or PNG recommended.</p>
+                                 <input type="file" {...register("cover")} accept="image/*" className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" />
+                                 
+                                 {initialData?.image && !watch('cover')?.[0] && (
+                                    <div className="mt-4 flex gap-6 items-center bg-slate-50 p-6 rounded-2xl border border-slate-100 shadow-inner">
+                                       <div className="relative group">
+                                          <img src={initialData.image} alt="Current Cover" className="w-24 h-36 object-cover rounded shadow-lg border-2 border-white transition-transform group-hover:scale-105" />
+                                          <div className="absolute -top-2 -right-2 bg-emerald-500 text-white p-1 rounded-full shadow-md">
+                                             <CheckCircle2 size={12} />
+                                          </div>
+                                       </div>
+                                       <div>
+                                          <p className="text-sm font-bold text-slate-900">Current Storefront Image</p>
+                                          <p className="text-xs text-slate-500 mt-1 leading-relaxed">This high-resolution image is currently active.<br/>Uploading a new file will replace it.</p>
+                                          <div className="mt-3 flex gap-2">
+                                             <span className="px-2 py-0.5 bg-white border border-slate-200 rounded text-[10px] font-bold text-slate-400 uppercase tracking-tight">Active</span>
+                                             <span className="px-2 py-0.5 bg-white border border-slate-200 rounded text-[10px] font-bold text-slate-400 uppercase tracking-tight">Public</span>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 )}
+
+                                 {watch('cover')?.[0] && (
+                                    <div className="mt-4 p-3 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-xl border border-emerald-100 flex items-center gap-2 animate-in fade-in slide-in-from-top-1">
+                                       <CheckCircle2 size={16} /> New storefront image selected: {watch('cover')[0].name}
+                                    </div>
+                                 )}
+                              </div>
+                           </>
+                        )}
+
+                        <div className="h-px bg-slate-100 w-full" />
+
+                        <div className="space-y-4">
+                           <strong className="block mb-2 text-slate-800">Digital Rights Management (DRM)</strong>
+                           <p className="text-slate-600 mb-2">DRM protects the rights of copyright holders and prevents unauthorized distribution of your file.</p>
+                           <div className="space-y-2">
+                              <label className="flex items-center gap-2 cursor-pointer text-slate-700 font-medium"><input type="radio" value="yes" {...register("drm")} className="text-sky-600" /> Yes, apply Digital Rights Management</label>
+                              <label className="flex items-center gap-2 cursor-pointer text-slate-700 font-medium"><input type="radio" value="no" {...register("drm")} className="text-sky-600" /> No, do not apply Digital Rights Management</label>
+                           </div>
+                        </div>
                      </div>
                   </div>
-
-
                </div>
             )}
 

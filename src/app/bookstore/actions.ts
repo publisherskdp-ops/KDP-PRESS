@@ -59,7 +59,7 @@ export async function getBooksAction() {
         hardcover: book.priceHardcover
       },
       image: book.image,
-      coverBack: book.coverBack,
+      coverPdf: book.coverPdf,
       manuscriptUrl: book.manuscriptUrl,
       luluPaperbackId: book.luluPaperbackId,
       luluHardcoverId: book.luluHardcoverId,
@@ -99,7 +99,7 @@ export async function getDashboardBooksAction() {
       reviews: book.reviews,
       status: book.status,
       image: book.image,
-      coverBack: book.coverBack,
+      coverPdf: book.coverPdf,
       manuscriptUrl: book.manuscriptUrl,
       createdAt: book.createdAt.toISOString(),
       pageCount: book.pageCount,
@@ -169,9 +169,11 @@ export async function updateBookDetailsAction(slug: string, rawFormData: FormDat
     };
 
     const imageFile = rawFormData.get('image') as File;
+    const coverPdfFile = rawFormData.get('coverPdf') as File;
     const manuscriptFile = rawFormData.get('manuscriptUrl') as File;
 
     const imageUrl = await saveFile(imageFile, 'front');
+    const coverPdfUrl = await saveFile(coverPdfFile, 'cover-pdf');
     const manuscriptUrl = await saveFile(manuscriptFile, 'ms');
 
     const updateFields: any = {};
@@ -201,7 +203,9 @@ export async function updateBookDetailsAction(slug: string, rawFormData: FormDat
     if (data.hardcoverInteriorColor) updateFields.hardcoverInteriorColor = data.hardcoverInteriorColor;
 
     if (imageUrl) updateFields.image = imageUrl;
+    if (coverPdfUrl) updateFields.coverPdf = coverPdfUrl;
     if (manuscriptUrl) updateFields.manuscriptUrl = manuscriptUrl;
+    if (data.status) updateFields.status = data.status;
 
     console.log("🛠️ Updating book with fields:", Object.keys(updateFields));
     Object.assign(book, updateFields);
@@ -230,6 +234,7 @@ export async function getBookAction(id: string) {
       title: book.title,
       subtitle: book.subtitle,
       author: book.author,
+      email: book.email,
       genre: book.genre,
       rating: book.rating,
       reviews: book.reviews,
@@ -239,7 +244,7 @@ export async function getBookAction(id: string) {
         hardcover: book.priceHardcover
       },
       image: book.image,
-      coverBack: book.coverBack,
+      coverPdf: book.coverPdf,
       manuscriptUrl: book.manuscriptUrl,
       luluPaperbackId: book.luluPaperbackId,
       luluHardcoverId: book.luluHardcoverId,
@@ -337,22 +342,22 @@ export async function publishBookAction(rawFormData: FormData) {
     };
 
     const imageFile = rawFormData.get('image') as File;
-    const coverBackFile = rawFormData.get('coverBack') as File;
+    const coverPdfFile = rawFormData.get('coverPdf') as File;
     const manuscriptFile = rawFormData.get('manuscriptUrl') as File;
 
     const imageUrl = await saveFile(imageFile, 'front');
-    const coverBackUrl = await saveFile(coverBackFile, 'back');
+    const coverPdfUrl = await saveFile(coverPdfFile, 'cover-pdf');
     const manuscriptUrl = await saveFile(manuscriptFile, 'ms');
 
     let luluPaperbackId = '';
     let luluHardcoverId = '';
 
     // Verify required assets exist
-    if (!manuscriptUrl || !imageUrl) {
-      console.log("❌ CRITICAL: Missing manuscript or cover image.");
+    if (!manuscriptUrl || !coverPdfUrl) {
+      console.log("❌ CRITICAL: Missing manuscript or cover pdf.");
       return { 
         success: false, 
-        error: "Required Publishing assets (Front Cover and Manuscript) are missing." 
+        error: "Required Publishing assets (Book Cover PDF and Manuscript) are missing." 
       };
     }
 
@@ -402,7 +407,7 @@ export async function publishBookAction(rawFormData: FormData) {
       language: data.language || 'English',
       specification: data.specification,
       image: imageUrl || '/assets/images/placeholder-book.png',
-      coverBack: coverBackUrl,
+      coverPdf: coverPdfUrl,
       manuscriptUrl: manuscriptUrl,
       luluPaperbackId,
       luluHardcoverId,

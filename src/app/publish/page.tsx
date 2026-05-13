@@ -30,8 +30,8 @@ export default function PublishPage() {
     isbn: '',
     pageCount: 200,
     language: 'English',
-    image: '', // Front Cover URL
-    coverBack: '', // Back Cover URL
+    image: '', // Storefront Display Image (JPG/PNG)
+    coverPdf: '', // Book Cover PDF (for Print)
     manuscriptUrl: '', // Manuscript PDF URL
 
     // Separate physical specs for Paperback
@@ -46,14 +46,13 @@ export default function PublishPage() {
   })
 
   const [files, setFiles] = useState<{ [key: string]: File | null }>({
-    image: null,
-    coverBack: null,
+    coverPdf: null,
     manuscriptUrl: null
   })
 
   const fileInputRefs = {
     image: useRef<HTMLInputElement>(null),
-    coverBack: useRef<HTMLInputElement>(null),
+    coverPdf: useRef<HTMLInputElement>(null),
     manuscriptUrl: useRef<HTMLInputElement>(null)
   }
 
@@ -78,8 +77,8 @@ export default function PublishPage() {
   }
 
   const handleSubmit = async () => {
-    if (!files.image || !files.manuscriptUrl) {
-      alert("Please upload the required assets (Front Cover and Manuscript).")
+    if (!files.manuscriptUrl || !files.coverPdf) {
+      alert("Please upload the required assets (Cover PDF and Manuscript).")
       return
     }
 
@@ -96,7 +95,7 @@ export default function PublishPage() {
 
       // Append actual file objects
       if (files.image) rawFormData.set('image', files.image);
-      if (files.coverBack) rawFormData.set('coverBack', files.coverBack);
+      if (files.coverPdf) rawFormData.set('coverPdf', files.coverPdf);
       if (files.manuscriptUrl) rawFormData.set('manuscriptUrl', files.manuscriptUrl);
 
       const result = await publishBookAction(rawFormData)
@@ -389,31 +388,19 @@ export default function PublishPage() {
                   <h4 className="text-xs font-black uppercase tracking-widest text-slate-400">Required Publishing Assets</h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-                    <div
-                      onClick={() => fileInputRefs.image.current?.click()}
-                      className={`group relative p-8 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center text-center gap-3 cursor-pointer transition-all ${files.image ? 'bg-emerald-50/50 border-emerald-200' : 'bg-slate-50 border-slate-150 hover:border-sky-300'
-                        }`}
-                    >
-                      <input type="file" ref={fileInputRefs.image} accept=".pdf" className="hidden" onChange={(e) => handleFileChange(e, 'image')} />
-                      {uploadingField === 'image' ? <Loader2 className="animate-spin text-sky-600" size={24} /> :
-                        files.image ? <CheckCircle2 className="text-emerald-500" size={24} /> : <ImageIcon className="text-slate-400 group-hover:scale-105 transition-transform" size={24} />}
-                      <div>
-                        <p className="text-xs font-black text-slate-800">{files.image ? files.image.name : 'Upload Front Cover'}</p>
-                        <p className="text-[10px] text-slate-400 mt-0.5">High-quality PDF (Front Cover)</p>
-                      </div>
-                    </div>
+
 
                     <div
-                      onClick={() => fileInputRefs.coverBack.current?.click()}
-                      className={`group relative p-8 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center text-center gap-3 cursor-pointer transition-all ${files.coverBack ? 'bg-emerald-50/50 border-emerald-200' : 'bg-slate-50 border-slate-150 hover:border-sky-300'
+                      onClick={() => fileInputRefs.coverPdf.current?.click()}
+                      className={`group relative p-8 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center text-center gap-3 cursor-pointer transition-all ${files.coverPdf ? 'bg-emerald-50/50 border-emerald-200' : 'bg-slate-50 border-slate-150 hover:border-sky-300'
                         }`}
                     >
-                      <input type="file" ref={fileInputRefs.coverBack} accept=".pdf" className="hidden" onChange={(e) => handleFileChange(e, 'coverBack')} />
-                      {uploadingField === 'coverBack' ? <Loader2 className="animate-spin text-sky-600" size={24} /> :
-                        files.coverBack ? <CheckCircle2 className="text-emerald-500" size={24} /> : <ImageIcon className="text-slate-400 group-hover:scale-105 transition-transform" size={24} />}
+                      <input type="file" ref={fileInputRefs.coverPdf} accept=".pdf" className="hidden" onChange={(e) => handleFileChange(e, 'coverPdf')} />
+                      {uploadingField === 'coverPdf' ? <Loader2 className="animate-spin text-sky-600" size={24} /> :
+                        files.coverPdf ? <CheckCircle2 className="text-emerald-500" size={24} /> : <FileUp className="text-slate-400 group-hover:scale-105 transition-transform" size={24} />}
                       <div>
-                        <p className="text-xs font-black text-slate-800">{files.coverBack ? files.coverBack.name : 'Upload Back Cover'}</p>
-                        <p className="text-[10px] text-slate-400 mt-0.5">Optional: High-quality PDF (Back Cover)</p>
+                        <p className="text-xs font-black text-slate-800">{files.coverPdf ? files.coverPdf.name : 'Book Cover PDF'}</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">High-quality PDF (For Printing)</p>
                       </div>
                     </div>
 
@@ -440,7 +427,7 @@ export default function PublishPage() {
                   </button>
                   <button
                     onClick={() => setStep(3)}
-                    disabled={!files.image || !files.manuscriptUrl}
+                    disabled={!files.manuscriptUrl || !files.coverPdf}
                     className="px-8 py-4 bg-slate-950 text-white rounded-xl font-bold uppercase tracking-wider text-xs flex items-center gap-2 hover:bg-sky-600 transition-all disabled:opacity-45"
                   >
                     Pricing & Sync <ChevronRight size={16} />
