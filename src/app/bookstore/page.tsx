@@ -66,11 +66,11 @@ export default function Bookstore() {
                     Editor's Choice
                 </div>
                 <h1 className="text-5xl md:text-7xl font-black text-slate-900 leading-[1.1] tracking-tight">
-                   Unlock a World of <br />
-                    <span className="gradient-text">Hidden Stories</span>.
+                    Discover Your Next <br />
+                    <span className="gradient-text">Favorite Book</span>.
                 </h1>
                 <p className="text-xl text-slate-600 max-w-lg leading-relaxed font-medium">
-                    Enjoy access to unlimited indie masterpieces. Read and support the hidden gems of the publishing world!
+                    Explore thousands of indie titles, from thrilling mysteries to heartwarming romances. Find your next great read today.
                 </p>
                 <div className="flex gap-4 pt-4">
                     <button className="px-8 py-4 bg-sky-600 text-white rounded-2xl font-bold shadow-xl shadow-sky-600/20 hover:bg-sky-700 hover:-translate-y-1 transition-all">
