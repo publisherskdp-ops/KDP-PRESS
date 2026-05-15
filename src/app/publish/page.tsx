@@ -9,6 +9,7 @@ import {
 import { publishBookAction } from "@/app/bookstore/actions"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
+import { toast } from "sonner"
 
 export default function PublishPage() {
   const router = useRouter()
@@ -78,7 +79,7 @@ export default function PublishPage() {
 
   const handleSubmit = async () => {
     if (!files.manuscriptUrl || !files.coverPdf) {
-      alert("Please upload the required assets (Cover PDF and Manuscript).")
+      toast.warning("Please upload the required assets (Cover PDF and Manuscript).")
       return
     }
 
@@ -105,11 +106,11 @@ export default function PublishPage() {
           router.push('/bookstore')
         }, 3000)
       } else {
-        alert("Error saving: " + result.error)
+        toast.error("Error saving: " + result.error)
       }
     } catch (error) {
       console.error(error)
-      alert("An unexpected error occurred.")
+      toast.error("An unexpected error occurred.")
     } finally {
       setIsSubmitting(false)
     }

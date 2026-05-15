@@ -5,6 +5,7 @@ import { CartProvider } from "@/components/CartContext";
 import { PayPalProvider } from "@/components/PayPalProvider";
 import CartDrawer from "@/components/CartDrawer";
 import ScriptLoader from "@/components/ScriptLoader";
+import { Toaster } from 'sonner';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
@@ -30,6 +31,7 @@ export default function RootLayout({
             <InteractiveProvider>
               {children}
               <CartDrawer />
+              <Toaster richColors position="top-right" />
             </InteractiveProvider>
           </PayPalProvider>
         </CartProvider>

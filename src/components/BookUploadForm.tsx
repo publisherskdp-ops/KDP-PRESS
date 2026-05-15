@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useBookshelfStore } from "@/lib/store";
 import { publishBookAction, updateBookDetailsAction } from "@/app/bookstore/actions";
 import { useRouter } from "next/navigation";
+import { toast } from 'sonner';
 import { CheckCircle2, FileText, Image as ImageIcon, Upload } from "lucide-react";
 
 interface BookUploadFormProps {
@@ -124,7 +125,7 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
          if (onClose) onClose();
          router.refresh();
       } else {
-         alert("Error: " + result.error);
+         toast.error("Error: " + result.error);
          setUploadProgress(0);
       }
    };

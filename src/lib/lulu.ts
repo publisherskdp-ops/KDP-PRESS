@@ -1,3 +1,5 @@
+// Lulu API Access Token Interface
+
 export interface LuluAccessToken {
   access_token: string;
   expires_in: number;
@@ -25,7 +27,7 @@ class LuluService {
   constructor() {
     this.clientId = process.env.LULU_CLIENT_KEY || '';
     this.clientSecret = process.env.LULU_CLIENT_SECRET || '';
-    this.authUrl = process.env.LULU_AUTH_URL || 'https://auth.sandbox.lulu.com/auth/realms/glasstree/protocol/openid-connect/token';
+    this.authUrl = process.env.LULU_AUTH_URL || 'https://api.sandbox.lulu.com/auth/realms/glasstree/protocol/openid-connect/token';
     this.apiUrl = process.env.LULU_API_BASE_URL || 'https://api.sandbox.lulu.com';
   }
 
@@ -36,7 +38,6 @@ class LuluService {
     if (this.accessToken && this.tokenExpiry && Date.now() < this.tokenExpiry) {
       return this.accessToken;
     }
-
     const authHeader = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64');
     
     try {
@@ -50,6 +51,7 @@ class LuluService {
           grant_type: 'client_credentials',
         }),
       });
+      console.log('Lulu Authentication Response:', response);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -57,11 +59,11 @@ class LuluService {
         throw new Error(`Failed to authenticate with Lulu API: ${response.statusText}`);
       }
 
-      const data: LuluAccessToken = await response.json();
-      this.accessToken = data.access_token;
+      const tokenData: LuluAccessToken = await response.json();
+      this.accessToken = tokenData.access_token;
       
       // Set local expiry slightly earlier (60 seconds) to avoid network latency race conditions
-      this.tokenExpiry = Date.now() + (data.expires_in - 60) * 1000;
+      this.tokenExpiry = Date.now() + (tokenData.expires_in - 60) * 1000;
       
       return this.accessToken;
     } catch (error) {
@@ -116,12 +118,13 @@ class LuluService {
   /**
    * Registers a Print-On-Demand (POD) job under the publisher account
    */
-  async registerPrintJob(jobData: Partial<LuluPrintJob>): Promise<LuluPrintJob> {
+  async createPrintJob(jobData: Partial<LuluPrintJob>): Promise<LuluPrintJob> {
+    console.log('🚀 ~ LuluService ~ createPrintJob ~ jobData:', jobData)
     return this.request('/print-jobs/', {
       method: 'POST',
       body: JSON.stringify(jobData),
     });
-  }
+  } 
 
   
 

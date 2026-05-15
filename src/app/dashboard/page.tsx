@@ -4,6 +4,7 @@ import BookUploadForm from "@/components/BookUploadForm";
 import React, { useState, useEffect, useRef } from "react";
 import { getDashboardBooksAction, updateBookCoverAction } from "@/app/bookstore/actions";
 import Image from "next/image";
+import { toast } from 'sonner';
 import {
   Search,
   MoreHorizontal,
@@ -331,8 +332,9 @@ export default function Dashboard() {
     const result = await updateBookCoverAction(slug, formData);
     if (result.success) {
       await fetchBooks();
+      toast.success("Cover updated successfully!");
     } else {
-      alert("Error updating cover: " + result.error);
+      toast.error("Error updating cover: " + result.error);
     }
     setUpdatingCoverSlug(null);
   };
