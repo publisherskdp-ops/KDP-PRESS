@@ -8,6 +8,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const navItems = [
     { name: 'Bookshelf', path: '/dashboard', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> },
+    { name: 'Orders', path: '/dashboard/orders', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> },
     { name: 'Reports & Sales (Beta)', path: '/dashboard/reports', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg> },
   ];
 
@@ -18,9 +19,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div style={{ padding: '2rem', borderBottom: '1px solid var(--border)' }}>
           <Link href="/">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-              <div style={{ width: '10px', height: '10px', background: 'var(--primary)', borderRadius: '50%' }}></div>
+              <div style={{ width: '10px', height: '10px', background: 'var(--primary-color)', borderRadius: '50%' }}></div>
               <span style={{ fontSize: '1.4rem', fontWeight: 900, letterSpacing: '-0.5px' }}>
-                KDP <span style={{ color: 'var(--primary)', fontWeight: 800 }}>PRESS</span>
+                KDP <span style={{ color: 'var(--primary-color)', fontWeight: 800 }}>PRESS</span>
               </span>
             </div>
           </Link>
@@ -36,13 +37,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <Link href={item.path}>
                     <div style={{
                       display: 'flex', alignItems: 'center', gap: '12px', padding: '0.8rem 1rem', borderRadius: '12px',
-                      color: isActive ? 'var(--primary-darker)' : 'var(--text-muted)',
+                      color: isActive ? 'var(--primary-deep)' : 'var(--text-muted)',
                       background: isActive ? 'var(--primary-surface)' : 'transparent',
                       fontWeight: isActive ? 700 : 500,
                       transition: 'all 0.2s ease',
                       cursor: 'pointer'
                     }}>
-                      <span style={{ color: isActive ? 'var(--primary)' : 'var(--text-dim)' }}>{item.icon}</span>
+                      <span style={{ color: isActive ? 'var(--primary-color)' : 'var(--text-dim)' }}>{item.icon}</span>
                       {item.name}
                     </div>
                   </Link>
@@ -54,7 +55,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         <div style={{ padding: '2rem 1.5rem', borderTop: '1px solid var(--border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), var(--primary-deep))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: '1.2rem' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary-color), var(--primary-deep))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: '1.2rem' }}>
               A
             </div>
             <div>

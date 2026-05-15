@@ -2,15 +2,24 @@
 'use server';
 
 import { lulu } from '@/lib/lulu';
+import dbConnect from '@/lib/mongodb';
+import Book from '@/models/Book';
+import { headers } from 'next/headers';
+
 
 export async function calculateShippingAction(shippingAddress: any, cart: any[]) {
   try {
+    await dbConnect();
     // Map cart items to Lulu line items for calculation
-    const lineItems = cart.map(item => ({
-      title: item.title,
-      quantity: item.quantity,
-      pod_package_id: item.luluPodPackageId || "0600X0900.BW.STD.PB.060UW444.MXX" 
+    const lineItems = await Promise.all(cart.map(async (item) => {
+      const bookData = await Book.findOne({ slug: item.id });
+      return {
+        title: bookData?.title || item.title,
+        quantity: item.quantity,
+        pod_package_id: bookData?.luluPaperbackId || "0600X0900.BW.STD.PB.060UW444.MXX" 
+      };
     }));
+
 
     const result = await lulu.calculateShipping({
       name: `${shippingAddress.first_name} ${shippingAddress.last_name}`,
@@ -31,27 +40,39 @@ export async function calculateShippingAction(shippingAddress: any, cart: any[])
 
 export async function createOrderAction(shippingAddress: any, cart: any[], paymentDetails?: any) {
   try {
+    await dbConnect();
+    const host = (await headers()).get('host');
+    const protocol = (await headers()).get('x-forwarded-proto') || 'http';
+    const baseUrl = `${protocol}://${host}`;
+
     // Map cart items to Lulu line items according to the new format
-    const lineItems = cart.map((item, index) => ({
-      title: item.title,
-      quantity: item.quantity,
-      external_id: `item-${item.id || index}-${Date.now()}`,
-      printable_normalization: {
-        cover: {
-          source_url: item.coverUrl || "https://www.dropbox.com/s/7bv6mg2tj0h3l0r/lulu_trade_perfect_template.pdf?dl=1&raw=1"
-        },
-        interior: {
-          source_url: item.manuscriptUrl || "https://www.dropbox.com/s/r20orb8umqjzav9/lulu_trade_interior_template-32.pdf?dl=1&raw=1"
-        },
-        pod_package_id: item.luluPodPackageId || "0600X0900.BW.STD.PB.060UW444.MXX" 
-      }
+    const lineItems = await Promise.all(cart.map(async (item, index) => {
+      const bookData = await Book.findOne({ slug: item.id });
+      
+      return {
+        title: bookData?.title || item.title,
+        quantity: item.quantity,
+        external_id: `item-${item.id || index}-${Date.now()}`,
+        printable_normalization: {
+          cover: {
+            source_url: bookData?.coverPdf ? `${baseUrl}${bookData.coverPdf}` : "https://www.dropbox.com/s/7bv6mg2tj0h3l0r/lulu_trade_perfect_template.pdf?dl=1&raw=1"
+          },
+          interior: {
+            source_url: bookData?.manuscriptUrl ? `${baseUrl}${bookData.manuscriptUrl}` : "https://www.dropbox.com/s/r20orb8umqjzav9/lulu_trade_interior_template-32.pdf?dl=1&raw=1"
+          },
+          pod_package_id: bookData?.luluPaperbackId || "0600X0900.BW.STD.PB.060UW444.MXX" 
+        }
+      };
     }));
+
+
+    const luluShippingLevel = shippingAddress.shipping_level === 'standard' ? 'MAIL' : (shippingAddress.shipping_level || "MAIL");
 
     const jobData = {
       contact_email: shippingAddress.email,
       external_id: paymentDetails?.id ? `PAYPAL-${paymentDetails.id}` : `KDP-${Date.now()}`,
       production_delay: 120, // Added production delay
-      shipping_level: shippingAddress.shipping_level || "MAIL",
+      shipping_level: 'MAIL',
       shipping_address: {
         name: `${shippingAddress.first_name} ${shippingAddress.last_name}`,
         street1: shippingAddress.street1,

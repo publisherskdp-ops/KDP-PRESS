@@ -134,6 +134,13 @@ class LuluService {
   async getPrintJob(id: number): Promise<LuluPrintJob> {
     return this.request(`/print-jobs/${id}/`);
   }
+
+  /**
+   * Fetches a paginated list of all print jobs
+   */
+  async listPrintJobs(page = 1, pageSize = 20): Promise<{ results: LuluPrintJob[], count: number }> {
+    return this.request(`/print-jobs/?page=${page}&page_size=${pageSize}`);
+  }
 }
 
 export const lulu = new LuluService();
