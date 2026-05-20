@@ -6,7 +6,7 @@ import Header from '@/components/Header';
 import Button from '@/components/Button';
 import { useCart } from '@/components/CartContext';
 import Link from 'next/link';
-import { calculateShippingAction, createOrderAction } from './actions';
+import { createOrderAction } from './actions';
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { toast } from 'sonner';
 import {
@@ -23,10 +23,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { cart, cartTotal, clearCart } = useCart();
 
-  const [step, setStep] = useState(1); // 1: Shipping, 2: Billing, 3: Payment, 4: Success
-  const [sameAsShipping, setSameAsShipping] = useState(true);
-  const [shippingMethod, setShippingMethod] = useState('standard');
-  // const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
+  const [step, setStep] = useState(1); 
 
   // Shipping Address State
   const [address, setAddress] = useState({
@@ -82,31 +79,13 @@ export default function CheckoutPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const validateStep2 = () => {
-    if (sameAsShipping) return true;
-    const newErrors: Record<string, string | null> = {};
-    if (!billingAddress.first_name) newErrors['bill-first'] = 'First name is required';
-    if (!billingAddress.last_name) newErrors['bill-last'] = 'Last name is required';
-    if (!billingAddress.street1) newErrors['bill-addr1'] = 'Address is required';
-    if (!billingAddress.city) newErrors['bill-city'] = 'City is required';
-    if (!billingAddress.state_code) newErrors['bill-state'] = 'State is required';
-    if (!billingAddress.postcode) {
-      newErrors['bill-zip'] = 'ZIP code is required';
-    } else if (validateZipCode(billingAddress.postcode)) {
-      newErrors['bill-zip'] = validateZipCode(billingAddress.postcode);
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
-  const handlePlaceOrder = async (paymentDetails?: any) => {
+  const handlePlaceOrder = async () => {
     setIsPlacingOrder(true);
     const res = await createOrderAction({
       ...address,
-      shipping_level: shippingMethod
-    }, cart, paymentDetails);
+    }, cart);
 
     if (res.success) {
       clearCart();
@@ -244,7 +223,7 @@ export default function CheckoutPage() {
                   <Button
                     size="lg"
                     style={{ marginTop: '2rem' }}
-                    onClick={(e) => { e.preventDefault(); if (validateStep1()) setStep(3); }}
+                    onClick={(e) => { e.preventDefault(); handlePlaceOrder(); }}
                   >
                     Continue to Payment →
                   </Button>
@@ -431,8 +410,8 @@ function OrderSummary({ cart, subtotal, shipping, tax, grandTotal }: { cart: any
       <h3 style={{ marginBottom: '2rem', fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)' }}>Order Summary</h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', marginBottom: '2rem', paddingBottom: '2rem', borderBottom: '1px solid var(--border-medium)' }}>
         {cart.map(item => (
-          <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem', alignItems: 'center', gap: '1rem' }}>
-            <span style={{ color: 'var(--text-muted)', flex: 1, lineHeight: '1.4' }}>{item.title} <span style={{ color: 'var(--text-dim)' }}>×{item.quantity}</span></span>
+          <div key={`${item.id}-${item.format || 'unknown'}`} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem', alignItems: 'center', gap: '1rem' }}>
+            <span style={{ color: 'var(--text-muted)', flex: 1, lineHeight: '1.4' }}>{item.title} {item.format && <span style={{fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', color: 'var(--primary-color)'}}>({item.format})</span>} <span style={{ color: 'var(--text-dim)' }}>×{item.quantity}</span></span>
             <span style={{ fontWeight: 700, whiteSpace: 'nowrap', color: 'var(--text-main)' }}>${(item.price * item.quantity).toFixed(2)}</span>
           </div>
         ))}

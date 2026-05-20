@@ -7,13 +7,14 @@ export interface CartItem {
   price: number;
   quantity: number;
   image?: string;
+  format?: string;
 }
 
 interface CartContextType {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
-  removeFromCart: (id: string) => void;
-  updateQuantity: (id: string, delta: number) => void;
+  removeFromCart: (id: string, format?: string) => void;
+  updateQuantity: (id: string, format: string | undefined, delta: number) => void;
   clearCart: () => void;
   cartTotal: number;
   cartCount: number;
@@ -46,10 +47,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const addToCart = (newItem: CartItem) => {
     setCart((prev) => {
-      const existing = prev.find((item) => item.id === newItem.id);
+      const existing = prev.find((item) => item.id === newItem.id && item.format === newItem.format);
       if (existing) {
         return prev.map((item) =>
-          item.id === newItem.id ? { ...item, quantity: item.quantity + 1 } : item
+          (item.id === newItem.id && item.format === newItem.format) ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
       return [...prev, newItem];
@@ -57,14 +58,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsOpen(true); // Open drawer on add
   };
 
-  const removeFromCart = (id: string) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
+  const removeFromCart = (id: string, format?: string) => {
+    setCart((prev) => prev.filter((item) => !(item.id === id && item.format === format)));
   };
 
-  const updateQuantity = (id: string, delta: number) => {
+  const updateQuantity = (id: string, format: string | undefined, delta: number) => {
     setCart((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
+        (item.id === id && item.format === format) ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
       )
     );
   };

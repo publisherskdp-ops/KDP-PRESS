@@ -308,7 +308,8 @@ export default function BookProductPage({ params }: { params: Promise<{ id: stri
                       title: book.title, 
                       price: selectedPrice, 
                       quantity: quantity,
-                      image: book.image
+                      image: book.image,
+                      format: selectedFormat
                     })}
                     className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-slate-900/10 hover:shadow-slate-900/30 hover:bg-sky-600 transition-all active:scale-95 group"
                    >
@@ -323,7 +324,8 @@ export default function BookProductPage({ params }: { params: Promise<{ id: stri
                           title: book.title, 
                           price: selectedPrice, 
                           quantity: quantity,
-                          image: book.image
+                          image: book.image,
+                          format: selectedFormat
                         });
                       }}
                       className="w-full py-5 bg-white border border-slate-200 text-slate-900 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95 shadow-sm mt-3"

@@ -20,10 +20,9 @@ export default function BookCard({ book, onQuickView }: { book: any, onQuickView
   const displayPrice = book.price[selectedFormat] || 0;
   
   const handleAddToCart = () => {
-    const formatLabel = selectedFormat === 'ebook' ? 'eBook' : (selectedFormat === 'hardcover' ? 'Hardcover' : 'Paperback');
     addToCart({
       id: `${book.id}-${selectedFormat}`,
-      title: `${book.title} (${formatLabel})`,
+      title: book.title,
       price: displayPrice,
       quantity: 1,
       image: book.image,

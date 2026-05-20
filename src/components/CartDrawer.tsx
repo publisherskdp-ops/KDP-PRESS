@@ -43,17 +43,17 @@ const CartDrawer: React.FC = () => {
             </div>
           ) : (
             cart.map((item) => (
-              <div key={item.id} style={{ display: 'flex', gap: '1.2rem', alignItems: 'center' }}>
+              <div key={`${item.id}-${item.format || 'unknown'}`} style={{ display: 'flex', gap: '1.2rem', alignItems: 'center' }}>
                 <div style={{ width: '80px', height: '120px', background: 'var(--surface-light)', borderRadius: '8px', border: '1px solid var(--border-medium)', flexShrink: 0, backgroundImage: item.image ? `url(${item.image})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                 <div style={{ flex: 1 }}>
-                  <h4 style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: 'var(--text-main)' }}>{item.title}</h4>
+                  <h4 style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: 'var(--text-main)' }}>{item.title} {item.format && <span style={{fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', color: 'var(--primary-color)'}}>({item.format})</span>}</h4>
                   <p style={{ color: 'var(--primary-color)', fontWeight: 700, marginBottom: '0.8rem' }}>${item.price}</p>
                     <div style={{ display: 'flex', alignItems: 'center', background: 'var(--surface-elevated)', borderRadius: '8px', border: '1px solid var(--border-medium)' }}>
-                      <button onClick={() => updateQuantity(item.id, -1)} style={{ padding: '0.5rem 0.8rem', color: 'var(--text-main)', background: 'transparent', border: 'none', cursor: 'pointer' }}>−</button>
+                      <button onClick={() => updateQuantity(item.id, item.format, -1)} style={{ padding: '0.5rem 0.8rem', color: 'var(--text-main)', background: 'transparent', border: 'none', cursor: 'pointer' }}>−</button>
                       <span style={{ padding: '0 0.5rem', fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>{item.quantity}</span>
-                      <button onClick={() => updateQuantity(item.id, 1)} style={{ padding: '0.5rem 0.8rem', color: 'var(--text-main)', background: 'transparent', border: 'none', cursor: 'pointer' }}>+</button>
+                      <button onClick={() => updateQuantity(item.id, item.format, 1)} style={{ padding: '0.5rem 0.8rem', color: 'var(--text-main)', background: 'transparent', border: 'none', cursor: 'pointer' }}>+</button>
                     </div>
-                    <button onClick={() => removeFromCart(item.id)} style={{ color: 'var(--destructive, #ef4444)', fontSize: '0.8rem', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer' }}>Remove</button>
+                    <button onClick={() => removeFromCart(item.id, item.format)} style={{ color: 'var(--destructive, #ef4444)', fontSize: '0.8rem', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer' }}>Remove</button>
                 </div>
               </div>
             ))
