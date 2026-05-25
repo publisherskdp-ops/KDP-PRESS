@@ -86,8 +86,12 @@ function OrderStatusContent() {
               textAlign: 'left',
               border: '1px solid rgba(255, 77, 77, 0.2)'
             }}>
-              <p style={{ fontSize: '0.8rem', color: '#ff4d4d', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem', fontWeight: 700 }}>Error Details</p>
-              <p style={{ fontWeight: 500, fontSize: '1rem', color: 'var(--text-main)' }}>{error || 'An unknown error occurred. Please contact support.'}</p>
+              <p style={{ fontSize: '0.8rem', color: '#ff4d4d', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.75rem', fontWeight: 700 }}>Error Details</p>
+              <div style={{ fontWeight: 500, fontSize: '1rem', color: 'var(--text-main)', whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
+                {error?.split('\n').map((line: string, idx: number) => (
+                  <div key={idx}>{line || '\u200b'}</div>
+                )) || 'An unknown error occurred. Please contact support.'}
+              </div>
             </div>
 
             <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)', marginBottom: '3rem' }}>

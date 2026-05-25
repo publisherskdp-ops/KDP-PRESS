@@ -13,31 +13,57 @@ import { join } from 'path';
  * Format: [Trim].[Ink].[Quality].[Binding].[Paper].[Finish]
  */
 function generateLuluPodId(specs: {
-  trimSize: string;      // e.g., "6 x 9", "5.5 x 8.5"
-  interiorColor: string; // e.g., "Black & White Standard", "Standard Color"
-  binding: 'PB' | 'HC';  // PB = Paperback (Perfect Bound), HC = Hardcover (Case Wrap)
-  coverFinish: string;   // e.g., "Gloss", "Matte"
+  trimSize: string;      // "6 x 9", "5.5 x 8.5", "8.5 x 11"
+  interiorColor: string; // "Black & White Standard", "Standard Color", "Premium Color"
+  binding: 'PB' | 'HC';  // PB = Paperback, HC = Hardcover
+  coverFinish: string;   // "Gloss", "Matte"
 }) {
   // 1. Map Trim Sizes
-  let trimCode = '0600X0900'; // Default 6 x 9
+  let trimCode = '0600X0900'; 
   if (specs.trimSize === '5.5 x 8.5') trimCode = '0550X0850';
-  if (specs.trimSize === '8.5 x 11') trimCode = '0850X1100';
+  if (specs.trimSize === '8.5 x 11')  trimCode = '0850X1100';
 
-  // 2. Map Interior Ink Colors
-  let inkCode = 'BW'; // Default Black & White Standard
-  if (specs.interiorColor === 'Standard Color' || specs.interiorColor === 'Premium Color') {
-    inkCode = 'FC'; // Full Color
+  let inkCode = 'BW';
+  let qualityCode = 'STD';
+  
+  // 2. Resolve Ink & Quality Limits
+  if (specs.interiorColor === 'Standard Color') {
+    inkCode = 'FC';
+    qualityCode = 'STD';
+    
+    // Manufacturing Limit: 8.5x11 does not support Standard Color. Upgrade to Premium.
+    if (trimCode === '0850X1100') {
+      qualityCode = 'PRE';
+    }
+  } else if (specs.interiorColor === 'Premium Color') {
+    inkCode = 'FC';
+    qualityCode = 'PRE';
   }
 
-  // 3. Map Cover Finishes
-  const finishCode = specs.coverFinish === 'Matte' ? 'MXX' : 'GXX';
+  // 3. Resolve Paper Weight & Bulk Code (CRITICAL FIX: Appending '444')
+  // Premium uses 80# Coated White (080CW444) for color, Standard/B&W uses 60# Uncoated White (060UW444)
+  // EXCEPT for 6x9 color books where standard color also maps to 80# coated paper.
+  let paperCode = '060UW444'; 
+  
+  if (inkCode === 'FC') {
+    if (qualityCode === 'PRE' || trimCode === '0600X0900') {
+      paperCode = '080CW444'; // Use Coated White with 444 bulk thickness specifier
+    }
+  }
 
-  // 4. Set standard defaults for Quality and Paper Type
-  const qualityCode = 'STD';  // Standard Quality
-  const paperCode = '060UW';  // 60# Uncoated White
+  // 4. Resolve Cover Finish Limits
+  let finishCode = specs.coverFinish === 'Matte' ? 'MXX' : 'GXX';
+  
+  // Manufacturing Limit: 8.5x11 Premium Color Paperbacks on 80# paper cannot be Matte. Force to Gloss.
+  if (trimCode === '0850X1100' && qualityCode === 'PRE' && specs.binding === 'PB') {
+    finishCode = 'GXX'; 
+  }
 
-  // Build: Trim.Ink.Quality.Binding.Paper.Finish
-  return `${trimCode}.${inkCode}.${qualityCode}.${specs.binding}.${paperCode}.${finishCode}`;
+  // Final Composite Output Layout: Trim.Ink.Quality.Binding.Paper.Finish
+  const finalId = `${trimCode}.${inkCode}.${qualityCode}.${specs.binding}.${paperCode}.${finishCode}`;
+  console.log(`🚀 [LULU ID BUILDER] Final generated SKU: ${finalId}`);
+  
+  return finalId;
 }
 
 export async function getBooksAction() {
@@ -329,7 +355,8 @@ export async function publishBookAction(rawFormData: FormData) {
     await fs.mkdir(uploadDir, { recursive: true });
     
     const saveFile = async (file: File | null, prefix: string) => {
-      if (!file || typeof file === 'string') return file as string || '';
+      if (!file) return '';
+      if (typeof file === 'string') return file;
       
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);

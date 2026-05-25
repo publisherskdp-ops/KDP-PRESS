@@ -305,7 +305,7 @@ export default function Dashboard() {
   const [books, setBooks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeUploadFormat, setActiveUploadFormat] = useState<{
-    format: "kindle" | "paperback" | "hardcover";
+    format: "kindle" | "paperback" | "hardcover" | "KDP";
     bookData: any;
   } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");

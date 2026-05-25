@@ -11,6 +11,23 @@ import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import { toast } from "sonner"
 
+// --- Lulu Manufacturing Rules & Conditional Options ---
+const getAvailableColors = (trimSize: string) => {
+  // 8.5 x 11 cannot handle Standard Color in Lulu's printing engines
+  if (trimSize === "8.5 x 11") {
+    return ["Black & White Standard", "Premium Color"];
+  }
+  return ["Black & White Standard", "Standard Color", "Premium Color"];
+};
+
+const getAvailableFinishes = (trimSize: string, interiorColor: string) => {
+  // Premium color on 8.5 x 11 paperbacks does not support a matte finish options in Lulu
+  if (trimSize === "8.5 x 11" && interiorColor === "Premium Color") {
+    return ["Gloss"];
+  }
+  return ["Gloss", "Matte"];
+};
+
 export default function PublishPage() {
   const router = useRouter()
   const [step, setStep] = useState(1)
@@ -71,10 +88,41 @@ export default function PublishPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'number' ? parseFloat(value) : value
-    }))
+    const parsedValue = type === 'number' ? parseFloat(value) : value;
+
+    setFormData(prev => {
+      const updated = { ...prev, [name]: parsedValue };
+
+      // --- Safeguards for Paperback Selections ---
+      if (name === 'paperbackTrimSize') {
+        const allowedColors = getAvailableColors(value);
+        if (!allowedColors.includes(updated.paperbackInteriorColor)) {
+          updated.paperbackInteriorColor = allowedColors[0];
+        }
+      }
+      if (name === 'paperbackTrimSize' || name === 'paperbackInteriorColor') {
+        const allowedFinishes = getAvailableFinishes(updated.paperbackTrimSize, updated.paperbackInteriorColor);
+        if (!allowedFinishes.includes(updated.paperbackCoverFinish)) {
+          updated.paperbackCoverFinish = allowedFinishes[0];
+        }
+      }
+
+      // --- Safeguards for Hardcover Selections ---
+      if (name === 'hardcoverTrimSize') {
+        const allowedColors = getAvailableColors(value);
+        if (!allowedColors.includes(updated.hardcoverInteriorColor)) {
+          updated.hardcoverInteriorColor = allowedColors[0];
+        }
+      }
+      if (name === 'hardcoverTrimSize' || name === 'hardcoverInteriorColor') {
+        const allowedFinishes = getAvailableFinishes(updated.hardcoverTrimSize, updated.hardcoverInteriorColor);
+        if (!allowedFinishes.includes(updated.hardcoverCoverFinish)) {
+          updated.hardcoverCoverFinish = allowedFinishes[0];
+        }
+      }
+
+      return updated;
+    });
   }
 
   const handleSubmit = async () => {
@@ -248,7 +296,7 @@ export default function PublishPage() {
               </div>
             )}
 
-            {/* Step 2: Custom Layouts, Specifications & Assets */}
+            {/* Step 2: Layouts, Specifications & Assets */}
             {step === 2 && (
               <div className="space-y-8 animate-in fade-in duration-300">
                 <div className="border-b border-slate-100 pb-5">
@@ -289,10 +337,10 @@ export default function PublishPage() {
                   </div>
                 </div>
 
-                {/* DUAL SPECS: Paperback Card & Hardcover Card */}
+                {/* DUAL SPECS PANEL */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
 
-                  {/* Paperback Specifications Panel */}
+                  {/* Paperback Specifications */}
                   <div className="p-6 bg-slate-50/50 rounded-2xl border border-slate-100 space-y-4">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-sky-500" />
@@ -313,31 +361,32 @@ export default function PublishPage() {
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-400">Cover Finish</label>
-                        <select
-                          name="paperbackCoverFinish" value={formData.paperbackCoverFinish} onChange={handleChange}
-                          className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-900 cursor-pointer outline-none focus:ring-2 focus:ring-sky-500/20"
-                        >
-                          <option value="Gloss">Gloss</option>
-                          <option value="Matte">Matte</option>
-                        </select>
-                      </div>
-
-                      <div className="space-y-1">
                         <label className="text-[9px] font-black uppercase tracking-wider text-slate-400">Interior Ink/Color Type</label>
                         <select
                           name="paperbackInteriorColor" value={formData.paperbackInteriorColor} onChange={handleChange}
                           className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-900 cursor-pointer outline-none focus:ring-2 focus:ring-sky-500/20"
                         >
-                          <option value="Black & White Standard">Black & White Standard</option>
-                          <option value="Standard Color">Standard Color</option>
-                          <option value="Premium Color">Premium Color</option>
+                          {getAvailableColors(formData.paperbackTrimSize).map(color => (
+                            <option key={color} value={color}>{color}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-400">Cover Finish</label>
+                        <select
+                          name="paperbackCoverFinish" value={formData.paperbackCoverFinish} onChange={handleChange}
+                          className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-900 cursor-pointer outline-none focus:ring-2 focus:ring-sky-500/20"
+                        >
+                          {getAvailableFinishes(formData.paperbackTrimSize, formData.paperbackInteriorColor).map(finish => (
+                            <option key={finish} value={finish}>{finish}</option>
+                          ))}
                         </select>
                       </div>
                     </div>
                   </div>
 
-                  {/* Hardcover Specifications Panel */}
+                  {/* Hardcover Specifications */}
                   <div className="p-6 bg-slate-50/50 rounded-2xl border border-slate-100 space-y-4">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-violet-500" />
@@ -358,25 +407,26 @@ export default function PublishPage() {
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-400">Cover Finish</label>
-                        <select
-                          name="hardcoverCoverFinish" value={formData.hardcoverCoverFinish} onChange={handleChange}
-                          className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-900 cursor-pointer outline-none focus:ring-2 focus:ring-sky-500/20"
-                        >
-                          <option value="Gloss">Gloss</option>
-                          <option value="Matte">Matte</option>
-                        </select>
-                      </div>
-
-                      <div className="space-y-1">
                         <label className="text-[9px] font-black uppercase tracking-wider text-slate-400">Interior Ink/Color Type</label>
                         <select
                           name="hardcoverInteriorColor" value={formData.hardcoverInteriorColor} onChange={handleChange}
                           className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-900 cursor-pointer outline-none focus:ring-2 focus:ring-sky-500/20"
                         >
-                          <option value="Black & White Standard">Black & White Standard</option>
-                          <option value="Standard Color">Standard Color</option>
-                          <option value="Premium Color">Premium Color</option>
+                          {getAvailableColors(formData.hardcoverTrimSize).map(color => (
+                            <option key={color} value={color}>{color}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-400">Cover Finish</label>
+                        <select
+                          name="hardcoverCoverFinish" value={formData.hardcoverCoverFinish} onChange={handleChange}
+                          className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-900 cursor-pointer outline-none focus:ring-2 focus:ring-sky-500/20"
+                        >
+                          {getAvailableFinishes(formData.hardcoverTrimSize, formData.hardcoverInteriorColor).map(finish => (
+                            <option key={finish} value={finish}>{finish}</option>
+                          ))}
                         </select>
                       </div>
                     </div>
@@ -384,12 +434,10 @@ export default function PublishPage() {
 
                 </div>
 
-                {/* Upload Section */}
+                {/* Required Assets Upload Area */}
                 <div className="space-y-3 pt-2">
                   <h4 className="text-xs font-black uppercase tracking-widest text-slate-400">Required Publishing Assets</h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-
 
                     <div
                       onClick={() => fileInputRefs.coverPdf.current?.click()}
@@ -437,7 +485,7 @@ export default function PublishPage() {
               </div>
             )}
 
-            {/* Step 3: Pricing & Review */}
+            {/* Step 3: Pricing & Review Summary */}
             {step === 3 && (
               <div className="space-y-8 animate-in fade-in duration-300">
                 <div className="border-b border-slate-100 pb-5">

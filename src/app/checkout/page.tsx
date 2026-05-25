@@ -81,7 +81,7 @@ export default function CheckoutPage() {
 
 
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = async (details?: any) => {
     setIsPlacingOrder(true);
     const res = await createOrderAction({
       ...address,

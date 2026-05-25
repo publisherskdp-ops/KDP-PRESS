@@ -6,7 +6,61 @@ import dbConnect from '@/lib/mongodb';
 import Book from '@/models/Book';
 import { headers } from 'next/headers';
 
+/**
+ * Extracts and formats error details from Lulu API response
+ */
+function formatLuluError(errorDetails: any): string {
+  if (!errorDetails || typeof errorDetails !== 'object') {
+    return 'An unexpected error occurred with the print partner.';
+  }
 
+  const messages: string[] = [];
+
+  // Check for line_items errors (invalid POD package IDs, etc.)
+  if (errorDetails.line_items && Array.isArray(errorDetails.line_items)) {
+    const podErrors = new Set<string>();
+    
+    errorDetails.line_items.forEach((item: any, index: number) => {
+      // Navigate the nested structure to find the error messages
+      const normalization = item?.printable_normalization?.printable_normalization;
+      if (normalization?.detail && Array.isArray(normalization.detail)) {
+        normalization.detail.forEach((detail: any) => {
+          if (detail.msg) {
+            // Extract the POD package ID from the error message if present
+            const match = detail.msg.match(/Invalid pod_package_id: ([^\s,]+)/);
+            if (match) {
+              podErrors.add(`Invalid POD Package ID: ${match[1]}`);
+            } else {
+              podErrors.add(detail.msg);
+            }
+          }
+        });
+      }
+    });
+
+    if (podErrors.size > 0) {
+      messages.push('Print configuration issue:');
+      podErrors.forEach(msg => messages.push(`• ${msg}`));
+    }
+  }
+
+  // Check for other error fields
+  if (errorDetails.detail) {
+    if (Array.isArray(errorDetails.detail)) {
+      errorDetails.detail.forEach((err: any) => {
+        if (err.msg) messages.push(err.msg);
+      });
+    } else if (typeof errorDetails.detail === 'string') {
+      messages.push(errorDetails.detail);
+    }
+  }
+
+  if (messages.length === 0) {
+    messages.push('An error occurred while processing your order with the print partner. Please try again or contact support.');
+  }
+
+  return messages.join('\n');
+}
 
 
 export async function createOrderAction(shippingAddress: any, cart: any[]) {
@@ -27,36 +81,56 @@ export async function createOrderAction(shippingAddress: any, cart: any[]) {
       return { success: true, job: { id: `DIGITAL-${Date.now()}`, external_id: `KDP-${Date.now()}` } };
     }
     
-    // Map cart items to Lulu line items according to the new format
     const lineItems = await Promise.all(itemsForPrint.map(async (item, index) => {
       console.log(`Processing print item ${index + 1}/${itemsForPrint.length}:`, item.title, '| format:', item.format);
-      const bookData = await Book.findOne({ slug: item.id });
+      
+      // Strip any format suffix (e.g., -paperback, -hardcover, -ebook, -kindle) to get the base slug
+      const baseSlug = item.id.replace(/-(paperback|hardcover|ebook|kindle)$/, '');
+      console.log(`Resolved base slug for lookup: "${baseSlug}" (from item.id: "${item.id}")`);
+
+      const bookData = await Book.findOne({ slug: baseSlug });
       
       if (!bookData) {
-        console.warn(`WARNING: Could not find Book in DB for slug: ${item.id}`);
+        throw new Error(`Could not find Book in DB for slug: "${baseSlug}"`);
       }
 
-      let podPackageId = bookData?.luluPaperbackId ;
-      if (item.format === 'hardcover' && bookData?.luluHardcoverId) {
-        podPackageId = bookData.luluHardcoverId;
-        console.log(`Selected Hardcover ID for ${item.title}: ${podPackageId}`);
-      } else if (item.format === 'paperback' && bookData?.luluPaperbackId) {
-        podPackageId = bookData.luluPaperbackId;
-        console.log(`Selected Paperback ID for ${item.title}: ${podPackageId}`);
-      } else {
-        console.log(`Fallback ID or No matching format ID for ${item.title}: ${podPackageId}`);
+      let podPackageId = '';
+      if (item.format === 'hardcover') {
+        podPackageId = bookData.luluHardcoverId || '';
+        console.log(`Selected Hardcover ID for ${bookData.title}: ${podPackageId}`);
+      } else if (item.format === 'paperback') {
+        podPackageId = bookData.luluPaperbackId || '';
+        console.log(`Selected Paperback ID for ${bookData.title}: ${podPackageId}`);
+      }
+
+      if (!podPackageId) {
+        throw new Error(`Lulu POD Package ID is missing/not generated for book "${bookData.title}" format "${item.format}"`);
+      }
+
+      const coverUrl = bookData.coverPdf 
+        ? (bookData.coverPdf.startsWith('http') ? bookData.coverPdf : `${baseUrl}${bookData.coverPdf}`)
+        : '';
+      const manuscriptUrl = bookData.manuscriptUrl
+        ? (bookData.manuscriptUrl.startsWith('http') ? bookData.manuscriptUrl : `${baseUrl}${bookData.manuscriptUrl}`)
+        : '';
+
+      if (!coverUrl) {
+        throw new Error(`Print-ready Cover PDF is missing for book "${bookData.title}"`);
+      }
+      if (!manuscriptUrl) {
+        throw new Error(`Print-ready Manuscript PDF is missing for book "${bookData.title}"`);
       }
 
       return {
-        title: bookData?.title || item.title,
+        title: bookData.title,
         quantity: item.quantity,
-        external_id: `item-${item.id || index}-${crypto.randomUUID()}`,
+        external_id: `item-${baseSlug || index}-${crypto.randomUUID()}`,
         printable_normalization: {
           cover: {
-            source_url: bookData?.coverPdf ? `${baseUrl}${bookData.coverPdf}` : `${baseUrl}${bookData.coverPdf}`
+            source_url: coverUrl
           },
           interior: {
-            source_url: bookData?.manuscriptUrl ? `${baseUrl}${bookData.manuscriptUrl}` : `${baseUrl}${bookData.manuscriptUrl}`
+            source_url: manuscriptUrl
           },
           pod_package_id: podPackageId
         }
@@ -101,6 +175,13 @@ export async function createOrderAction(shippingAddress: any, cart: any[]) {
        console.error('Error Response Data:', JSON.stringify(error.response.data, null, 2));
     }
     console.error('Stack:', error.stack);
-    return { success: false, error: error.message };
+    
+    // Extract and format Lulu-specific error details
+    let errorMessage = error.message;
+    if (error.luluErrorDetails) {
+      errorMessage = formatLuluError(error.luluErrorDetails);
+    }
+    
+    return { success: false, error: errorMessage };
   }
 }

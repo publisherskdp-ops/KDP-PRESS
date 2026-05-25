@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { CheckCircle2, FileText, Image as ImageIcon, Upload } from "lucide-react";
 
 interface BookUploadFormProps {
+   format?: string;
    initialData?: any; // <-- Added prop definition
    onClose?: () => void;
 }
@@ -18,7 +19,7 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
    const [uploadProgress, setUploadProgress] = useState(0);
    const addBook = useBookshelfStore(state => state.addBook);
 
-   const formatText = 'KDP' ? 'KDP eBook' : format.charAt(0).toUpperCase() + format.slice(1);
+   const formatText = format === 'KDP' ? 'KDP eBook' : format.charAt(0).toUpperCase() + format.slice(1);
 
    const { register, control, handleSubmit, formState: { errors }, watch, setValue } = useForm({
       values: {
@@ -332,11 +333,11 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
                            <p className="text-slate-600 mb-2 text-xs">Upload the interior content of your book in PDF format.</p>
                            <input type="file" {...register("manuscript")} accept=".pdf" className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" />
 
-                           {(initialData?.manuscriptUrl || watch('manuscript')?.[0]) && (
+                           {(initialData?.manuscriptUrl || (watch('manuscript') as any)?.[0]) && (
                               <div className="border border-green-500 rounded p-4 bg-green-50 text-green-900 font-medium flex gap-2 items-start">
                                  <CheckCircle2 className="text-green-600 mt-1" size={18} />
                                  <div>
-                                    <strong className="block text-base">Manuscript {watch('manuscript')?.[0]?.name || 'Current File'} {watch('manuscript')?.[0] ? 'selected' : 'active'}</strong>
+                                    <strong className="block text-base">Manuscript {(watch('manuscript') as any)?.[0]?.name || 'Current File'} {(watch('manuscript') as any)?.[0] ? 'selected' : 'active'}</strong>
                                     <span className="text-xs font-normal">
                                        {initialData?.manuscriptUrl ? `Current file: ${initialData.manuscriptUrl.split('/').pop()}` : 'File ready for processing.'}
                                     </span>
@@ -353,11 +354,11 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
                            <p className="text-slate-600 mb-2 text-xs">Upload your full book cover PDF for high-quality printing.</p>
                            <input type="file" {...register("coverPdfFile")} accept=".pdf" className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" />
                            
-                           {(initialData?.coverPdf || watch('coverPdfFile')?.[0]) && (
+                           {(initialData?.coverPdf || (watch('coverPdfFile') as any)?.[0]) && (
                               <div className="border border-sky-500 rounded p-4 bg-sky-50 text-sky-900 font-medium flex gap-2 items-start">
                                  <CheckCircle2 className="text-sky-600 mt-1" size={18} />
                                  <div>
-                                    <strong className="block text-base">Cover PDF {watch('coverPdfFile')?.[0]?.name || 'Current File'} {watch('coverPdfFile')?.[0] ? 'selected' : 'active'}</strong>
+                                    <strong className="block text-base">Cover PDF {(watch('coverPdfFile') as any)?.[0]?.name || 'Current File'} {(watch('coverPdfFile') as any)?.[0] ? 'selected' : 'active'}</strong>
                                     <span className="text-xs font-normal">
                                        {initialData?.coverPdf ? `Current file: ${initialData.coverPdf.split('/').pop()}` : 'File ready for printing.'}
                                     </span>
@@ -394,9 +395,9 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
                                     </div>
                                  )}
 
-                                 {watch('cover')?.[0] && (
+                                 {(watch('cover') as any)?.[0] && (
                                     <div className="mt-4 p-3 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-xl border border-emerald-100 flex items-center gap-2 animate-in fade-in slide-in-from-top-1">
-                                       <CheckCircle2 size={16} /> New storefront image selected: {watch('cover')[0].name}
+                                       <CheckCircle2 size={16} /> New storefront image selected: {(watch('cover') as any)[0].name}
                                     </div>
                                  )}
                               </div>

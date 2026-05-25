@@ -77,6 +77,7 @@ class LuluService {
    */
   private async request(endpoint: string, options: RequestInit = {}) {
     const token = await this.getAccessToken();
+    console.log(`[LULU API REQUEST] Endpoint: ${endpoint}`, options);
     
     const response = await fetch(`${this.apiUrl}${endpoint}`, {
       ...options,
@@ -87,14 +88,19 @@ class LuluService {
       },
     });
 
-    if (!response.ok) {
+    if (!response.ok) { 
       const errorData = await response.json().catch(() => ({}));
       console.error(`[LULU API ERROR] Endpoint: ${endpoint}`, {
         status: response.status,
         statusText: response.statusText,
-        error: errorData
+       error: JSON.stringify(errorData, null, 2)
       });
-      throw new Error(`Lulu API request failed: ${response.statusText}`);
+      
+      // Create error with detailed information
+      const error = new Error(`Lulu API request failed: ${response.statusText}`);
+      (error as any).luluErrorDetails = errorData;
+      (error as any).luluStatus = response.status;
+      throw error;
     }
 
     const data = await response.json();
