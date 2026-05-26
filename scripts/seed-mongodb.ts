@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
+import crypto from 'crypto';
 
 // Load environment variables from .env
 dotenv.config();
@@ -42,6 +43,19 @@ const BookSchema = new mongoose.Schema(
 );
 
 const Book = mongoose.models.Book || mongoose.model('Book', BookSchema);
+
+const UserSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true, index: true },
+    password: { type: String, required: true },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const User = mongoose.models.User || mongoose.model('User', UserSchema);
 
 const SAMPLE_BOOKS = [
   {
@@ -139,6 +153,22 @@ async function seed() {
     for (const book of SAMPLE_BOOKS) {
       await Book.findOneAndUpdate({ slug: book.slug }, book, { upsert: true });
     }
+
+    // Seed Admin User
+    console.log('Seeding admin user...');
+    const adminPasswordPlain = '2KKc65sUh6xW34a9';
+    const adminPasswordHashed = crypto.createHash('sha256').update(adminPasswordPlain).digest('hex');
+    
+    await User.findOneAndUpdate(
+      { email: 'admin@example.com' },
+      {
+        name: 'admin',
+        email: 'admin@example.com',
+        password: adminPasswordHashed
+      },
+      { upsert: true }
+    );
+    console.log('Admin user seeded successfully.');
 
     console.log('Seeding complete.');
   } catch (error) {

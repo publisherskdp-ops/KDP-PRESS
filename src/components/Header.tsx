@@ -71,10 +71,7 @@ const Header: React.FC = () => {
           </div>
 
           <div className="hidden sm:flex items-center gap-3">
-            <Link href="/auth/login" className="px-5 py-2.5 text-sm font-black text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-widest flex items-center gap-2">
-              <LogIn size={18} />
-              Login
-            </Link>
+        
             <Link 
               href="/publish"
               className="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-black shadow-xl shadow-slate-900/10 hover:shadow-slate-900/20 hover:-translate-y-0.5 transition-all active:scale-95 uppercase tracking-widest flex items-center gap-2"

@@ -3,14 +3,54 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { getLuluOrdersAction } from './actions';
 import { toast } from 'sonner';
-import { Search, Filter, RefreshCw, ChevronDown, ShoppingBag, Truck, AlertCircle, Calendar, X, Copy, Check, ExternalLink, FileText, MapPin, User, Package } from 'lucide-react';
+import { 
+  Search, 
+  Filter, 
+  RefreshCw, 
+  ChevronDown, 
+  ShoppingBag, 
+  Truck, 
+  AlertCircle, 
+  Calendar, 
+  X, 
+  Copy, 
+  Check, 
+  ExternalLink, 
+  FileText, 
+  MapPin, 
+  Package,
+  ChevronUp
+} from 'lucide-react';
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  getPaginationRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  SortingState,
+  ColumnFiltersState,
+} from '@tanstack/react-table';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell
+} from '@/components/ui/table';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(0);
   
-  // Filter states
+  // Table states
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'date_created', desc: true }
+  ]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
 
@@ -123,21 +163,149 @@ export default function OrdersPage() {
     return '#64748b'; // slate-500
   };
 
-  // Filtered and searched orders
-  const filteredOrders = useMemo(() => {
-    return orders.filter(order => {
-      const statusName = getStatusName(order.status);
-      const matchesStatus = statusFilter === 'ALL' || statusName.toUpperCase() === statusFilter.toUpperCase();
-      const matchesSearch = 
-        order.id.toString().includes(searchQuery) || 
-        order.contact_email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (order.external_id && order.external_id.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      return matchesStatus && matchesSearch;
-    });
-  }, [orders, searchQuery, statusFilter]);
+  // Tanstack columns configuration
+  const columns = useMemo<ColumnDef<any>[]>(() => [
+    {
+      accessorKey: 'id',
+      header: 'Lulu Job ID',
+      cell: ({ row }) => {
+        const order = row.original;
+        return (
+          <div 
+            onClick={() => setSelectedOrder(order)}
+            style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+            className="job-id-link"
+          >
+            <div style={{ 
+              width: '32px', height: '32px', background: 'var(--surface-light)', 
+              borderRadius: '8px', display: 'flex', alignItems: 'center', 
+              justifyContent: 'center', color: 'var(--primary-color)', 
+              transition: 'all 0.2s ease' 
+            }} className="job-id-icon">
+              <ShoppingBag size={14} />
+            </div>
+            <span style={{ fontWeight: 800, color: 'var(--primary-color)', fontSize: '1.05rem', textDecoration: 'underline dotted' }}>
+              #{order.id}
+            </span>
+          </div>
+        );
+      }
+    },
+    {
+      accessorKey: 'external_id',
+      header: 'External ID',
+      cell: ({ row }) => (
+        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontFamily: 'monospace', background: '#f8fafc', padding: '0.3rem 0.6rem', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+          {row.getValue('external_id') || 'manual-entry'}
+        </span>
+      )
+    },
+    {
+      id: 'recipient',
+      header: 'Recipient',
+      accessorFn: (row) => `${row.shipping_address?.name || 'Guest'} ${row.contact_email || ''}`,
+      cell: ({ row }) => {
+        const order = row.original;
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{order.shipping_address?.name || 'Guest'}</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>{order.contact_email || '—'}</span>
+          </div>
+        );
+      }
+    },
+    {
+      accessorKey: 'status',
+      header: 'Fulfillment Status',
+      accessorFn: (row) => getStatusName(row.status),
+      cell: ({ row }) => {
+        const status = row.getValue('status');
+        const color = getStatusColor(status);
+        return (
+          <div style={{ 
+            display: 'inline-flex', 
+            alignItems: 'center', 
+            gap: '8px', 
+            padding: '0.5rem 1rem', 
+            borderRadius: '12px', 
+            fontSize: '0.75rem', 
+            fontWeight: 900,
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            background: `${color}12`,
+            color: color,
+            border: `1px solid ${color}25`
+          }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: color }}></div>
+            {status as string}
+          </div>
+        );
+      }
+    },
+    {
+      id: 'assets',
+      header: 'Asset Count',
+      accessorFn: (row) => row.line_items?.length || 0,
+      cell: ({ row }) => {
+        const count = row.original.line_items?.length || 0;
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ height: '6px', width: '40px', background: '#e2e8f0', borderRadius: '10px', overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: count > 0 ? '100%' : '0%', background: 'var(--primary-color)' }}></div>
+            </div>
+            <span style={{ fontWeight: 800, fontSize: '0.85rem' }}>{count} {count === 1 ? 'Asset' : 'Assets'}</span>
+          </div>
+        );
+      }
+    },
+    {
+      accessorKey: 'date_created',
+      header: 'Date Created',
+      cell: ({ row }) => {
+        const date = new Date(row.getValue('date_created'));
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-dim)' }}>
+            <Calendar size={14} />
+            <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+              {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </span>
+          </div>
+        );
+      }
+    }
+  ], []);
 
-  // Stats
+  // Update table filter when searchQuery changes
+  const globalFilter = searchQuery;
+
+  // Update table filter when statusFilter changes
+  const tableColumnFilters = useMemo<ColumnFiltersState>(() => {
+    if (statusFilter === 'ALL') return [];
+    return [{ id: 'status', value: statusFilter }];
+  }, [statusFilter]);
+
+  const table = useReactTable({
+    data: orders,
+    columns,
+    state: {
+      sorting,
+      columnFilters: tableColumnFilters,
+      globalFilter,
+    },
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 10
+      }
+    }
+  });
+
+  // Calculate stats based on orders list
   const stats = useMemo(() => {
     const total = orders.length;
     const shipped = orders.filter(o => getStatusName(o.status).toLowerCase().includes('shipped')).length;
@@ -208,7 +376,7 @@ export default function OrdersPage() {
           <Search style={{ position: 'absolute', left: '1.2rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-dim)' }} size={18} />
           <input 
             type="text" 
-            placeholder="Search by ID, Email, or Reference..."
+            placeholder="Search by ID, Email, or Recipient..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
@@ -220,7 +388,8 @@ export default function OrdersPage() {
               fontSize: '0.95rem',
               fontWeight: 500,
               outline: 'none',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              color: 'var(--text-main)'
             }}
           />
         </div>
@@ -262,30 +431,48 @@ export default function OrdersPage() {
         boxShadow: '0 20px 50px rgba(0,0,0,0.04)'
       }}>
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead>
-              <tr style={{ background: 'var(--surface-light)' }}>
-                <th style={thStyle}>Lulu Job ID</th>
-                <th style={thStyle}>External ID</th>
-                <th style={thStyle}>Recipient</th>
-                <th style={thStyle}>Fulfillment Status</th>
-                <th style={thStyle}>Asset Count</th>
-                <th style={thStyle}>Date Created</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableHeader style={{ background: 'var(--surface-light)' }}>
+              {table.getHeaderGroups().map(headerGroup => (
+                <TableRow key={headerGroup.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                  {headerGroup.headers.map(header => (
+                    <TableHead 
+                      key={header.id} 
+                      onClick={header.column.getToggleSortingHandler()}
+                      style={{ 
+                        padding: '1.5rem 2rem',
+                        fontSize: '0.75rem',
+                        fontWeight: 900,
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px',
+                        color: 'var(--text-dim)',
+                        cursor: header.column.getCanSort() ? 'pointer' : 'default',
+                        userSelect: 'none'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.column.getIsSorted() === 'asc' && <ChevronUp size={14} />}
+                        {header.column.getIsSorted() === 'desc' && <ChevronDown size={14} />}
+                      </div>
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
               {loading ? (
-                <tr>
-                  <td colSpan={6} style={{ padding: '8rem', textAlign: 'center' }}>
+                <TableRow>
+                  <TableCell colSpan={6} style={{ padding: '8rem', textAlign: 'center' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
                       <div className="loader-ring"></div>
                       <p style={{ fontWeight: 700, color: 'var(--text-muted)', fontSize: '1.1rem' }}>Synchronizing with Lulu Cloud...</p>
                     </div>
-                  </td>
-                </tr>
-              ) : filteredOrders.length === 0 ? (
-                <tr>
-                  <td colSpan={6} style={{ padding: '8rem', textAlign: 'center' }}>
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} style={{ padding: '8rem', textAlign: 'center' }}>
                     <div style={{ opacity: 0.5, marginBottom: '1.5rem' }}>
                       <Search size={48} strokeWidth={1} />
                     </div>
@@ -296,75 +483,80 @@ export default function OrdersPage() {
                     >
                       Reset all filters
                     </button>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ) : (
-                filteredOrders.map((order) => (
-                  <tr key={order.id} className="table-row" style={{ borderBottom: '1px solid #f1f5f9', transition: 'all 0.2s ease' }}>
-                    <td style={tdStyle}>
-                      <div 
-                        onClick={() => setSelectedOrder(order)}
-                        style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
-                        className="job-id-link"
-                      >
-                        <div style={{ width: '32px', height: '32px', background: 'var(--surface-light)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-color)', transition: 'all 0.2s ease' }} className="job-id-icon">
-                          <ShoppingBag size={14} />
-                        </div>
-                        <span style={{ fontWeight: 800, color: 'var(--primary-color)', fontSize: '1.05rem', textDecoration: 'underline dotted' }}>#{order.id}</span>
-                      </div>
-                    </td>
-                    <td style={tdStyle}>
-                      <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontFamily: 'monospace', background: '#f8fafc', padding: '0.3rem 0.6rem', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
-                        {order.external_id || 'manual-entry'}
-                      </span>
-                    </td>
-                    <td style={tdStyle}>
-                      <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{order.shipping_address?.name || 'Guest'}</span>
-                        <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>{order.contact_email}</span>
-                      </div>
-                    </td>
-                    <td style={tdStyle}>
-                      <div style={{ 
-                        display: 'inline-flex', 
-                        alignItems: 'center', 
-                        gap: '8px', 
-                        padding: '0.5rem 1rem', 
-                        borderRadius: '12px', 
-                        fontSize: '0.75rem', 
-                        fontWeight: 900,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                        background: `${getStatusColor(order.status)}12`,
-                        color: getStatusColor(order.status),
-                        border: `1px solid ${getStatusColor(order.status)}25`
-                      }}>
-                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: getStatusColor(order.status) }}></div>
-                        {getStatusName(order.status)}
-                      </div>
-                    </td>
-                    <td style={tdStyle}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div style={{ height: '6px', width: '40px', background: '#e2e8f0', borderRadius: '10px', overflow: 'hidden' }}>
-                          <div style={{ height: '100%', width: '100%', background: 'var(--primary-color)' }}></div>
-                        </div>
-                        <span style={{ fontWeight: 800, fontSize: '0.85rem' }}>{order.line_items?.length || 0} Assets</span>
-                      </div>
-                    </td>
-                    <td style={tdStyle}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-dim)' }}>
-                        <Calendar size={14} />
-                        <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>
-                          {new Date(order.date_created).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
+                table.getRowModel().rows.map(row => (
+                  <TableRow 
+                    key={row.id} 
+                    className="table-row" 
+                    style={{ borderBottom: '1px solid #f1f5f9', transition: 'all 0.2s ease', cursor: 'default' }}
+                  >
+                    {row.getVisibleCells().map(cell => (
+                      <TableCell key={cell.id} style={{ padding: '1.5rem 2rem', fontSize: '0.95rem', verticalAlign: 'middle' }}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
                 ))
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
+        
+        {/* Pagination Controls */}
+        {!loading && table.getFilteredRowModel().rows.length > 0 && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '1.5rem 2rem',
+            borderTop: '1px solid var(--border)',
+            background: 'white'
+          }}>
+            <span style={{ fontSize: '0.85rem', color: 'var(--text-dim)', fontWeight: 600 }}>
+              Showing <strong style={{ color: 'var(--text-main)' }}>{table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}</strong> to <strong style={{ color: 'var(--text-main)' }}>{Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, table.getFilteredRowModel().rows.length)}</strong> of <strong style={{ color: 'var(--text-main)' }}>{table.getFilteredRowModel().rows.length}</strong> orders
+            </span>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+                style={{
+                  padding: '0.6rem 1.2rem',
+                  borderRadius: '10px',
+                  fontSize: '0.85rem',
+                  fontWeight: 800,
+                  border: '1px solid var(--border-medium)',
+                  background: 'white',
+                  color: 'var(--text-main)',
+                  cursor: table.getCanPreviousPage() ? 'pointer' : 'default',
+                  opacity: table.getCanPreviousPage() ? 1 : 0.5,
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                Previous
+              </button>
+              <button
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+                style={{
+                  padding: '0.6rem 1.2rem',
+                  borderRadius: '10px',
+                  fontSize: '0.85rem',
+                  fontWeight: 800,
+                  border: '1px solid var(--border-medium)',
+                  background: 'white',
+                  color: 'var(--text-main)',
+                  cursor: table.getCanNextPage() ? 'pointer' : 'default',
+                  opacity: table.getCanNextPage() ? 1 : 0.5,
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <style>{`
@@ -923,19 +1115,3 @@ function StatCard({ icon, label, value, color }: { icon: React.ReactNode, label:
     </div>
   );
 }
-
-const thStyle: React.CSSProperties = {
-  padding: '1.5rem 2rem',
-  fontSize: '0.75rem',
-  fontWeight: 900,
-  textTransform: 'uppercase',
-  letterSpacing: '1px',
-  color: 'var(--text-dim)',
-  borderBottom: '1px solid var(--border)'
-};
-
-const tdStyle: React.CSSProperties = {
-  padding: '1.5rem 2rem',
-  fontSize: '0.95rem',
-  verticalAlign: 'middle'
-};
