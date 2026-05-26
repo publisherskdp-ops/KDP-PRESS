@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { CheckCircle2, ArrowRight, Sparkles, BookOpen, LayoutDashboard, ShoppingBag, Heart } from 'lucide-react';
+import { CheckCircle2,  Sparkles, Heart } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ThankYouPage() {

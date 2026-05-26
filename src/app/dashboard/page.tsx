@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
-type BookStatus = "PENDING" | "LIVE" | "DRAFT" | string;
 type TabKey = "ALL" | "IN_REVIEW";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

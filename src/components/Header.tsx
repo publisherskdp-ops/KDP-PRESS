@@ -50,10 +50,6 @@ const Header: React.FC = () => {
           <Link href="/about" className="text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-widest">About</Link>
           <Link href="/contact" className="text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-widest">Contact</Link>
           <Link href="/book-publishing" className="text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-widest">Book Publishing</Link>
-          <Link href="/dashboard" className="text-sm font-black text-amber-600 hover:text-amber-700 transition-colors uppercase tracking-widest flex items-center gap-1">
-            <Sparkles size={14} />
-            Dashboard
-          </Link>
         </nav>
 
         {/* Actions */}
@@ -98,10 +94,7 @@ const Header: React.FC = () => {
           <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black text-slate-900 uppercase">About</Link>
           <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black text-slate-900 uppercase">Contact</Link>
           <Link href="/book-publishing" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black text-slate-900 uppercase">Book Publishing</Link>
-          <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black text-amber-600 uppercase flex items-center gap-2">
-            <Sparkles size={20} />
-            Dashboard
-          </Link>
+          
           <div className="h-[1px] bg-slate-100" />
           <div className="flex flex-col gap-3">
             <Link href="/auth/login" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-4 text-center font-black text-slate-500 uppercase">Login</Link>
