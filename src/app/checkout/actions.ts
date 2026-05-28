@@ -4,6 +4,7 @@
 import { lulu } from '@/lib/lulu';
 import dbConnect from '@/lib/mongodb';
 import Book from '@/models/Book';
+import Order from '@/models/Order';
 import { headers } from 'next/headers';
 
 /**
@@ -78,9 +79,10 @@ export async function createOrderAction(shippingAddress: any, cart: any[]) {
 
     if (itemsForPrint.length === 0) {
       console.log('Only digital items found. Returning digital order success.');
-      return { success: true, job: { id: `DIGITAL-${Date.now()}`, external_id: `KDP-${Date.now()}` } };
+      const digitalOrderId = `ORD-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
+      return { success: true, job: { id: `DIGITAL-${Date.now()}`, external_id: `KDP-${digitalOrderId}` } };
     }
-    
+  
     const lineItems = await Promise.all(itemsForPrint.map(async (item, index) => {
       console.log(`Processing print item ${index + 1}/${itemsForPrint.length}:`, item.title, '| format:', item.format);
       
@@ -163,8 +165,42 @@ export async function createOrderAction(shippingAddress: any, cart: any[]) {
     
     console.log('Lulu API Response:', JSON.stringify(result, null, 2));
 
-    // In a real app, you would also save this to MongoDB here
-    // const transaction = await prisma.transaction.create({ ... })
+    // Save order to MongoDB
+    const shipping = 5.99;
+    const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const tax = totalAmount * 0.08;
+    const grossAmount = totalAmount + tax + shipping;
+    
+    console.log(`Calculated amounts - Total: ${totalAmount.toFixed(2)}, Tax: ${tax.toFixed(2)}, Shipping: ${shipping.toFixed(2)}, Gross: ${grossAmount.toFixed(2)}`);
+    
+    // Fetch book MongoDB IDs for cart items
+    const booksWithIds = await Promise.all(cart.map(async (item) => {
+      const baseSlug = item.id.replace(/-(paperback|hardcover|ebook|kindle)$/, '');
+      const bookData = await Book.findOne({ slug: baseSlug });
+      return {
+        bookId: bookData?._id?.toString() || item.id,
+        id: item.id,
+        title: item.title,
+        format: item.format || 'unknown',
+        quantity: item.quantity,
+        price: item.price
+      };
+    }));
+
+    const order = await Order.create({
+      luluJobId: result.id,
+      externalId: jobData.external_id,
+      books: booksWithIds,
+      totalAmount,
+      shippingAmount: shipping,
+      shippingCharged: true,
+      grossAmount,
+      grossAmountCharged: true,
+      status: 'PENDING'
+    });
+    console.log('Order created in MongoDB with ID:', order._id);
+
+    console.log('Order saved to MongoDB:', order._id);
 
     return { success: true, job: result };
   } catch (error: any) {
