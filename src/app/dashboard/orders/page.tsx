@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { getLuluOrdersAction } from '@/app/api/orders/route';
+import { getLuluOrdersAction } from '@/app/dashboard/orders/action';
 import { toast } from 'sonner';
 import { Search, Filter, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
 import { flexRender, getCoreRowModel, useReactTable, getPaginationRowModel, getSortedRowModel, getFilteredRowModel, SortingState, ColumnFiltersState, PaginationState } from '@tanstack/react-table';

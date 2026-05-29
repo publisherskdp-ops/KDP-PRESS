@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { TrendingUp, TrendingDown, Loader, AlertCircle } from "lucide-react";
-import { getLuluCostsAction } from "@/app/api/orders/route";
+import { getLuluCostsAction } from "@/app/dashboard/orders/action";
 import { toast } from "sonner";
 
 interface CostBreakdown {
