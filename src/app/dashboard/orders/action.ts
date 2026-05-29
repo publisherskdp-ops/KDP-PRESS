@@ -2,9 +2,9 @@
 
 import { lulu } from '@/lib/lulu';
 
-export async function getLuluOrdersAction(page = 1) {
+export async function getLuluOrdersAction() {
   try {
-    const data = await lulu.listPrintJobs(page);
+    const data = await lulu.listPrintJobs();
     return { success: true, orders: data.results, count: data.count };
   } catch (error: any) {
     console.error('Failed to fetch Lulu orders:', error);
