@@ -142,10 +142,17 @@ class LuluService {
   }
 
   /**
+   * Fetches the cost details of a specific print job
+   */
+  async getPrintJobCosts(id: number): Promise<any> {
+    return this.request(`/print-jobs/${id}/costs/`);
+  }
+
+  /**
    * Fetches a paginated list of all print jobs
    */
-  async listPrintJobs(page = 1, pageSize = 20): Promise<{ results: LuluPrintJob[], count: number }> {
-    return this.request(`/print-jobs/?page=${page}&page_size=${pageSize}`);
+  async listPrintJobs(): Promise<{ results: LuluPrintJob[], count: number }> {
+    return this.request(`/print-jobs/`);
   }
 }
 
