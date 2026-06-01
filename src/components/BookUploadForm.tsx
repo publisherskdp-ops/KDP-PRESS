@@ -7,6 +7,21 @@ import { publishBookAction, updateBookDetailsAction } from "@/app/bookstore/acti
 import { useRouter } from "next/navigation";
 import { toast } from 'sonner';
 import { CheckCircle2, FileText, Image as ImageIcon, Upload } from "lucide-react";
+import {
+   PAPERBACK_TRIMS,
+   HARDCOVER_TRIMS,
+   getAvailableInkTypes,
+   getAvailableFinishes,
+   type InkPaperType
+} from "@/lib/luluSpecs";
+
+const getNormalizedInk = (ink: string): InkPaperType => {
+   if (!ink) return 'Black & White / White';
+   if (ink === 'Black & White Standard' || ink === 'Black & White / White') return 'Black & White / White';
+   if (ink === 'Standard Color' || ink === 'Standard Color / White') return 'Standard Color / White';
+   if (ink === 'Premium Color' || ink === 'Premium Color / White') return 'Premium Color / White';
+   return ink as InkPaperType;
+};
 
 interface BookUploadFormProps {
    format?: string;
@@ -54,12 +69,12 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
 
          // Paperback Specs
          paperbackTrimSize: initialData?.paperbackTrimSize || '6 x 9',
-         paperbackInteriorColor: initialData?.paperbackInteriorColor || 'Black & White Standard',
+         paperbackInteriorColor: getNormalizedInk(initialData?.paperbackInteriorColor || ''),
          paperbackCoverFinish: initialData?.paperbackCoverFinish || 'Gloss',
 
          // Hardcover Specs
          hardcoverTrimSize: initialData?.hardcoverTrimSize || '6 x 9',
-         hardcoverInteriorColor: initialData?.hardcoverInteriorColor || 'Black & White Standard',
+         hardcoverInteriorColor: getNormalizedInk(initialData?.hardcoverInteriorColor || ''),
          hardcoverCoverFinish: initialData?.hardcoverCoverFinish || 'Gloss',
 
          priceEbook: initialData?.priceEbook || 0,
@@ -67,9 +82,21 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
          priceHardcover: initialData?.priceHardcover || 0,
          status: initialData?.status || 'PENDING'
       }
-   });
+    });
 
-   const router = useRouter();
+    const watchedPbTrim = watch("paperbackTrimSize") || '6 x 9';
+    const watchedPbInterior = watch("paperbackInteriorColor") || 'Black & White / White';
+    const normalizedPbInterior = getNormalizedInk(watchedPbInterior);
+    const availablePbInks = getAvailableInkTypes('paperback', watchedPbTrim);
+    const availablePbFinishes = getAvailableFinishes('paperback', watchedPbTrim, normalizedPbInterior);
+
+    const watchedHcTrim = watch("hardcoverTrimSize") || '6 x 9';
+    const watchedHcInterior = watch("hardcoverInteriorColor") || 'Black & White / White';
+    const normalizedHcInterior = getNormalizedInk(watchedHcInterior);
+    const availableHcInks = getAvailableInkTypes('hardcover', watchedHcTrim);
+    const availableHcFinishes = getAvailableFinishes('hardcover', watchedHcTrim, normalizedHcInterior);
+
+    const router = useRouter();
 
    const { fields, append, remove } = useFieldArray({
       control,
@@ -267,24 +294,27 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
                         <div>
                            <label className="font-bold text-slate-800 block mb-2">Trim Size</label>
                            <select {...register("paperbackTrimSize")} className="border border-slate-300 rounded p-2 w-full shadow-sm focus:ring-1 focus:ring-sky-500">
-                              <option>5.5 x 8.5</option>
-                              <option>6 x 9</option>
-                              <option>8.5 x 11</option>
+                              {PAPERBACK_TRIMS.map(t => (
+                                 <option key={t.value} value={t.value}>{t.label} ({t.metric})</option>
+                              ))}
                            </select>
                         </div>
                         <div>
                            <label className="font-bold text-slate-800 block mb-2">Interior & Paper Type</label>
                            <select {...register("paperbackInteriorColor")} className="border border-slate-300 rounded p-2 w-full shadow-sm focus:ring-1 focus:ring-sky-500">
-                              <option>Black & White Standard</option>
-                              <option>Standard Color</option>
-                              <option>Premium Color</option>
+                              {availablePbInks.map(ink => (
+                                 <option key={ink} value={ink}>{ink}</option>
+                              ))}
                            </select>
                         </div>
                         <div>
                            <label className="font-bold text-slate-800 block mb-2">Cover Finish</label>
                            <div className="flex gap-4">
-                              <label className="flex items-center gap-2 cursor-pointer"><input type="radio" value="Gloss" {...register("paperbackCoverFinish")} /> Glossy</label>
-                              <label className="flex items-center gap-2 cursor-pointer"><input type="radio" value="Matte" {...register("paperbackCoverFinish")} /> Matte</label>
+                              {availablePbFinishes.map(f => (
+                                 <label key={f} className="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" value={f} {...register("paperbackCoverFinish")} /> {f === 'Gloss' ? 'Glossy' : 'Matte'}
+                                 </label>
+                              ))}
                            </div>
                         </div>
                      </div>
@@ -296,24 +326,27 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
                         <div>
                            <label className="font-bold text-slate-800 block mb-2">Trim Size</label>
                            <select {...register("hardcoverTrimSize")} className="border border-slate-300 rounded p-2 w-full shadow-sm focus:ring-1 focus:ring-sky-500">
-                              <option>5.5 x 8.5</option>
-                              <option>6 x 9</option>
-                              <option>8.5 x 11</option>
+                              {HARDCOVER_TRIMS.map(t => (
+                                 <option key={t.value} value={t.value}>{t.label} ({t.metric})</option>
+                              ))}
                            </select>
                         </div>
                         <div>
                            <label className="font-bold text-slate-800 block mb-2">Interior & Paper Type</label>
                            <select {...register("hardcoverInteriorColor")} className="border border-slate-300 rounded p-2 w-full shadow-sm focus:ring-1 focus:ring-sky-500">
-                              <option>Black & White Standard</option>
-                              <option>Standard Color</option>
-                              <option>Premium Color</option>
+                              {availableHcInks.map(ink => (
+                                 <option key={ink} value={ink}>{ink}</option>
+                              ))}
                            </select>
                         </div>
                         <div>
                            <label className="font-bold text-slate-800 block mb-2">Cover Finish</label>
                            <div className="flex gap-4">
-                              <label className="flex items-center gap-2 cursor-pointer"><input type="radio" value="Gloss" {...register("hardcoverCoverFinish")} /> Glossy</label>
-                              <label className="flex items-center gap-2 cursor-pointer"><input type="radio" value="Matte" {...register("hardcoverCoverFinish")} /> Matte</label>
+                              {availableHcFinishes.map(f => (
+                                 <label key={f} className="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" value={f} {...register("hardcoverCoverFinish")} /> {f === 'Gloss' ? 'Glossy' : 'Matte'}
+                                 </label>
+                              ))}
                            </div>
                         </div>
                      </div>
@@ -367,7 +400,42 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
                            )}
                         </div>
 
+                         {/* Storefront Image Section - Only shown on Edit */}
+                         {initialData?.id && (
+                            <>
+                               <div className="h-px bg-slate-100 w-full" />
+                               <div className="space-y-4">
+                                  <label className="font-bold text-slate-700 block text-xs uppercase tracking-wider">3. Storefront Display Image (Book Front Image)</label>
+                                  <p className="text-slate-600 mb-2 text-xs">This image is what customers see on the Amazon and website storefront. JPG or PNG recommended.</p>
+                                  <input type="file" {...register("cover")} accept="image/*" className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" />
 
+                                  {initialData?.image && !watch('cover')?.[0] && (
+                                     <div className="mt-4 flex gap-6 items-center bg-slate-50 p-6 rounded-2xl border border-slate-100 shadow-inner">
+                                        <div className="relative group">
+                                           <img src={initialData.image} alt="Current Cover" className="w-24 h-36 object-cover rounded shadow-lg border-2 border-white transition-transform group-hover:scale-105" />
+                                           <div className="absolute -top-2 -right-2 bg-emerald-500 text-white p-1 rounded-full shadow-md">
+                                              <CheckCircle2 size={12} />
+                                           </div>
+                                        </div>
+                                        <div>
+                                           <p className="text-sm font-bold text-slate-900">Current Storefront Image</p>
+                                           <p className="text-xs text-slate-500 mt-1 leading-relaxed">This high-resolution image is currently active.<br />Uploading a new file will replace it.</p>
+                                           <div className="mt-3 flex gap-2">
+                                              <span className="px-2 py-0.5 bg-white border border-slate-200 rounded text-[10px] font-bold text-slate-400 uppercase tracking-tight">Active</span>
+                                              <span className="px-2 py-0.5 bg-white border border-slate-200 rounded text-[10px] font-bold text-slate-400 uppercase tracking-tight">Public</span>
+                                           </div>
+                                        </div>
+                                     </div>
+                                  )}
+
+                                  {(watch('cover') as any)?.[0] && (
+                                     <div className="mt-4 p-3 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-xl border border-emerald-100 flex items-center gap-2 animate-in fade-in slide-in-from-top-1">
+                                        <CheckCircle2 size={16} /> New storefront image selected: {(watch('cover') as any)[0].name}
+                                     </div>
+                                  )}
+                               </div>
+                            </>
+                         )}
 
                         <div className="h-px bg-slate-100 w-full" />
 
