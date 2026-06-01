@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto';
+import bcrypt from 'bcrypt'; // Swapped crypto for bcrypt
+import crypto from 'crypto'; // Kept ONLY for fallback support (optional)
 import { cookies } from 'next/headers';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
@@ -34,13 +35,26 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    // Hash password with SHA-256 to match seed database
-    const inputPasswordHashed = crypto
-      .createHash('sha256')
-      .update(password)
-      .digest('hex');
+    // 1. Check password using bcrypt
+    let isPasswordCorrect = await bcrypt.compare(password, user.password);
+    
+    // 2. FALLBACK: Check if user is still using the old SHA-256 crypto hash
+    if (!isPasswordCorrect) {
+      const oldCryptoHash = crypto
+        .createHash('sha256')
+        .update(password)
+        .digest('hex');
+        
+      if (user.password === oldCryptoHash) {
+        isPasswordCorrect = true;
+        
+        // Dynamic upgrade: Convert this old user to bcrypt on the fly
+        user.password = await bcrypt.hash(password, 10);
+        await user.save();
+      }
+    }
       
-    if (user.password !== inputPasswordHashed) {
+    if (!isPasswordCorrect) {
       return NextResponse.json(
         { success: false, error: 'Invalid username/email or password' },
         { status: 401 }
