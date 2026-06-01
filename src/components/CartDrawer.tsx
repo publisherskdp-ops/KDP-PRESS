@@ -44,7 +44,7 @@ const CartDrawer: React.FC = () => {
           ) : (
             cart.map((item) => (
               <div key={`${item.id}-${item.format || 'unknown'}`} style={{ display: 'flex', gap: '1.2rem', alignItems: 'center' }}>
-                <div style={{ width: '80px', height: '120px', background: 'var(--surface-light)', borderRadius: '8px', border: '1px solid var(--border-medium)', flexShrink: 0, backgroundImage: item.image ? `url(${item.image})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                <div style={{ width: '80px', height: '120px', background: 'var(--surface-light)', borderRadius: '8px', border: '1px solid var(--border-medium)', flexShrink: 0, backgroundImage: item.image ? `url("${item.image}")` : 'none', backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                 <div style={{ flex: 1 }}>
                   <h4 style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: 'var(--text-main)' }}>{item.title} {item.format && <span style={{fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', color: 'var(--primary-color)'}}>({item.format})</span>}</h4>
                   <p style={{ color: 'var(--primary-color)', fontWeight: 700, marginBottom: '0.8rem' }}>${item.price}</p>

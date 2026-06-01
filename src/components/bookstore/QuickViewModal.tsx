@@ -7,6 +7,18 @@ export default function QuickViewModal({ book, isOpen, onClose }: { book: any | 
   const { addToCart } = useCart();
   const [selectedFormat, setSelectedFormat] = useState<'paperback' | 'ebook' | 'hardcover'>('paperback');
 
+  React.useEffect(() => {
+    if (book) {
+      const hasEbook = !!book.price?.ebook;
+      const hasPaperback = !!book.price?.paperback;
+      const hasHardcover = !!book.price?.hardcover;
+      
+      setSelectedFormat(
+        hasEbook ? 'ebook' : (hasPaperback ? 'paperback' : 'hardcover')
+      );
+    }
+  }, [book, isOpen]);
+
   if (!isOpen || !book) return null;
 
   const price = book.price[selectedFormat] || book.price.paperback || book.price.ebook || book.price.hardcover || 0;
@@ -15,7 +27,7 @@ export default function QuickViewModal({ book, isOpen, onClose }: { book: any | 
     { id: 'paperback', label: 'Paperback', icon: <BookIcon size={16} />, price: book.price.paperback },
     { id: 'ebook', label: 'eBook', icon: <Tablet size={16} />, price: book.price.ebook },
     { id: 'hardcover', label: 'Hardcover', icon: <Bookmark size={16} />, price: book.price.hardcover },
-  ].filter(f => f.price !== undefined);
+  ].filter(f => !!f.price);
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
@@ -35,7 +47,7 @@ export default function QuickViewModal({ book, isOpen, onClose }: { book: any | 
           <div className="md:col-span-5 lg:col-span-4 space-y-6">
             <div className="relative aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl border border-white/20">
               <div
-                style={{ backgroundImage: `url(${book.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                style={{ backgroundImage: `url("${book.image}")`, backgroundSize: 'cover', backgroundPosition: 'center' }}
                 className="absolute inset-0"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-60" />

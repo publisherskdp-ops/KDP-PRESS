@@ -6,60 +6,34 @@ import { revalidatePath } from 'next/cache';
 import fs from 'fs/promises';
 import path from 'path';
 import { join } from 'path';
+import {
+  getTrimCodeForLulu,
+  getInkQualityCodes,
+  getPaperCode,
+  getFinishCode,
+  type InkPaperType,
+  type BindingFormat,
+} from '@/lib/luluSpecs';
 
 /**
  * Offline generator for Lulu POD IDs.
  * Constructs the standard dotted Lulu package ID structure.
  * Format: [Trim].[Ink].[Quality].[Binding].[Paper].[Finish]
+ * 
+ * Now uses the centralized luluSpecs module for all code mappings.
  */
 function generateLuluPodId(specs: {
-  trimSize: string;      // "6 x 9", "5.5 x 8.5", "8.5 x 11"
-  interiorColor: string; // "Black & White Standard", "Standard Color", "Premium Color"
-  binding: 'PB' | 'HC';  // PB = Paperback, HC = Hardcover
-  coverFinish: string;   // "Gloss", "Matte"
+  trimSize: string;
+  interiorColor: InkPaperType;
+  binding: 'PB' | 'HC';
+  coverFinish: string;
 }) {
-  // 1. Map Trim Sizes
-  let trimCode = '0600X0900'; 
-  if (specs.trimSize === '5.5 x 8.5') trimCode = '0550X0850';
-  if (specs.trimSize === '8.5 x 11')  trimCode = '0850X1100';
+  const trimCode = getTrimCodeForLulu(specs.trimSize);
+  const { inkCode, qualityCode } = getInkQualityCodes(specs.interiorColor, specs.trimSize);
+  const paperCode = getPaperCode(specs.interiorColor, inkCode, qualityCode, specs.trimSize);
+  const format: BindingFormat = specs.binding === 'PB' ? 'paperback' : 'hardcover';
+  const finishCode = getFinishCode(specs.coverFinish, format, specs.trimSize, qualityCode);
 
-  let inkCode = 'BW';
-  let qualityCode = 'STD';
-  
-  // 2. Resolve Ink & Quality Limits
-  if (specs.interiorColor === 'Standard Color') {
-    inkCode = 'FC';
-    qualityCode = 'STD';
-    
-    // Manufacturing Limit: 8.5x11 does not support Standard Color. Upgrade to Premium.
-    if (trimCode === '0850X1100') {
-      qualityCode = 'PRE';
-    }
-  } else if (specs.interiorColor === 'Premium Color') {
-    inkCode = 'FC';
-    qualityCode = 'PRE';
-  }
-
-  // 3. Resolve Paper Weight & Bulk Code (CRITICAL FIX: Appending '444')
-  // Premium uses 80# Coated White (080CW444) for color, Standard/B&W uses 60# Uncoated White (060UW444)
-  // EXCEPT for 6x9 color books where standard color also maps to 80# coated paper.
-  let paperCode = '060UW444'; 
-  
-  if (inkCode === 'FC') {
-    if (qualityCode === 'PRE' || trimCode === '0600X0900') {
-      paperCode = '080CW444'; // Use Coated White with 444 bulk thickness specifier
-    }
-  }
-
-  // 4. Resolve Cover Finish Limits
-  let finishCode = specs.coverFinish === 'Matte' ? 'MXX' : 'GXX';
-  
-  // Manufacturing Limit: 8.5x11 Premium Color Paperbacks on 80# paper cannot be Matte. Force to Gloss.
-  if (trimCode === '0850X1100' && qualityCode === 'PRE' && specs.binding === 'PB') {
-    finishCode = 'GXX'; 
-  }
-
-  // Final Composite Output Layout: Trim.Ink.Quality.Binding.Paper.Finish
   const finalId = `${trimCode}.${inkCode}.${qualityCode}.${specs.binding}.${paperCode}.${finishCode}`;
   console.log(`🚀 [LULU ID BUILDER] Final generated SKU: ${finalId}`);
   
@@ -388,12 +362,15 @@ export async function publishBookAction(rawFormData: FormData) {
       };
     }
 
+    const enablePaperback = data.enablePaperback === 'true';
+    const enableHardcover = data.enableHardcover === 'true';
+
     const pricePaperback = parseFloat(data.pricePaperback) || 0;
     const priceHardcover = parseFloat(data.priceHardcover) || 0;
     const priceEbook = parseFloat(data.priceEbook) || 0;
 
-    // 1. PAPERBACK OFFLINE ID GENERATION
-    if (pricePaperback > 0) {
+    // 1. PAPERBACK OFFLINE ID GENERATION (only when format is enabled)
+    if (enablePaperback) {
       luluPaperbackId = generateLuluPodId({
         trimSize: data.paperbackTrimSize,
         interiorColor: data.paperbackInteriorColor,
@@ -403,8 +380,8 @@ export async function publishBookAction(rawFormData: FormData) {
       console.log(`✅ Generated Offline Paperback POD ID: ${luluPaperbackId}`);
     }
 
-    // 2. HARDCOVER OFFLINE ID GENERATION
-    if (priceHardcover > 0) {
+    // 2. HARDCOVER OFFLINE ID GENERATION (only when format is enabled)
+    if (enableHardcover) {
       luluHardcoverId = generateLuluPodId({
         trimSize: data.hardcoverTrimSize,
         interiorColor: data.hardcoverInteriorColor,
@@ -426,9 +403,9 @@ export async function publishBookAction(rawFormData: FormData) {
       email: data.email,
       genre: data.genre,
       descriptionHtml: data.descriptionHtml || '<p>No description provided yet.</p>',
-      pricePaperback,
+      pricePaperback: enablePaperback ? pricePaperback : 0,
       priceEbook,
-      priceHardcover,
+      priceHardcover: enableHardcover ? priceHardcover : 0,
       isbn: data.isbn,
       pageCount: data.pageCount,
       language: data.language || 'English',
@@ -440,14 +417,24 @@ export async function publishBookAction(rawFormData: FormData) {
       luluHardcoverId,
       status: 'PENDING',
 
-      // Physical specs saved for record-keeping
-      paperbackTrimSize: data.paperbackTrimSize,
-      paperbackCoverFinish: data.paperbackCoverFinish,
-      paperbackInteriorColor: data.paperbackInteriorColor,
+      // Format enable flags
+      enablePaperback,
+      enableHardcover,
 
-      hardcoverTrimSize: data.hardcoverTrimSize,
-      hardcoverCoverFinish: data.hardcoverCoverFinish,
-      hardcoverInteriorColor: data.hardcoverInteriorColor,
+      // Physical specs saved for record-keeping (only for enabled formats)
+      ...(enablePaperback ? {
+        paperbackTrimSize: data.paperbackTrimSize,
+        paperbackCoverFinish: data.paperbackCoverFinish,
+        paperbackInteriorColor: data.paperbackInteriorColor,
+        paperbackPaperType: data.paperbackInteriorColor,
+      } : {}),
+
+      ...(enableHardcover ? {
+        hardcoverTrimSize: data.hardcoverTrimSize,
+        hardcoverCoverFinish: data.hardcoverCoverFinish,
+        hardcoverInteriorColor: data.hardcoverInteriorColor,
+        hardcoverPaperType: data.hardcoverInteriorColor,
+      } : {}),
     });
 
     console.log("🎉 DATABASE SUCCESS: Book saved successfully under slug:", book.slug);

@@ -367,42 +367,7 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
                            )}
                         </div>
 
-                        {/* Storefront Image Section - Only shown on Edit */}
-                        {initialData?.id && (
-                           <>
-                              <div className="h-px bg-slate-100 w-full" />
-                              <div className="space-y-4">
-                                 <label className="font-bold text-slate-700 block text-xs uppercase tracking-wider">3. Storefront Display Image (Book Front Image)</label>
-                                 <p className="text-slate-600 mb-2 text-xs">This image is what customers see on the Amazon and website storefront. JPG or PNG recommended.</p>
-                                 <input type="file" {...register("cover")} accept="image/*" className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" />
 
-                                 {initialData?.image && !watch('cover')?.[0] && (
-                                    <div className="mt-4 flex gap-6 items-center bg-slate-50 p-6 rounded-2xl border border-slate-100 shadow-inner">
-                                       <div className="relative group">
-                                          <img src={initialData.image} alt="Current Cover" className="w-24 h-36 object-cover rounded shadow-lg border-2 border-white transition-transform group-hover:scale-105" />
-                                          <div className="absolute -top-2 -right-2 bg-emerald-500 text-white p-1 rounded-full shadow-md">
-                                             <CheckCircle2 size={12} />
-                                          </div>
-                                       </div>
-                                       <div>
-                                          <p className="text-sm font-bold text-slate-900">Current Storefront Image</p>
-                                          <p className="text-xs text-slate-500 mt-1 leading-relaxed">This high-resolution image is currently active.<br />Uploading a new file will replace it.</p>
-                                          <div className="mt-3 flex gap-2">
-                                             <span className="px-2 py-0.5 bg-white border border-slate-200 rounded text-[10px] font-bold text-slate-400 uppercase tracking-tight">Active</span>
-                                             <span className="px-2 py-0.5 bg-white border border-slate-200 rounded text-[10px] font-bold text-slate-400 uppercase tracking-tight">Public</span>
-                                          </div>
-                                       </div>
-                                    </div>
-                                 )}
-
-                                 {(watch('cover') as any)?.[0] && (
-                                    <div className="mt-4 p-3 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-xl border border-emerald-100 flex items-center gap-2 animate-in fade-in slide-in-from-top-1">
-                                       <CheckCircle2 size={16} /> New storefront image selected: {(watch('cover') as any)[0].name}
-                                    </div>
-                                 )}
-                              </div>
-                           </>
-                        )}
 
                         <div className="h-px bg-slate-100 w-full" />
 

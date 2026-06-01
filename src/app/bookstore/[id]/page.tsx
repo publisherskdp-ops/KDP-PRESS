@@ -143,7 +143,7 @@ export default function BookProductPage({ params }: { params: Promise<{ id: stri
                 <div className="aspect-[2/3] rounded-[2rem] overflow-hidden shadow-inner relative hover-perspective">
                    <div 
                     className="absolute inset-0 bg-slate-100 group-hover:scale-105 transition-transform duration-700 ease-out"
-                    style={{ backgroundImage: `url(${book.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                    style={{ backgroundImage: `url("${book.image}")`, backgroundSize: 'cover', backgroundPosition: 'center' }}
                    />
                    <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white border border-white/20">
                      Original Edition

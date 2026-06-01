@@ -25,15 +25,21 @@ export interface IBook extends Document {
   isbn?: string;
   pageCount?: number;
   specification?: 'ebook' | 'paperback' | 'hardcover' | 'all';
+
+  // Format Enable Flags
+  enablePaperback?: boolean;
+  enableHardcover?: boolean;
   
   // Format-Specific Physical Specifications
   paperbackTrimSize?: string;
   paperbackCoverFinish?: string;
   paperbackInteriorColor?: string;
+  paperbackPaperType?: string;
   
   hardcoverTrimSize?: string;
   hardcoverCoverFinish?: string;
   hardcoverInteriorColor?: string;
+  hardcoverPaperType?: string;
 
   createdAt: Date;
   updatedAt: Date;
@@ -66,14 +72,20 @@ const BookSchema: Schema = new Schema(
   pageCount: { type: Number },
     specification: { type: String, enum: ['ebook', 'paperback', 'hardcover', 'all'], default: 'ebook' },
 
+    // Format Enable Flags
+    enablePaperback: { type: Boolean, default: false },
+    enableHardcover: { type: Boolean, default: false },
+
     // Format-Specific Customizations
     paperbackTrimSize: { type: String, default: '6 x 9' },
     paperbackCoverFinish: { type: String, default: 'Gloss' },
-    paperbackInteriorColor: { type: String, default: 'Black & White Standard' },
+    paperbackInteriorColor: { type: String, default: 'Black & White / White' },
+    paperbackPaperType: { type: String },
 
     hardcoverTrimSize: { type: String, default: '6 x 9' },
     hardcoverCoverFinish: { type: String, default: 'Gloss' },
-    hardcoverInteriorColor: { type: String, default: 'Black & White Standard' },
+    hardcoverInteriorColor: { type: String, default: 'Black & White / White' },
+    hardcoverPaperType: { type: String },
   },
   {
     timestamps: true,

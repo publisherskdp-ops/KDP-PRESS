@@ -19,6 +19,7 @@ export default function Bookstore() {
   useEffect(() => {
     async function loadBooks() {
       const data = await getBooksAction();
+      console.log(data);
       setBooks(data);
       setLoading(false);
     }
