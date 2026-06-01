@@ -1,26 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 
 export async function GET(req: NextRequest) {
-  try {
-    const cookieStore = await cookies();
-    cookieStore.delete('session');
-  } catch (error) {
-    console.error('Error deleting session cookie:', error);
-  }
-  
-  // Redirect to login page
-  const loginUrl = new URL('/auth/login', req.nextUrl.origin);
-  return NextResponse.redirect(loginUrl);
+  const response = NextResponse.redirect(new URL('/auth/login', req.url));
+  response.cookies.set('session', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 0,
+  });
+  return response;
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    const cookieStore = await cookies();
-    cookieStore.delete('session');
-  } catch (error) {
-    console.error('Error deleting session cookie:', error);
-  }
-  
-  return NextResponse.json({ success: true });
+  const response = NextResponse.json({ success: true });
+  response.cookies.set('session', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 0,
+  });
+  return response;
 }
