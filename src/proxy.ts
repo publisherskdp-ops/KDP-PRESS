@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySession } from '@/lib/session';
 
-export async function proxy(req: NextRequest) {
+// Next.js expects the interception function to be a DEFAULT export
+export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   
   // 1. Force /auth/signup to redirect to /auth/login (Enforce "no registration")
@@ -13,20 +14,20 @@ export async function proxy(req: NextRequest) {
   // Get session cookie
   const sessionCookie = req.cookies.get('session')?.value;
   
-  // Verify session (Web Crypto, Edge compatible)
+  // Verify session (Web Crypto, Edge/Node compatible via your lib)
   const session = sessionCookie ? await verifySession(sessionCookie) : null;
   
   // 2. Protect dashboard routes
   if (pathname.startsWith('/dashboard')) {
     if (!session) {
       const loginUrl = new URL('/auth/login', req.nextUrl.origin);
-      // Optional: keep track of where the user was going
       loginUrl.searchParams.set('callbackUrl', pathname);
       
       const response = NextResponse.redirect(loginUrl);
-      // Clear invalid cookie if any
+      
+      // FIX: Standardize cookie clearing for cross-browser reliability
       if (sessionCookie) {
-        response.cookies.delete('session');
+        response.cookies.set('session', '', { path: '/', maxAge: 0 });
       }
       return response;
     }
