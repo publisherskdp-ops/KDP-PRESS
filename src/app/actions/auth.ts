@@ -1,6 +1,6 @@
 'use server'
 
-import { createSession, deleteSession } from '@/lib/session'
+import { createSession, deleteSession } from '@/lib/dbSession'
 import { redirect } from 'next/navigation'
 import dbConnect from '@/lib/mongodb'
 import User from '@/models/User'

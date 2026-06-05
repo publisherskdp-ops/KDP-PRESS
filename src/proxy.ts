@@ -12,14 +12,14 @@ export default async function proxy(req: NextRequest) {
   }
   
   // Get session cookie
-  const sessionCookie = req.cookies.get('session')?.value;
+  const sessionCookie = req.cookies.get('kdp_session_id')?.value;
   
   // Verify session (Web Crypto, Edge/Node compatible via your lib)
   const session = sessionCookie ? await decrypt(sessionCookie) : null;
   
   // 2. Protect dashboard routes
   if (pathname.startsWith('/dashboard')) {
-    if (!session) {
+    if (!session || !session.sessionId) {
       const loginUrl = new URL('/auth/login', req.nextUrl.origin);
       loginUrl.searchParams.set('callbackUrl', pathname);
       
@@ -27,7 +27,7 @@ export default async function proxy(req: NextRequest) {
       
       // FIX: Standardize cookie clearing for cross-browser reliability
       if (sessionCookie) {
-        response.cookies.set('session', '', { 
+        response.cookies.set('kdp_session_id', '', { 
           path: '/', 
           maxAge: 0,
           secure: process.env.NODE_ENV === 'production',
@@ -40,7 +40,7 @@ export default async function proxy(req: NextRequest) {
   
   // 3. Prevent logged-in users from accessing the login page
   if (pathname === '/auth/login') {
-    if (session) {
+    if (session && session.sessionId) {
       const dashboardUrl = new URL('/dashboard', req.nextUrl.origin);
       return NextResponse.redirect(dashboardUrl);
     }
