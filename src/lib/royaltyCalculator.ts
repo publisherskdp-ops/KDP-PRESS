@@ -1,9 +1,3 @@
-import Stripe from 'stripe';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_mock', {
-  apiVersion: '2026-03-25.dahlia',
-});
-
 interface CheckoutParams {
   bookId: string;
   price: number;
@@ -47,10 +41,6 @@ export const createCheckoutSession = async ({ bookId, price, authorStripeAccount
 };
 
 export const runTaxVerification = async (userId: string) => {
-  /**
-   * multi-step "Tax Interview" using Stripe Tax or TaxBandits API to collect W-8/W-9 forms. 
-   * Block "Live" publishing until verified.
-   */
   console.log(`Verifying tax status for User ${userId}`);
   return { status: 'VERIFIED', message: 'W-9 Submitted and Approved via mock endpoints' };
 }

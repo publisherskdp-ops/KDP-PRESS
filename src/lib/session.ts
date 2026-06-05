@@ -1,69 +1,65 @@
-// Web Crypto-based session utility, 100% compatible with Next.js Edge Runtime (Middleware)
-// Uses HMAC SHA-256 to sign and verify cookies without any external dependencies.
+import 'server-only'
+import { SignJWT, jwtVerify } from 'jose'
+import { SessionPayload } from '@/lib/definitions'
+import { cookies } from 'next/headers'
 
-const SESSION_SECRET = process.env.SESSION_SECRET || 'kdp-press-super-secret-key-for-session-signing-123456';
-const encoder = new TextEncoder();
+const secretKey = process.env.SESSION_SECRET || 'kdp-press-super-secret-key-for-session-signing-123456'
+const encodedKey = new TextEncoder().encode(secretKey)
 
-async function getSignature(data: string, secret: string): Promise<string> {
-  const keyBuffer = encoder.encode(secret);
-  const dataBuffer = encoder.encode(data);
-  
-  const key = await crypto.subtle.importKey(
-    'raw',
-    keyBuffer,
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
-  
-  const signatureBuffer = await crypto.subtle.sign('HMAC', key, dataBuffer);
-  const hashArray = Array.from(new Uint8Array(signatureBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+export async function encrypt(payload: SessionPayload) {
+  return new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('7d')
+    .sign(encodedKey)
 }
 
-export async function signSession(payload: any, expiresInDays: number = 7): Promise<string> {
-  const exp = Date.now() + expiresInDays * 24 * 60 * 60 * 1000;
-  const sessionData = {
-    ...payload,
-    exp
-  };
-  
-  const dataStr = JSON.stringify(sessionData);
-  // Base64 encode the payload safely
-  const encodedPayload = typeof btoa !== 'undefined' 
-    ? btoa(unescape(encodeURIComponent(dataStr)))
-    : Buffer.from(dataStr).toString('base64');
-    
-  const signature = await getSignature(encodedPayload, SESSION_SECRET);
-  return `${encodedPayload}.${signature}`;
-}
-
-export async function verifySession(token: string): Promise<any | null> {
+export async function decrypt(session: string | undefined = '') {
   try {
-    if (!token) return null;
-    const parts = token.split('.');
-    if (parts.length !== 2) return null;
-    
-    const [encodedPayload, signature] = parts;
-    const expectedSignature = await getSignature(encodedPayload, SESSION_SECRET);
-    
-    if (signature === expectedSignature) {
-      const decodedStr = typeof atob !== 'undefined'
-        ? decodeURIComponent(escape(atob(encodedPayload)))
-        : Buffer.from(encodedPayload, 'base64').toString('utf8');
-        
-      const payload = JSON.parse(decodedStr);
-      
-      // Check expiration
-      if (payload.exp && Date.now() > payload.exp) {
-        return null;
-      }
-      
-      return payload;
-    }
-  } catch (e) {
-    console.error('Session verification failed:', e);
-    return null;
+    const { payload } = await jwtVerify(session, encodedKey, {
+      algorithms: ['HS256'],
+    })
+    return payload
+  } catch (error) {
+    console.log('Failed to verify session')
+    return null
   }
-  return null;
+}
+
+export async function createSession(userId: string) {
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+  const session = await encrypt({ userId, expiresAt })
+  const cookieStore = await cookies()
+
+  cookieStore.set('session', session, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    expires: expiresAt,
+    sameSite: 'lax',
+    path: '/',
+  })
+}
+
+export async function updateSession() {
+  const session = (await cookies()).get('session')?.value
+  const payload = await decrypt(session)
+
+  if (!session || !payload) {
+    return null
+  }
+
+  const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+  const cookieStore = await cookies()
+  cookieStore.set('session', session, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    expires: expires,
+    sameSite: 'lax',
+    path: '/',
+  })
+}
+
+export async function deleteSession() {
+  const cookieStore = await cookies()
+  cookieStore.delete('session')
 }

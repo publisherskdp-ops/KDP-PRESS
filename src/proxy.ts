@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifySession } from '@/lib/session';
+import { decrypt } from '@/lib/session';
 
 // Next.js expects the interception function to be a DEFAULT export
 export default async function proxy(req: NextRequest) {
@@ -15,7 +15,7 @@ export default async function proxy(req: NextRequest) {
   const sessionCookie = req.cookies.get('session')?.value;
   
   // Verify session (Web Crypto, Edge/Node compatible via your lib)
-  const session = sessionCookie ? await verifySession(sessionCookie) : null;
+  const session = sessionCookie ? await decrypt(sessionCookie) : null;
   
   // 2. Protect dashboard routes
   if (pathname.startsWith('/dashboard')) {
