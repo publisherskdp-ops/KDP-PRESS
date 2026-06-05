@@ -27,7 +27,12 @@ export default async function proxy(req: NextRequest) {
       
       // FIX: Standardize cookie clearing for cross-browser reliability
       if (sessionCookie) {
-        response.cookies.set('session', '', { path: '/', maxAge: 0 });
+        response.cookies.set('session', '', { 
+          path: '/', 
+          maxAge: 0,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax'
+        });
       }
       return response;
     }
