@@ -33,3 +33,16 @@ export async function getLuluCostsAction(luluJobId: number) {
     };
   }
 }
+
+export async function cancelLuluOrderAction(luluJobId: number) {
+  try {
+    const data = await lulu.cancelPrintJob(luluJobId);
+    return { success: true, data };
+  } catch (error: any) {
+    console.error('Failed to cancel Lulu order:', error);
+    return { 
+      success: false, 
+      error: error?.luluErrorDetails?.detail || error?.message || 'Failed to cancel order' 
+    };
+  }
+}

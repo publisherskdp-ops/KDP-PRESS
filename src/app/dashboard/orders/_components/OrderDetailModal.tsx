@@ -2,18 +2,22 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, AlertCircle, MapPin, Package, FileText, ExternalLink, Copy, Check, TrendingUp } from 'lucide-react';
+import { X, AlertCircle, MapPin, Package, FileText, ExternalLink, Copy, Check, TrendingUp, Ban } from 'lucide-react';
 import ProfitCalculationTab from '@/components/ProfitCalculationTab';
 import { getStatusName, getStatusColor, getRejectionReasons } from '../_utils/statusHelpers';
+  import { cancelLuluOrderAction } from '../action';
+  import { toast } from 'sonner';
 
 interface OrderDetailModalProps {
   order: any;
   onClose: () => void;
+  onOrderCancelled?: () => void;
 }
 
-export default function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
+export default function OrderDetailModal({ order, onClose, onOrderCancelled }: OrderDetailModalProps) {
   const [copied, setCopied] = useState(false);
   const [modalTab, setModalTab] = useState<'overview' | 'profit' | 'json'>('overview');
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const handleCopyJson = () => {
     if (!order) return;
@@ -22,12 +26,28 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const statusColor = getStatusColor(order.status);
-  const statusName = getStatusName(order.status);
-  const rejectionReasons = getRejectionReasons(order);
-  console.log('Order Details Modal Rendered with Order:', order);
+  const handleCancelOrder = async () => {
+      if (!window.confirm("Are you sure you want to cancel this order? This action cannot be undone.")) return;
+      
+      setIsCancelling(true);
+      const res = await cancelLuluOrderAction(order.id);
+      setIsCancelling(false);
+      
+      if (res.success) {
+        toast.success("Order cancelled successfully");
+        if (onOrderCancelled) onOrderCancelled();
+        onClose();
+      } else {
+        toast.error(res.error || "Failed to cancel order");
+      }
+    };
 
-  return (
+    const statusColor = getStatusColor(order.status);
+    const statusName = getStatusName(order.status);
+    const rejectionReasons = getRejectionReasons(order);
+    const isCancellable = statusName === 'UNPAID' || statusName === 'CREATED';
+
+    return (
     <div 
       style={{
         position: 'fixed',
@@ -502,9 +522,38 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
           padding: '1.5rem 2rem',
           borderTop: '1px solid var(--border)',
           display: 'flex',
-          justifyContent: 'flex-end',
+          justifyContent: 'space-between',
+          alignItems: 'center',
           background: 'var(--surface-light)'
         }}>
+          <div>
+            {isCancellable && (
+              <button
+                onClick={handleCancelOrder}
+                disabled={isCancelling}
+                style={{
+                  padding: '0.8rem 1.5rem',
+                  background: 'white',
+                  border: '1px solid #ef4444',
+                  borderRadius: '12px',
+                  fontWeight: 800,
+                  fontSize: '0.9rem',
+                  cursor: isCancelling ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s ease',
+                  color: '#ef4444',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  opacity: isCancelling ? 0.6 : 1
+                }}
+                onMouseOver={(e) => { if(!isCancelling) e.currentTarget.style.background = '#fef2f2'; }}
+                onMouseOut={(e) => { if(!isCancelling) e.currentTarget.style.background = 'white'; }}
+              >
+                <Ban size={16} />
+                {isCancelling ? 'Cancelling...' : 'Cancel Order'}
+              </button>
+            )}
+          </div>
           <button 
             onClick={onClose}
             style={{

@@ -18,27 +18,36 @@ export default function ProfitCalculationTab({ order }: { order: any }) {
 
   useEffect(() => {
     const fetchCosts = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const res = await getLuluCostsAction(order.id);
-        if (!res.success) {
-          const errorMessage = res.error || "Failed to load costs";
+        try {
+          setLoading(true);
+          setError(null);
+          const res = await getLuluCostsAction(order.id);
+          if (!res.success) {
+            const errorMessage = res.error || "Failed to load costs";
+            setError(errorMessage);
+            
+            // Only show toast error if it's not a standard pending/rejected state
+            const isPendingOrRejected = order?.status?.name === 'REJECTED' || order?.status?.name === 'UNPAID' || order?.status?.name === 'CREATED';
+            if (!isPendingOrRejected) {
+              toast.error(errorMessage);
+            }
+            return;
+          }
+          // Success
+          setCosts(res.cost);
+        } catch (error: any) {
+          const errorMessage =
+            error?.message || error?.error || "An error occurred";
           setError(errorMessage);
-          toast.error(errorMessage);
-          return;
+          
+          const isPendingOrRejected = order?.status?.name === 'REJECTED' || order?.status?.name === 'UNPAID' || order?.status?.name === 'CREATED';
+          if (!isPendingOrRejected) {
+            toast.error(errorMessage);
+          }
+        } finally {
+          setLoading(false);
         }
-        // Success
-        setCosts(res.cost);
-      } catch (error: any) {
-        const errorMessage =
-          error?.message || error?.error || "An error occurred";
-        setError(errorMessage);
-        toast.error(errorMessage);
-      } finally {
-        setLoading(false);
-      }
-    };
+      };
 
     fetchCosts();
   }, [order.id]);
@@ -65,11 +74,13 @@ export default function ProfitCalculationTab({ order }: { order: any }) {
   }
 
   if (error || !costs) {
+    const isPendingOrRejected = order?.status?.name === 'REJECTED' || order?.status?.name === 'UNPAID' || order?.status?.name === 'CREATED';
+
     return (
       <div
         style={{
-          background: "rgba(239, 68, 68, 0.06)",
-          border: "1px solid rgba(239, 68, 68, 0.2)",
+          background: isPendingOrRejected ? "rgba(245, 158, 11, 0.06)" : "rgba(239, 68, 68, 0.06)",
+          border: isPendingOrRejected ? "1px solid rgba(245, 158, 11, 0.2)" : "1px solid rgba(239, 68, 68, 0.2)",
           borderRadius: "16px",
           padding: "1.5rem",
           display: "flex",
@@ -79,18 +90,18 @@ export default function ProfitCalculationTab({ order }: { order: any }) {
       >
         <AlertCircle
           size={22}
-          style={{ color: "#ef4444", flexShrink: 0, marginTop: "2px" }}
+          style={{ color: isPendingOrRejected ? "#f59e0b" : "#ef4444", flexShrink: 0, marginTop: "2px" }}
         />
         <div>
           <h3
             style={{
               margin: "0 0 0.5rem 0",
-              color: "#ef4444",
+              color: isPendingOrRejected ? "#d97706" : "#ef4444",
               fontWeight: 900,
               fontSize: "1.05rem",
             }}
           >
-            Error Fetching Costs
+            {isPendingOrRejected ? "Costs Not Available Yet" : "Error Fetching Costs"}
           </h3>
           <p
             style={{
@@ -100,7 +111,7 @@ export default function ProfitCalculationTab({ order }: { order: any }) {
               fontWeight: 600,
             }}
           >
-            {error || "Could not retrieve Lulu costs"}
+            {isPendingOrRejected ? "Cost calculation is not available until the order has valid line items and is processed." : (error || "Could not retrieve Lulu costs")}
           </p>
         </div>
       </div>

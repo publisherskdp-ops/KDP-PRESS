@@ -368,9 +368,10 @@ export default function OrdersPage() {
 
       {/* Extracted Self-Contained Overlay Modal Component */}
       {selectedOrder && (
-        <OrderDetailModal 
-          order={selectedOrder} 
-          onClose={() => setSelectedOrder(null)} 
+        <OrderDetailModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+          onOrderCancelled={fetchOrders}
         />
       )}
     </div>

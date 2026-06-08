@@ -110,8 +110,10 @@ export async function getDashboardBooksAction() {
       priceEbook: book.priceEbook,
       pricePaperback: book.pricePaperback,
       priceHardcover: book.priceHardcover,
-      
-      // Technical Specs
+        enablePaperback: book.enablePaperback,
+        enableHardcover: book.enableHardcover,
+
+        // Technical Specs
       paperbackTrimSize: book.paperbackTrimSize,
       paperbackCoverFinish: book.paperbackCoverFinish,
       paperbackInteriorColor: book.paperbackInteriorColor,
@@ -190,19 +192,44 @@ export async function updateBookDetailsAction(slug: string, rawFormData: FormDat
     if (data.pageCount) updateFields.pageCount = Number(data.pageCount);
     
     // Pricing
-    if (data.priceEbook !== undefined) updateFields.priceEbook = Number(data.priceEbook);
-    if (data.pricePaperback !== undefined) updateFields.pricePaperback = Number(data.pricePaperback);
-    if (data.priceHardcover !== undefined) updateFields.priceHardcover = Number(data.priceHardcover);
+      if (data.priceEbook !== undefined) updateFields.priceEbook = Number(data.priceEbook);
+      if (data.pricePaperback !== undefined) updateFields.pricePaperback = Number(data.pricePaperback);
+      if (data.priceHardcover !== undefined) updateFields.priceHardcover = Number(data.priceHardcover);
 
-    // Physical Specifications
-    if (data.paperbackTrimSize) updateFields.paperbackTrimSize = data.paperbackTrimSize;
-    if (data.paperbackCoverFinish) updateFields.paperbackCoverFinish = data.paperbackCoverFinish;
-    if (data.paperbackInteriorColor) updateFields.paperbackInteriorColor = data.paperbackInteriorColor;
-    if (data.hardcoverTrimSize) updateFields.hardcoverTrimSize = data.hardcoverTrimSize;
-    if (data.hardcoverCoverFinish) updateFields.hardcoverCoverFinish = data.hardcoverCoverFinish;
-    if (data.hardcoverInteriorColor) updateFields.hardcoverInteriorColor = data.hardcoverInteriorColor;
+      // Format Enable Flags
+      const enablePaperback = data.enablePaperback !== undefined ? data.enablePaperback === 'true' : book.enablePaperback;
+      const enableHardcover = data.enableHardcover !== undefined ? data.enableHardcover === 'true' : book.enableHardcover;
+      updateFields.enablePaperback = enablePaperback;
+      updateFields.enableHardcover = enableHardcover;
 
-    if (imageUrl) updateFields.image = imageUrl;
+      // Physical Specifications
+      if (data.paperbackTrimSize) updateFields.paperbackTrimSize = data.paperbackTrimSize;
+      if (data.paperbackCoverFinish) updateFields.paperbackCoverFinish = data.paperbackCoverFinish;
+      if (data.paperbackInteriorColor) updateFields.paperbackInteriorColor = data.paperbackInteriorColor;
+      if (data.hardcoverTrimSize) updateFields.hardcoverTrimSize = data.hardcoverTrimSize;
+      if (data.hardcoverCoverFinish) updateFields.hardcoverCoverFinish = data.hardcoverCoverFinish;
+      if (data.hardcoverInteriorColor) updateFields.hardcoverInteriorColor = data.hardcoverInteriorColor;
+
+      // Recalculate POD IDs based on updated fields
+      if (enablePaperback) {
+        updateFields.luluPaperbackId = generateLuluPodId({
+          trimSize: updateFields.paperbackTrimSize || book.paperbackTrimSize,
+          interiorColor: updateFields.paperbackInteriorColor || book.paperbackInteriorColor,
+          binding: 'PB',
+          coverFinish: updateFields.paperbackCoverFinish || book.paperbackCoverFinish
+        });
+      }
+      
+      if (enableHardcover) {
+        updateFields.luluHardcoverId = generateLuluPodId({
+          trimSize: updateFields.hardcoverTrimSize || book.hardcoverTrimSize,
+          interiorColor: updateFields.hardcoverInteriorColor || book.hardcoverInteriorColor,
+          binding: 'HC',
+          coverFinish: updateFields.hardcoverCoverFinish || book.hardcoverCoverFinish
+        });
+      }
+
+      if (imageUrl) updateFields.image = imageUrl;
     if (coverPdfUrl) updateFields.coverPdf = coverPdfUrl;
     if (manuscriptUrl) updateFields.manuscriptUrl = manuscriptUrl;
     if (data.status) updateFields.status = data.status;

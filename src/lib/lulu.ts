@@ -144,9 +144,20 @@ class LuluService {
   /**
    * Fetches the cost details of a specific print job
    */
-async getPrintJobCosts(id: number): Promise<any> {
-  return this.request(`/print-jobs/${id}/costs/`);
-}
+  async getPrintJobCosts(id: number): Promise<any> {
+    return this.request(`/print-jobs/${id}/costs/`);
+  }
+
+  /**
+   * Cancels a print job (only possible if status is UNPAID or CREATED)
+   */
+  async cancelPrintJob(id: number): Promise<any> {
+    // Lulu's cancel endpoint typically requires a DELETE to the job endpoint or POST to /cancel/
+    // According to Lulu API specs, it's typically DELETE /print-jobs/{id}/
+    return this.request(`/print-jobs/${id}/`, {
+      method: 'DELETE',
+    });
+  }
 
   /**
    * Fetches a paginated list of all print jobs

@@ -32,6 +32,11 @@ interface BookUploadFormProps {
 export default function BookUploadForm({ format = 'KDP', initialData, onClose }: BookUploadFormProps) {
    const [step, setStep] = useState(1);
    const [uploadProgress, setUploadProgress] = useState(0);
+   const [enablePaperback, setEnablePaperback] = useState(initialData?.enablePaperback ?? (initialData?.pricePaperback > 0));
+   const [enableHardcover, setEnableHardcover] = useState(initialData?.enableHardcover ?? (initialData?.priceHardcover > 0));
+   const [detectedSize, setDetectedSize] = useState<{width: number, height: number} | null>(null);
+   const [coverDetectedSize, setCoverDetectedSize] = useState<{width: number, height: number} | null>(null);
+   
    const addBook = useBookshelfStore(state => state.addBook);
 
    const formatText = format === 'KDP' ? 'KDP eBook' : format.charAt(0).toUpperCase() + format.slice(1);
@@ -103,6 +108,73 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
       name: "contributors"
    });
 
+   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, field: 'manuscript' | 'coverPdfFile') => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      if (field === 'coverPdfFile' && file.type === 'application/pdf') {
+         try {
+            const arrayBuffer = await file.arrayBuffer();
+            const { PDFDocument } = await import('pdf-lib');
+            const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+            const firstPage = pdfDoc.getPage(0);
+            const { width, height } = firstPage.getSize();
+            const widthInches = width / 72;
+            const heightInches = height / 72;
+            setCoverDetectedSize({ width: widthInches, height: heightInches });
+            toast.success(`Cover loaded: ${widthInches.toFixed(3)}" x ${heightInches.toFixed(3)}" detected.`);
+         } catch (err) {
+            console.error("Failed to parse Cover PDF:", err);
+         }
+      }
+
+      if (field === 'manuscript' && file.type === 'application/pdf') {
+         try {
+            const arrayBuffer = await file.arrayBuffer();
+            const { PDFDocument } = await import('pdf-lib');
+            const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+            
+            const count = pdfDoc.getPageCount();
+            setValue("pageCount", count);
+
+            const firstPage = pdfDoc.getPage(0);
+            const { width, height } = firstPage.getSize();
+            const widthInches = width / 72;
+            const heightInches = height / 72;
+
+            const findClosestTrim = (w: number, h: number, specs: any[]) => {
+               let closest = specs[0].value;
+               let minDiff = Infinity;
+               specs.forEach(s => {
+                  const [sw, sh] = s.value.split(' x ').map(Number);
+                  const diff = Math.abs(sw - w) + Math.abs(sh - h);
+                  if (diff < minDiff) {
+                     minDiff = diff;
+                     closest = s.value;
+                  }
+               });
+               return { closest, minDiff };
+            };
+
+            const pbMatch = findClosestTrim(widthInches, heightInches, PAPERBACK_TRIMS);
+            const hcMatch = findClosestTrim(widthInches, heightInches, HARDCOVER_TRIMS);
+
+            if (pbMatch.minDiff < 0.2) {
+               setValue("paperbackTrimSize", pbMatch.closest);
+            }
+            if (hcMatch.minDiff < 0.2) {
+               setValue("hardcoverTrimSize", hcMatch.closest);
+            }
+
+            setDetectedSize({ width: widthInches, height: heightInches });
+            toast.success(`Manuscript loaded: ${count} pages at ${widthInches.toFixed(2)}" x ${heightInches.toFixed(2)}"`);
+         } catch (err) {
+            console.error("Failed to parse PDF:", err);
+            toast.error("Could not read PDF dimensions or page count.");
+         }
+      }
+   };
+
    const nextStep = () => {
       setStep(s => Math.min(s + 1, 4));
       window.scrollTo(0, 0);
@@ -116,6 +188,9 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
 
       setUploadProgress(10);
       const formData = new FormData();
+      formData.append('enablePaperback', enablePaperback ? 'true' : 'false');
+      formData.append('enableHardcover', enableHardcover ? 'true' : 'false');
+      
       Object.keys(data).forEach(key => {
          if (key === 'contributors') {
             formData.append(key, JSON.stringify(data[key]));
@@ -287,72 +362,111 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
             )}
 
             {step === 2 && (
-               <div className="space-y-6 text-sm">
-                  <div className="bg-white border border-slate-200 shadow-sm p-6 rounded">
-                     <h2 className="text-xl font-bold text-slate-800 mb-6 border-b pb-2">Paperback Specifications</h2>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                           <label className="font-bold text-slate-800 block mb-2">Trim Size</label>
-                           <select {...register("paperbackTrimSize")} className="border border-slate-300 rounded p-2 w-full shadow-sm focus:ring-1 focus:ring-sky-500">
-                              {PAPERBACK_TRIMS.map(t => (
-                                 <option key={t.value} value={t.value}>{t.label} ({t.metric})</option>
-                              ))}
-                           </select>
-                        </div>
-                        <div>
-                           <label className="font-bold text-slate-800 block mb-2">Interior & Paper Type</label>
-                           <select {...register("paperbackInteriorColor")} className="border border-slate-300 rounded p-2 w-full shadow-sm focus:ring-1 focus:ring-sky-500">
-                              {availablePbInks.map(ink => (
-                                 <option key={ink} value={ink}>{ink}</option>
-                              ))}
-                           </select>
-                        </div>
-                        <div>
-                           <label className="font-bold text-slate-800 block mb-2">Cover Finish</label>
-                           <div className="flex gap-4">
-                              {availablePbFinishes.map(f => (
-                                 <label key={f} className="flex items-center gap-2 cursor-pointer">
-                                    <input type="radio" value={f} {...register("paperbackCoverFinish")} /> {f === 'Gloss' ? 'Glossy' : 'Matte'}
-                                 </label>
-                              ))}
-                           </div>
-                        </div>
-                     </div>
-                  </div>
+                 <div className="space-y-6 text-sm">
+                    {/* Format Toggles */}
+                    <div className="bg-white border border-slate-200 shadow-sm p-6 rounded mb-6">
+                       <h2 className="text-xl font-bold text-slate-800 mb-4 border-b pb-2">Enable Formats</h2>
+                       <div className="flex flex-col md:flex-row gap-6">
+                          <label className="flex items-center gap-3 cursor-pointer p-4 border rounded-xl hover:bg-slate-50 flex-1">
+                             <input type="checkbox" checked={enablePaperback} onChange={e => setEnablePaperback(e.target.checked)} className="w-5 h-5 text-sky-600 rounded border-slate-300 focus:ring-sky-500" />
+                             <div>
+                                <span className="font-bold text-slate-800 block">Paperback Format</span>
+                                <span className="text-xs text-slate-500">Enable physical paperback printing</span>
+                             </div>
+                          </label>
+                          <label className="flex items-center gap-3 cursor-pointer p-4 border rounded-xl hover:bg-slate-50 flex-1">
+                             <input type="checkbox" checked={enableHardcover} onChange={e => setEnableHardcover(e.target.checked)} className="w-5 h-5 text-violet-600 rounded border-slate-300 focus:ring-violet-500" />
+                             <div>
+                                <span className="font-bold text-slate-800 block">Hardcover Format</span>
+                                <span className="text-xs text-slate-500">Enable premium hardcover printing</span>
+                             </div>
+                          </label>
+                       </div>
+                    </div>
 
-                  <div className="bg-white border border-slate-200 shadow-sm p-6 rounded">
-                     <h2 className="text-xl font-bold text-slate-800 mb-6 border-b pb-2">Hardcover Specifications</h2>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                           <label className="font-bold text-slate-800 block mb-2">Trim Size</label>
-                           <select {...register("hardcoverTrimSize")} className="border border-slate-300 rounded p-2 w-full shadow-sm focus:ring-1 focus:ring-sky-500">
-                              {HARDCOVER_TRIMS.map(t => (
-                                 <option key={t.value} value={t.value}>{t.label} ({t.metric})</option>
-                              ))}
-                           </select>
-                        </div>
-                        <div>
-                           <label className="font-bold text-slate-800 block mb-2">Interior & Paper Type</label>
-                           <select {...register("hardcoverInteriorColor")} className="border border-slate-300 rounded p-2 w-full shadow-sm focus:ring-1 focus:ring-sky-500">
-                              {availableHcInks.map(ink => (
-                                 <option key={ink} value={ink}>{ink}</option>
-                              ))}
-                           </select>
-                        </div>
-                        <div>
-                           <label className="font-bold text-slate-800 block mb-2">Cover Finish</label>
-                           <div className="flex gap-4">
-                              {availableHcFinishes.map(f => (
-                                 <label key={f} className="flex items-center gap-2 cursor-pointer">
-                                    <input type="radio" value={f} {...register("hardcoverCoverFinish")} /> {f === 'Gloss' ? 'Glossy' : 'Matte'}
-                                 </label>
-                              ))}
+                    {enablePaperback && (
+                    <div className="bg-white border border-slate-200 shadow-sm p-6 rounded">
+                       <h2 className="text-xl font-bold text-slate-800 mb-6 border-b pb-2">Paperback Specifications</h2>
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          <div>
+                             <label className="font-bold text-slate-800 block mb-2">Trim Size</label>
+                             {detectedSize ? (
+                               <div className="w-full px-4 py-2 bg-slate-100 border border-slate-200 rounded text-slate-600 cursor-not-allowed flex justify-between items-center">
+                                 <span>{PAPERBACK_TRIMS.find(t => t.value === watchedPbTrim)?.label || watchedPbTrim}</span>
+                                 <span className="text-[10px] uppercase tracking-wider font-black bg-slate-200 px-2 py-0.5 rounded text-slate-400">Locked</span>
+                               </div>
+                             ) : (
+                               <select {...register("paperbackTrimSize")} className="border border-slate-300 rounded p-2 w-full shadow-sm focus:ring-1 focus:ring-sky-500"> 
+                                  {PAPERBACK_TRIMS.map(t => (
+                                     <option key={t.value} value={t.value}>{t.label} ({t.metric})</option>
+                                  ))}
+                               </select>
+                             )}
+                          </div>
+                          <div>
+                             <label className="font-bold text-slate-800 block mb-2">Interior & Paper Type</label>
+                             <select {...register("paperbackInteriorColor")} className="border border-slate-300 rounded p-2 w-full shadow-sm focus:ring-1 focus:ring-sky-500">
+                                {availablePbInks.map(ink => (
+                                   <option key={ink} value={ink}>{ink}</option>
+                                ))}
+                             </select>
+                          </div>
+                          <div>
+                             <label className="font-bold text-slate-800 block mb-2">Cover Finish</label>
+                             <div className="flex gap-4">
+                                {availablePbFinishes.map(f => (
+                                   <label key={f} className="flex items-center gap-2 cursor-pointer">
+                                      <input type="radio" value={f} {...register("paperbackCoverFinish")} /> {f === 'Gloss' ? 'Glossy' : 'Matte'}
+                                   </label>
+                                ))}
+                             </div>
+                          </div>
+                       </div>
+                    </div>
+                    )}
+
+                    {enableHardcover && (
+                    <div className="bg-white border border-slate-200 shadow-sm p-6 rounded">
+                       <h2 className="text-xl font-bold text-slate-800 mb-6 border-b pb-2">Hardcover Specifications</h2>
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          <div>
+                             <label className="font-bold text-slate-800 block mb-2">Trim Size</label>
+                             {detectedSize ? (
+                               <div className="w-full px-4 py-2 bg-slate-100 border border-slate-200 rounded text-slate-600 cursor-not-allowed flex justify-between items-center">
+                                 <span>{HARDCOVER_TRIMS.find(t => t.value === watchedHcTrim)?.label || watchedHcTrim}</span>
+                                 <span className="text-[10px] uppercase tracking-wider font-black bg-slate-200 px-2 py-0.5 rounded text-slate-400">Locked</span>
+                               </div>
+                             ) : (
+                               <select {...register("hardcoverTrimSize")} className="border border-slate-300 rounded p-2 w-full shadow-sm focus:ring-1 focus:ring-sky-500"> 
+                                  {HARDCOVER_TRIMS.map(t => (
+                                     <option key={t.value} value={t.value}>{t.label} ({t.metric})</option>
+                                  ))}
+                               </select>
+                             )}
+                          </div>
+                            <div>
+                                <label className="font-bold text-slate-800 block mb-2">Interior & Paper Type</label>
+                              <select {...register("hardcoverInteriorColor")} className="border border-slate-300 rounded p-2 w-full shadow-sm focus:ring-1 focus:ring-sky-500">
+                                 {availableHcInks.map(ink => (
+                                    <option key={ink} value={ink}>{ink}</option>
+                                 ))}
+                              </select>
+                           </div>
+                           <div>
+                              <label className="font-bold text-slate-800 block mb-2">Cover Finish</label>
+                              <div className="flex gap-4">
+                                 {availableHcFinishes.map(f => (
+                                    <label key={f} className="flex items-center gap-2 cursor-pointer">
+                                       <input type="radio" value={f} {...register("hardcoverCoverFinish")} /> {f === 'Gloss' ? 'Glossy' : 'Matte'}
+                                    </label>
+                                 ))}
+                              </div>
                            </div>
                         </div>
                      </div>
+                     )}
                   </div>
-               </div>
-            )}
+              )}
 
             {step === 3 && (
                <div className="space-y-6 text-sm">
@@ -362,22 +476,34 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
                      <div className="w-3/4 space-y-8">
                         {/* Manuscript Section */}
                         <div className="space-y-4">
-                           <label className="font-bold text-slate-700 block text-xs uppercase tracking-wider">1. Book Manuscript (Internal PDF)</label>
-                           <p className="text-slate-600 mb-2 text-xs">Upload the interior content of your book in PDF format.</p>
-                           <input type="file" {...register("manuscript")} accept=".pdf" className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" />
+                             <label className="font-bold text-slate-700 block text-xs uppercase tracking-wider">1. Book Manuscript (Internal PDF)</label>
+                             <p className="text-slate-600 mb-2 text-xs">Upload the interior content of your book in PDF format.</p>
+                             <input 
+                               type="file" 
+                               {...register("manuscript", {
+                                 onChange: (e) => handleFileChange(e, 'manuscript')
+                               })} 
+                               accept=".pdf" 
+                               className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" 
+                             />
 
-                           {(initialData?.manuscriptUrl || (watch('manuscript') as any)?.[0]) && (
-                              <div className="border border-green-500 rounded p-4 bg-green-50 text-green-900 font-medium flex gap-2 items-start">
-                                 <CheckCircle2 className="text-green-600 mt-1" size={18} />
-                                 <div>
-                                    <strong className="block text-base">Manuscript {(watch('manuscript') as any)?.[0]?.name || 'Current File'} {(watch('manuscript') as any)?.[0] ? 'selected' : 'active'}</strong>
-                                    <span className="text-xs font-normal">
-                                       {initialData?.manuscriptUrl ? `Current file: ${initialData.manuscriptUrl.split('/').pop()}` : 'File ready for processing.'}
-                                    </span>
-                                 </div>
-                              </div>
-                           )}
-                        </div>
+                             {(initialData?.manuscriptUrl || (watch('manuscript') as any)?.[0]) && (
+                                <div className="border border-green-500 rounded p-4 bg-green-50 text-green-900 font-medium flex gap-2 items-start">
+                                   <CheckCircle2 className="text-green-600 mt-1" size={18} />
+                                   <div>
+                                      <strong className="block text-base">Manuscript {(watch('manuscript') as any)?.[0]?.name || 'Current File'} {(watch('manuscript') as any)?.[0] ? 'selected' : 'active'}</strong>
+                                      <span className="text-xs font-normal">
+                                         {initialData?.manuscriptUrl ? `Current file: ${initialData.manuscriptUrl.split('/').pop()}` : 'File ready for processing.'}      
+                                      </span>
+                                      {detectedSize && (
+                                         <p className="text-xs font-bold text-sky-600 mt-1">
+                                           Detected Dimensions: {detectedSize.width.toFixed(2)}" x {detectedSize.height.toFixed(2)}" | Pages: {watch("pageCount")}
+                                         </p>
+                                      )}
+                                   </div>
+                                </div>
+                             )}
+                          </div>
 
                         <div className="h-px bg-slate-100 w-full" />
 
@@ -385,7 +511,14 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
                         <div className="space-y-4">
                            <label className="font-bold text-slate-700 block text-xs uppercase tracking-wider">2. Book Cover (Print-Ready PDF)</label>
                            <p className="text-slate-600 mb-2 text-xs">Upload your full book cover PDF for high-quality printing.</p>
-                           <input type="file" {...register("coverPdfFile")} accept=".pdf" className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" />
+                           <input 
+                             type="file" 
+                             {...register("coverPdfFile", {
+                               onChange: (e) => handleFileChange(e, 'coverPdfFile')
+                             })} 
+                             accept=".pdf" 
+                             className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" 
+                           />
                            
                            {(initialData?.coverPdf || (watch('coverPdfFile') as any)?.[0]) && (
                               <div className="border border-sky-500 rounded p-4 bg-sky-50 text-sky-900 font-medium flex gap-2 items-start">
@@ -395,6 +528,11 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
                                     <span className="text-xs font-normal">
                                        {initialData?.coverPdf ? `Current file: ${initialData.coverPdf.split('/').pop()}` : 'File ready for printing.'}
                                     </span>
+                                    {coverDetectedSize && (
+                                       <p className="text-xs font-bold text-sky-600 mt-1">
+                                         Detected Dimensions: {coverDetectedSize.width.toFixed(3)}" x {coverDetectedSize.height.toFixed(3)}"
+                                       </p>
+                                    )}
                                  </div>
                               </div>
                            )}
