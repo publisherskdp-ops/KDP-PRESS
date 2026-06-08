@@ -284,6 +284,21 @@ export default function PublishPage() {
     if (!file) return
 
     setUploadingField(field)
+
+    if (field === 'manuscriptUrl' && file.type === 'application/pdf') {
+      try {
+        const arrayBuffer = await file.arrayBuffer()
+        const { PDFDocument } = await import('pdf-lib')
+        const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true })
+        const count = pdfDoc.getPageCount()
+        setPageCount(count)
+        toast.success(`Manuscript loaded: ${count} pages detected.`)
+      } catch (err) {
+        console.error("Failed to parse PDF page count:", err)
+        toast.error("Could not read PDF page count. Please ensure it is a valid PDF.")
+      }
+    }
+
     await new Promise(resolve => setTimeout(resolve, 1200))
     setFiles(prev => ({ ...prev, [field]: file }))
     setUploadingField(null)
@@ -561,8 +576,16 @@ export default function PublishPage() {
                   <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Final Page Count *</label>
                   <input
                     type="number" value={pageCount} onChange={(e) => setPageCount(parseInt(e.target.value) || 0)}
-                    className="w-full px-4 py-3.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:ring-2 focus:ring-sky-500/20 focus:bg-white transition-all text-slate-900 font-bold text-sm"
+                    readOnly={!!files.manuscriptUrl}
+                    className={`w-full px-4 py-3.5 border rounded-xl outline-none focus:ring-2 focus:ring-sky-500/20 transition-all font-bold text-sm ${
+                      files.manuscriptUrl 
+                        ? 'bg-emerald-50/50 border-emerald-200 text-emerald-900 cursor-not-allowed' 
+                        : 'bg-slate-50 border-slate-100 focus:bg-white text-slate-900'
+                    }`}
                   />
+                  {files.manuscriptUrl && (
+                    <p className="text-[10px] text-emerald-600 font-bold mt-1">✓ Auto-detected from manuscript</p>
+                  )}
                 </div>
               </div>
 
