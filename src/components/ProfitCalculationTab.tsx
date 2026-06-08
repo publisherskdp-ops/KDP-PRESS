@@ -27,7 +27,7 @@ export default function ProfitCalculationTab({ order }: { order: any }) {
             setError(errorMessage);
             
             // Only show toast error if it's not a standard pending/rejected state
-            const isPendingOrRejected = order?.status?.name === 'REJECTED' || order?.status?.name === 'UNPAID' || order?.status?.name === 'CREATED';
+            const isPendingOrRejected = order?.status?.name === 'REJECTED' || order?.status?.name === 'UNPAID' || order?.status?.name === 'CREATED' || order?.status?.name === 'PRODUCTION_DELAYED';
             if (!isPendingOrRejected) {
               toast.error(errorMessage);
             }
@@ -40,7 +40,7 @@ export default function ProfitCalculationTab({ order }: { order: any }) {
             error?.message || error?.error || "An error occurred";
           setError(errorMessage);
           
-          const isPendingOrRejected = order?.status?.name === 'REJECTED' || order?.status?.name === 'UNPAID' || order?.status?.name === 'CREATED';
+          const isPendingOrRejected = order?.status?.name === 'REJECTED' || order?.status?.name === 'UNPAID' || order?.status?.name === 'CREATED' || order?.status?.name === 'PRODUCTION_DELAYED';
           if (!isPendingOrRejected) {
             toast.error(errorMessage);
           }
@@ -73,8 +73,12 @@ export default function ProfitCalculationTab({ order }: { order: any }) {
     );
   }
 
-  if (error || !costs) {
-    const isPendingOrRejected = order?.status?.name === 'REJECTED' || order?.status?.name === 'UNPAID' || order?.status?.name === 'CREATED';
+  // Fallback to order.costs if API fetch failed
+  const luluCostsFromOrder = order?.costs;
+  const hasEmbeddedCosts = luluCostsFromOrder && (luluCostsFromOrder.total_cost_incl_tax > 0 || luluCostsFromOrder.line_item_costs > 0);
+  
+  if (error || (!costs && !hasEmbeddedCosts)) {
+    const isPendingOrRejected = order?.status?.name === 'REJECTED' || order?.status?.name === 'UNPAID' || order?.status?.name === 'CREATED' || order?.status?.name === 'PRODUCTION_DELAYED';
 
     return (
       <div
@@ -118,12 +122,19 @@ export default function ProfitCalculationTab({ order }: { order: any }) {
     );
   }
 
+  // Use API costs if available, otherwise fallback to embedded order costs
+  const activeCosts = costs || {
+    productCost: Number(luluCostsFromOrder?.line_item_costs) || 0,
+    shippingCost: Number(luluCostsFromOrder?.shipping_cost) || 0,
+    totalCost: Number(luluCostsFromOrder?.total_cost_incl_tax) || 0,
+  };
+
   // Get order price from database
   const ourPrice = order.grossAmount || 0;
-  const luluTotalCost = costs.totalCost || 0;
+  const luluTotalCost = activeCosts.totalCost || 0;
   const profit = ourPrice - luluTotalCost;
   const profitMargin = luluTotalCost > 0 ? (profit / luluTotalCost) * 100 : 0;
-  const isProfitable = profit > 0;
+  const isProfitable = profit >= 0;
   const profitColor = isProfitable ? "#10b981" : "#ef4444";
 
   return (
@@ -379,7 +390,7 @@ export default function ProfitCalculationTab({ order }: { order: any }) {
                   fontSize: "0.95rem",
                 }}
               >
-                ${costs.productCost.toFixed(2)}
+                ${activeCosts.productCost.toFixed(2)}
               </td>
             </tr>
             <tr style={{ borderBottom: "1px solid var(--border)" }}>
@@ -402,7 +413,7 @@ export default function ProfitCalculationTab({ order }: { order: any }) {
                   fontSize: "0.95rem",
                 }}
               >
-                ${costs.shippingCost.toFixed(2)}
+                ${activeCosts.shippingCost.toFixed(2)}
               </td>
             </tr>
             <tr style={{ borderBottom: "2px solid var(--primary-color)" }}>
