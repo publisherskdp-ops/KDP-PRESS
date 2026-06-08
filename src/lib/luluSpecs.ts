@@ -34,7 +34,7 @@ export interface TrimSpec {
 export const PAPERBACK_TRIMS: TrimSpec[] = [
   // Standard Trim Sizes
   {
-    label: '5" x 8"', value: '5 x 8', metric: '12.7 x 20.32 cm', isLarge: false,
+    label: '5.5" x 8.5" (Digest)', value: '5.5 x 8.5', metric: '13.97 x 21.59 cm', isLarge: false,
     pageRanges: {
       'Black & White / White': { min: 24, max: 828 },
       'Black & White / Cream': { min: 24, max: 776 },
@@ -43,34 +43,7 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
     },
   },
   {
-    label: '5.06" x 7.81"', value: '5.06 x 7.81', metric: '12.85 x 19.84 cm', isLarge: false,
-    pageRanges: {
-      'Black & White / White': { min: 24, max: 828 },
-      'Black & White / Cream': { min: 24, max: 776 },
-      'Standard Color / White': { min: 72, max: 600 },
-      'Premium Color / White': { min: 24, max: 828 },
-    },
-  },
-  {
-    label: '5.25" x 8"', value: '5.25 x 8', metric: '13.34 x 20.32 cm', isLarge: false,
-    pageRanges: {
-      'Black & White / White': { min: 24, max: 828 },
-      'Black & White / Cream': { min: 24, max: 776 },
-      'Standard Color / White': { min: 72, max: 600 },
-      'Premium Color / White': { min: 24, max: 828 },
-    },
-  },
-  {
-    label: '5.5" x 8.5"', value: '5.5 x 8.5', metric: '13.97 x 21.59 cm', isLarge: false,
-    pageRanges: {
-      'Black & White / White': { min: 24, max: 828 },
-      'Black & White / Cream': { min: 24, max: 776 },
-      'Standard Color / White': { min: 72, max: 600 },
-      'Premium Color / White': { min: 24, max: 828 },
-    },
-  },
-  {
-    label: '6" x 9"', value: '6 x 9', metric: '15.24 x 22.86 cm', isLarge: false,
+    label: '6" x 9" (US Trade)', value: '6 x 9', metric: '15.24 x 22.86 cm', isLarge: false,
     pageRanges: {
       'Black & White / White': { min: 24, max: 828 },
       'Black & White / Cream': { min: 24, max: 776 },
@@ -81,7 +54,7 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
 
   // Large Trim Sizes
   {
-    label: '6.14" x 9.21"', value: '6.14 x 9.21', metric: '15.6 x 23.39 cm', isLarge: true,
+    label: '6.14" x 9.21" (Royal)', value: '6.14 x 9.21', metric: '15.6 x 23.39 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 24, max: 828 },
       'Black & White / Cream': { min: 24, max: 776 },
@@ -90,7 +63,7 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
     },
   },
   {
-    label: '6.69" x 9.61"', value: '6.69 x 9.61', metric: '16.99 x 24.41 cm', isLarge: true,
+    label: '7" x 10" (Executive)', value: '7 x 10', metric: '17.78 x 25.4 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 24, max: 828 },
       'Black & White / Cream': null,
@@ -99,7 +72,7 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
     },
   },
   {
-    label: '7" x 10"', value: '7 x 10', metric: '17.78 x 25.4 cm', isLarge: true,
+    label: '7.44" x 9.68" (Crown Quarto)', value: '7.44 x 9.68', metric: '18.9 x 24.6 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 24, max: 828 },
       'Black & White / Cream': null,
@@ -108,52 +81,7 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
     },
   },
   {
-    label: '7.44" x 9.69"', value: '7.44 x 9.69', metric: '18.9 x 24.61 cm', isLarge: true,
-    pageRanges: {
-      'Black & White / White': { min: 24, max: 828 },
-      'Black & White / Cream': null,
-      'Standard Color / White': { min: 72, max: 600 },
-      'Premium Color / White': { min: 24, max: 828 },
-    },
-  },
-  {
-    label: '7.5" x 9.25"', value: '7.5 x 9.25', metric: '19.05 x 23.5 cm', isLarge: true,
-    pageRanges: {
-      'Black & White / White': { min: 24, max: 828 },
-      'Black & White / Cream': null,
-      'Standard Color / White': { min: 72, max: 600 },
-      'Premium Color / White': { min: 24, max: 828 },
-    },
-  },
-  {
-    label: '8" x 10"', value: '8 x 10', metric: '20.32 x 25.4 cm', isLarge: true,
-    pageRanges: {
-      'Black & White / White': { min: 24, max: 828 },
-      'Black & White / Cream': null, // Not available in Cream
-      'Standard Color / White': { min: 72, max: 600 },
-      'Premium Color / White': { min: 24, max: 828 },
-    },
-  },
-  {
-    label: '8.25" x 6"', value: '8.25 x 6', metric: '20.96 x 15.24 cm', isLarge: true,
-    pageRanges: {
-      'Black & White / White': { min: 24, max: 800 },
-      'Black & White / Cream': null,
-      'Standard Color / White': { min: 72, max: 600 },
-      'Premium Color / White': { min: 24, max: 800 },
-    },
-  },
-  {
-    label: '8.25" x 8.25"', value: '8.25 x 8.25', metric: '20.96 x 20.96 cm', isLarge: true,
-    pageRanges: {
-      'Black & White / White': { min: 24, max: 800 },
-      'Black & White / Cream': null,
-      'Standard Color / White': { min: 72, max: 600 },
-      'Premium Color / White': { min: 24, max: 800 },
-    },
-  },
-  {
-    label: '8.5" x 8.5"', value: '8.5 x 8.5', metric: '21.59 x 21.59 cm', isLarge: true,
+    label: '8.5" x 8.5" (Square)', value: '8.5 x 8.5', metric: '21.59 x 21.59 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 24, max: 590 },
       'Black & White / Cream': null,
@@ -162,7 +90,7 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
     },
   },
   {
-    label: '8.5" x 11"', value: '8.5 x 11', metric: '21.59 x 27.94 cm', isLarge: true,
+    label: '8.5" x 11" (US Letter)', value: '8.5 x 11', metric: '21.59 x 27.94 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 24, max: 590 },
       'Black & White / Cream': null,
@@ -171,7 +99,7 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
     },
   },
   {
-    label: '8.27" x 11.69"', value: '8.27 x 11.69', metric: '21 x 29.7 cm', isLarge: true,
+    label: '8.27" x 11.69" (A4)', value: '8.27 x 11.69', metric: '21 x 29.7 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 24, max: 780 },
       'Black & White / Cream': null,
@@ -330,25 +258,20 @@ export function getAvailableFinishes(
 /** Maps a trim value string to the Lulu 4-digit x 4-digit code */
 export function getTrimCodeForLulu(trimValue: string): string {
   const map: Record<string, string> = {
-    '5 x 8': '0500X0800',
-    '5.06 x 7.81': '0506X0781',
-    '5.25 x 8': '0525X0800',
     '5.5 x 8.5': '0550X0850',
     '6 x 9': '0600X0900',
     '6.14 x 9.21': '0614X0921',
-    '6.69 x 9.61': '0669X0961',
     '7 x 10': '0700X1000',
-    '7.44 x 9.69': '0744X0969',
-    '7.5 x 9.25': '0750X0925',
-    '8 x 10': '0800X1000',
-    '8.25 x 6': '0825X0600',
-    '8.25 x 8.25': '0825X0825',
+    '7.44 x 9.68': '0744X0968',
     '8.5 x 8.5': '0850X0850',
     '8.5 x 11': '0850X1100',
     '8.27 x 11.69': '0827X1169',
     '8.25 x 11': '0825X1100',
   };
-  return map[trimValue] || '0600X0900';
+  if (!map[trimValue]) {
+    throw new Error(`Trim size '${trimValue}' is not physically manufactured by Lulu Print-On-Demand. Please select a supported size.`);
+  }
+  return map[trimValue];
 }
 
 /** Resolve ink + quality codes from InkPaperType */

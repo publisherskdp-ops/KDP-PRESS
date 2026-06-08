@@ -15,15 +15,15 @@ const tests: { name: string; spec: KDPBookSpec; expectedId?: string; expectError
     expectedId: '0600X0900.BW.STD.PB.060UW444.GXX',
   },
   {
-    name: 'Paperback, 5x8, B&W Cream, Matte, 300 pages',
+    name: 'Paperback, 5.5x8.5, B&W Cream, Matte, 300 pages',
     spec: {
       format: 'Paperback',
-      trimSize: '5 x 8',
+      trimSize: '5.5 x 8.5',
       interiorType: 'Black ink and cream paper',
       coverFinish: 'Matte',
       pageCount: 300,
     },
-    expectedId: '0500X0800.BW.STD.PB.060UC444.MXX',
+    expectedId: '0550X0850.BW.STD.PB.060UC444.MXX',
   },
   {
     name: 'Hardcover, 6x9, Premium Color, Glossy, 100 pages',

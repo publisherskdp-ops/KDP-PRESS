@@ -37,20 +37,22 @@ function FormatCard({
   pageCount,
   accentColor,
   icon,
+  detectedSize,
 }: {
   format: BindingFormat
   enabled: boolean
   onToggle: () => void
   trimSpecs: TrimSpec[]
   selectedTrim: string
-  onTrimChange: (v: string) => void
+  onTrimChange: (val: string) => void
   selectedInk: InkPaperType
-  onInkChange: (v: InkPaperType) => void
+  onInkChange: (val: InkPaperType) => void
   selectedFinish: string
-  onFinishChange: (v: string) => void
+  onFinishChange: (val: string) => void
   pageCount: number
-  accentColor: string
+  accentColor: 'sky' | 'violet'
   icon: React.ReactNode
+  detectedSize?: { width: number, height: number } | null
 }) {
   const availableInks = getAvailableInkTypes(format, selectedTrim)
   const availableFinishes = getAvailableFinishes(format, selectedTrim, selectedInk)
@@ -139,30 +141,49 @@ function FormatCard({
             <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1">
               Trim Size
             </label>
-            <select
-              value={selectedTrim}
-              onChange={(e) => onTrimChange(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 cursor-pointer outline-none focus:ring-2 focus:ring-sky-500/20 focus:bg-white transition-all appearance-none"
-            >
-              {standardTrims.length > 0 && (
-                <optgroup label="Standard Trim Sizes">
-                  {standardTrims.map(t => (
-                    <option key={t.value} value={t.value}>
-                      {t.label} — {t.metric}
-                    </option>
-                  ))}
-                </optgroup>
-              )}
-              {largeTrims.length > 0 && (
-                <optgroup label="Large Trim Sizes">
-                  {largeTrims.map(t => (
-                    <option key={t.value} value={t.value}>
-                      {t.label} — {t.metric}
-                    </option>
-                  ))}
-                </optgroup>
-              )}
-            </select>
+            {detectedSize ? (
+              <div className="space-y-2">
+                <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${
+                  accentColor === 'sky' 
+                    ? 'bg-sky-50 border-sky-100 text-sky-800' 
+                    : 'bg-violet-50 border-violet-100 text-violet-800'
+                }`}>
+                  <FileText size={14} className={accentColor === 'sky' ? 'text-sky-600' : 'text-violet-600'} />
+                  <span className="text-xs font-bold">
+                    Detected PDF Size: {detectedSize.width.toFixed(2)}" x {detectedSize.height.toFixed(2)}"
+                  </span>
+                </div>
+                <div className="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 cursor-not-allowed flex justify-between items-center">
+                  <span>{trimSpecs.find(t => t.value === selectedTrim)?.label || selectedTrim}</span>
+                  <span className="text-[10px] uppercase tracking-wider font-black bg-slate-200 px-2 py-0.5 rounded text-slate-400">Locked</span>
+                </div>
+              </div>
+            ) : (
+              <select
+                value={selectedTrim}
+                onChange={(e) => onTrimChange(e.target.value)}
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 cursor-pointer outline-none focus:ring-2 focus:ring-sky-500/20 focus:bg-white transition-all appearance-none"
+              >
+                {standardTrims.length > 0 && (
+                  <optgroup label="Standard Trim Sizes">
+                    {standardTrims.map(t => (
+                      <option key={t.value} value={t.value}>
+                        {t.label} — {t.metric}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+                {largeTrims.length > 0 && (
+                  <optgroup label="Large Trim Sizes">
+                    {largeTrims.map(t => (
+                      <option key={t.value} value={t.value}>
+                        {t.label} — {t.metric}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+              </select>
+            )}
           </div>
 
           {/* Ink / Paper Type */}
@@ -273,6 +294,9 @@ export default function PublishPage() {
     image: null,
   })
 
+  // PDF Detected Data
+  const [detectedSize, setDetectedSize] = useState<{width: number, height: number} | null>(null)
+
   const fileInputRefs = {
     image: useRef<HTMLInputElement>(null),
     coverPdf: useRef<HTMLInputElement>(null),
@@ -290,12 +314,49 @@ export default function PublishPage() {
         const arrayBuffer = await file.arrayBuffer()
         const { PDFDocument } = await import('pdf-lib')
         const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true })
+        
+        // 1. Extract Page Count
         const count = pdfDoc.getPageCount()
         setPageCount(count)
-        toast.success(`Manuscript loaded: ${count} pages detected.`)
+
+        // 2. Extract Physical Dimensions (Points -> Inches)
+        const firstPage = pdfDoc.getPage(0)
+        const { width, height } = firstPage.getSize()
+        const widthInches = width / 72
+        const heightInches = height / 72
+
+        // Helper to find closest trim size
+        const findClosestTrim = (w: number, h: number, specs: any[]) => {
+          let closest = specs[0].value
+          let minDiff = Infinity
+          specs.forEach(s => {
+            const [sw, sh] = s.value.split(' x ').map(Number)
+            const diff = Math.abs(sw - w) + Math.abs(sh - h)
+            if (diff < minDiff) {
+              minDiff = diff
+              closest = s.value
+            }
+          })
+          return { closest, minDiff }
+        }
+
+        const pbMatch = findClosestTrim(widthInches, heightInches, PAPERBACK_TRIMS)
+        const hcMatch = findClosestTrim(widthInches, heightInches, HARDCOVER_TRIMS)
+
+        // Auto-select if it's a reasonably close match (within 0.2 inches tolerance)
+        if (pbMatch.minDiff < 0.2) {
+          setPbTrim(pbMatch.closest)
+        }
+        if (hcMatch.minDiff < 0.2) {
+          setHcTrim(hcMatch.closest)
+        }
+
+        setDetectedSize({ width: widthInches, height: heightInches })
+
+        toast.success(`Manuscript loaded: ${count} pages at ${widthInches.toFixed(2)}" x ${heightInches.toFixed(2)}"`)
       } catch (err) {
-        console.error("Failed to parse PDF page count:", err)
-        toast.error("Could not read PDF page count. Please ensure it is a valid PDF.")
+        console.error("Failed to parse PDF:", err)
+        toast.error("Could not read PDF dimensions or page count. Please ensure it is a valid PDF.")
       }
     }
 
@@ -524,6 +585,7 @@ export default function PublishPage() {
               pageCount={pageCount}
               accentColor="sky"
               icon={<Book size={18} />}
+              detectedSize={detectedSize}
             />
 
             <FormatCard
@@ -540,6 +602,7 @@ export default function PublishPage() {
               pageCount={pageCount}
               accentColor="violet"
               icon={<BookOpen size={18} />}
+              detectedSize={detectedSize}
             />
           </section>
 
