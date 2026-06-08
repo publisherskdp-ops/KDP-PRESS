@@ -93,7 +93,7 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
     label: '6.69" x 9.61"', value: '6.69 x 9.61', metric: '16.99 x 24.41 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 24, max: 828 },
-      'Black & White / Cream': { min: 24, max: 776 },
+      'Black & White / Cream': null,
       'Standard Color / White': { min: 72, max: 600 },
       'Premium Color / White': { min: 24, max: 828 },
     },
@@ -102,7 +102,7 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
     label: '7" x 10"', value: '7 x 10', metric: '17.78 x 25.4 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 24, max: 828 },
-      'Black & White / Cream': { min: 24, max: 776 },
+      'Black & White / Cream': null,
       'Standard Color / White': { min: 72, max: 600 },
       'Premium Color / White': { min: 24, max: 828 },
     },
@@ -111,7 +111,7 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
     label: '7.44" x 9.69"', value: '7.44 x 9.69', metric: '18.9 x 24.61 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 24, max: 828 },
-      'Black & White / Cream': { min: 24, max: 776 },
+      'Black & White / Cream': null,
       'Standard Color / White': { min: 72, max: 600 },
       'Premium Color / White': { min: 24, max: 828 },
     },
@@ -120,7 +120,7 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
     label: '7.5" x 9.25"', value: '7.5 x 9.25', metric: '19.05 x 23.5 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 24, max: 828 },
-      'Black & White / Cream': { min: 24, max: 776 },
+      'Black & White / Cream': null,
       'Standard Color / White': { min: 72, max: 600 },
       'Premium Color / White': { min: 24, max: 828 },
     },
@@ -129,7 +129,7 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
     label: '8" x 10"', value: '8 x 10', metric: '20.32 x 25.4 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 24, max: 828 },
-      'Black & White / Cream': { min: 24, max: 776 },
+      'Black & White / Cream': null, // Not available in Cream
       'Standard Color / White': { min: 72, max: 600 },
       'Premium Color / White': { min: 24, max: 828 },
     },
@@ -138,7 +138,7 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
     label: '8.25" x 6"', value: '8.25 x 6', metric: '20.96 x 15.24 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 24, max: 800 },
-      'Black & White / Cream': { min: 24, max: 750 },
+      'Black & White / Cream': null,
       'Standard Color / White': { min: 72, max: 600 },
       'Premium Color / White': { min: 24, max: 800 },
     },
@@ -147,7 +147,7 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
     label: '8.25" x 8.25"', value: '8.25 x 8.25', metric: '20.96 x 20.96 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 24, max: 800 },
-      'Black & White / Cream': { min: 24, max: 750 },
+      'Black & White / Cream': null,
       'Standard Color / White': { min: 72, max: 600 },
       'Premium Color / White': { min: 24, max: 800 },
     },
@@ -156,7 +156,7 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
     label: '8.5" x 8.5"', value: '8.5 x 8.5', metric: '21.59 x 21.59 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 24, max: 590 },
-      'Black & White / Cream': { min: 24, max: 550 },
+      'Black & White / Cream': null,
       'Standard Color / White': { min: 72, max: 600 },
       'Premium Color / White': { min: 24, max: 590 },
     },
@@ -165,7 +165,7 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
     label: '8.5" x 11"', value: '8.5 x 11', metric: '21.59 x 27.94 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 24, max: 590 },
-      'Black & White / Cream': { min: 24, max: 550 },
+      'Black & White / Cream': null,
       'Standard Color / White': { min: 72, max: 600 },
       'Premium Color / White': { min: 24, max: 590 },
     },
@@ -174,8 +174,8 @@ export const PAPERBACK_TRIMS: TrimSpec[] = [
     label: '8.27" x 11.69"', value: '8.27 x 11.69', metric: '21 x 29.7 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 24, max: 780 },
-      'Black & White / Cream': { min: 24, max: 730 },
-      'Standard Color / White': null, // Not available
+      'Black & White / Cream': null,
+      'Standard Color / White': { min: 72, max: 600 },
       'Premium Color / White': { min: 24, max: 590 },
     },
   },
@@ -189,7 +189,7 @@ export const HARDCOVER_TRIMS: TrimSpec[] = [
     pageRanges: {
       'Black & White / White': { min: 75, max: 550 },
       'Black & White / Cream': { min: 75, max: 550 },
-      'Standard Color / White': null,
+      'Standard Color / White': { min: 75, max: 550 },
       'Premium Color / White': { min: 75, max: 550 },
     },
   },
@@ -198,7 +198,7 @@ export const HARDCOVER_TRIMS: TrimSpec[] = [
     pageRanges: {
       'Black & White / White': { min: 75, max: 550 },
       'Black & White / Cream': { min: 75, max: 550 },
-      'Standard Color / White': null,
+      'Standard Color / White': { min: 75, max: 550 },
       'Premium Color / White': { min: 75, max: 550 },
     },
   },
@@ -207,7 +207,7 @@ export const HARDCOVER_TRIMS: TrimSpec[] = [
     pageRanges: {
       'Black & White / White': { min: 75, max: 550 },
       'Black & White / Cream': { min: 75, max: 550 },
-      'Standard Color / White': null,
+      'Standard Color / White': { min: 75, max: 550 },
       'Premium Color / White': { min: 75, max: 550 },
     },
   },
@@ -215,8 +215,8 @@ export const HARDCOVER_TRIMS: TrimSpec[] = [
     label: '7" x 10"', value: '7 x 10', metric: '17.78 x 25.4 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 75, max: 550 },
-      'Black & White / Cream': { min: 75, max: 550 },
-      'Standard Color / White': null,
+      'Black & White / Cream': null,
+      'Standard Color / White': { min: 75, max: 550 },
       'Premium Color / White': { min: 75, max: 550 },
     },
   },
@@ -224,8 +224,8 @@ export const HARDCOVER_TRIMS: TrimSpec[] = [
     label: '8.25" x 11"', value: '8.25 x 11', metric: '20.96 x 27.94 cm', isLarge: true,
     pageRanges: {
       'Black & White / White': { min: 75, max: 550 },
-      'Black & White / Cream': { min: 75, max: 550 },
-      'Standard Color / White': null,
+      'Black & White / Cream': null,
+      'Standard Color / White': { min: 75, max: 550 },
       'Premium Color / White': { min: 75, max: 550 },
     },
   },
