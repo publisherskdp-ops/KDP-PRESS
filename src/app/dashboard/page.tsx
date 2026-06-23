@@ -221,6 +221,34 @@ function BookRow({
                 </span>
               )}
             </div>
+
+            {/* Asset Badges */}
+            <div className="flex flex-wrap items-center gap-2 mt-2">
+              {book.manuscriptUrl && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-sky-50 text-sky-600 text-[10px] font-medium border border-sky-100">
+                  <FileEdit size={10} />
+                  Manuscript PDF
+                </span>
+              )}
+              {book.coverPdfPaperback && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-medium border border-amber-100">
+                  <FileEdit size={10} />
+                  Paperback Cover
+                </span>
+              )}
+              {book.coverPdfHardcover && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 text-[10px] font-medium border border-emerald-100">
+                  <FileEdit size={10} />
+                  Hardcover Cover
+                </span>
+              )}
+              {(!book.coverPdfPaperback && !book.coverPdfHardcover && book.coverPdf) && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-indigo-50 text-indigo-600 text-[10px] font-medium border border-indigo-100">
+                  <FileEdit size={10} />
+                  Cover PDF
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Action trigger tools */}

@@ -109,8 +109,15 @@ export async function createOrderAction(shippingAddress: any, cart: any[]) {
         throw new Error(`Lulu POD Package ID is missing/not generated for book "${bookData.title}" format "${item.format}"`);
       }
 
-      const coverUrl = bookData.coverPdf 
-        ? (bookData.coverPdf.startsWith('http') ? bookData.coverPdf : `${baseUrl}${bookData.coverPdf}`)
+      let coverUrlRaw = '';
+      if (item.format === 'hardcover') {
+        coverUrlRaw = bookData.coverPdfHardcover || bookData.coverPdf || '';
+      } else if (item.format === 'paperback') {
+        coverUrlRaw = bookData.coverPdfPaperback || bookData.coverPdf || '';
+      }
+
+      const coverUrl = coverUrlRaw 
+        ? (coverUrlRaw.startsWith('http') ? coverUrlRaw : `${baseUrl}${coverUrlRaw}`)
         : '';
       const manuscriptUrl = bookData.manuscriptUrl
         ? (bookData.manuscriptUrl.startsWith('http') ? bookData.manuscriptUrl : `${baseUrl}${bookData.manuscriptUrl}`)

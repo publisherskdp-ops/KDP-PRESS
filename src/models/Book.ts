@@ -13,7 +13,9 @@ export interface IBook extends Document {
   priceEbook?: number;
   priceHardcover?: number;
   image: string; // Storefront Display Image
-  coverPdf?: string; // Print-ready Book Cover PDF
+  coverPdf?: string; // Legacy/General Print-ready Book Cover PDF
+  coverPdfPaperback?: string; // Print-ready Paperback Book Cover PDF
+  coverPdfHardcover?: string; // Print-ready Hardcover Book Cover PDF
   manuscriptUrl?: string; // Interior PDF
   luluPaperbackId?: string; // Lulu POD ID for Paperback
   luluHardcoverId?: string; // Lulu POD ID for Hardcover
@@ -60,6 +62,8 @@ const BookSchema: Schema = new Schema(
     priceHardcover: { type: Number },
     image: { type: String, default: '/assets/images/placeholder-book.png' },
     coverPdf: { type: String },
+    coverPdfPaperback: { type: String },
+    coverPdfHardcover: { type: String },
     manuscriptUrl: { type: String },
     luluPaperbackId: { type: String },
     luluHardcoverId: { type: String },

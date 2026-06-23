@@ -289,7 +289,8 @@ export default function PublishPage() {
 
   // Files
   const [files, setFiles] = useState<{ [key: string]: File | null }>({
-    coverPdf: null,
+    coverPdfPaperback: null,
+    coverPdfHardcover: null,
     manuscriptUrl: null,
     image: null,
   })
@@ -299,7 +300,8 @@ export default function PublishPage() {
 
   const fileInputRefs = {
     image: useRef<HTMLInputElement>(null),
-    coverPdf: useRef<HTMLInputElement>(null),
+    coverPdfPaperback: useRef<HTMLInputElement>(null),
+    coverPdfHardcover: useRef<HTMLInputElement>(null),
     manuscriptUrl: useRef<HTMLInputElement>(null),
   }
 
@@ -388,7 +390,8 @@ export default function PublishPage() {
     if (!fullName.trim()) errors.push('Author name is required')
     if (!email.trim()) errors.push('Email is required')
     if (!title.trim()) errors.push('Book title is required')
-    if (!files.coverPdf) errors.push('Cover PDF is required')
+    if (enablePaperback && !files.coverPdfPaperback) errors.push('Paperback Cover PDF is required')
+    if (enableHardcover && !files.coverPdfHardcover) errors.push('Hardcover Cover PDF is required')
     if (!files.manuscriptUrl) errors.push('Manuscript PDF is required')
     if (!enablePaperback && !enableHardcover) errors.push('At least one print format must be enabled')
 
@@ -445,7 +448,8 @@ export default function PublishPage() {
 
       // Files
       if (files.image) rawFormData.set('image', files.image)
-      if (files.coverPdf) rawFormData.set('coverPdf', files.coverPdf)
+      if (files.coverPdfPaperback) rawFormData.set('coverPdfPaperback', files.coverPdfPaperback)
+      if (files.coverPdfHardcover) rawFormData.set('coverPdfHardcover', files.coverPdfHardcover)
       if (files.manuscriptUrl) rawFormData.set('manuscriptUrl', files.manuscriptUrl)
 
       const result = await publishBookAction(rawFormData)
@@ -491,7 +495,8 @@ export default function PublishPage() {
   }
 
   // ─── Main Render ─────────────────────────────────────────
-  const canSubmit = fullName && email && title && files.coverPdf && files.manuscriptUrl && (enablePaperback || enableHardcover)
+  const canSubmit = fullName && email && title && files.manuscriptUrl && (enablePaperback || enableHardcover) &&
+    (!enablePaperback || files.coverPdfPaperback) && (!enableHardcover || files.coverPdfHardcover)
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -673,21 +678,41 @@ export default function PublishPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {/* Cover PDF */}
-                <div
-                  onClick={() => fileInputRefs.coverPdf.current?.click()}
-                  className={`group relative p-6 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center text-center gap-3 cursor-pointer transition-all ${
-                    files.coverPdf ? 'bg-emerald-50/50 border-emerald-200' : 'bg-slate-50 border-slate-200 hover:border-sky-300'
-                  }`}
-                >
-                  <input type="file" ref={fileInputRefs.coverPdf} accept=".pdf" className="hidden" onChange={(e) => handleFileChange(e, 'coverPdf')} />
-                  {uploadingField === 'coverPdf' ? <Loader2 className="animate-spin text-sky-600" size={22} /> :
-                    files.coverPdf ? <CheckCircle2 className="text-emerald-500" size={22} /> : <FileUp className="text-slate-400 group-hover:scale-105 transition-transform" size={22} />}
-                  <div>
-                    <p className="text-xs font-black text-slate-800">{files.coverPdf ? files.coverPdf.name : 'Book Cover PDF *'}</p>
-                    <p className="text-[10px] text-slate-400 mt-0.5">High-quality PDF for printing</p>
+                {/* Paperback Cover PDF */}
+                {enablePaperback && (
+                  <div
+                    onClick={() => fileInputRefs.coverPdfPaperback.current?.click()}
+                    className={`group relative p-6 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center text-center gap-3 cursor-pointer transition-all ${
+                      files.coverPdfPaperback ? 'bg-emerald-50/50 border-emerald-200' : 'bg-slate-50 border-slate-200 hover:border-sky-300'
+                    }`}
+                  >
+                    <input type="file" ref={fileInputRefs.coverPdfPaperback} accept=".pdf" className="hidden" onChange={(e) => handleFileChange(e, 'coverPdfPaperback')} />
+                    {uploadingField === 'coverPdfPaperback' ? <Loader2 className="animate-spin text-sky-600" size={22} /> :
+                      files.coverPdfPaperback ? <CheckCircle2 className="text-emerald-500" size={22} /> : <FileUp className="text-slate-400 group-hover:scale-105 transition-transform" size={22} />}
+                    <div>
+                      <p className="text-xs font-black text-slate-800">{files.coverPdfPaperback ? files.coverPdfPaperback.name : 'Paperback Cover PDF *'}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">High-quality PDF for paperback printing</p>
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* Hardcover Cover PDF */}
+                {enableHardcover && (
+                  <div
+                    onClick={() => fileInputRefs.coverPdfHardcover.current?.click()}
+                    className={`group relative p-6 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center text-center gap-3 cursor-pointer transition-all ${
+                      files.coverPdfHardcover ? 'bg-emerald-50/50 border-emerald-200' : 'bg-slate-50 border-slate-200 hover:border-violet-300'
+                    }`}
+                  >
+                    <input type="file" ref={fileInputRefs.coverPdfHardcover} accept=".pdf" className="hidden" onChange={(e) => handleFileChange(e, 'coverPdfHardcover')} />
+                    {uploadingField === 'coverPdfHardcover' ? <Loader2 className="animate-spin text-violet-600" size={22} /> :
+                      files.coverPdfHardcover ? <CheckCircle2 className="text-emerald-500" size={22} /> : <FileUp className="text-slate-400 group-hover:scale-105 transition-transform" size={22} />}
+                    <div>
+                      <p className="text-xs font-black text-slate-800">{files.coverPdfHardcover ? files.coverPdfHardcover.name : 'Hardcover Cover PDF *'}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">High-quality PDF for hardcover printing</p>
+                    </div>
+                  </div>
+                )}
 
                 {/* Manuscript */}
                 <div

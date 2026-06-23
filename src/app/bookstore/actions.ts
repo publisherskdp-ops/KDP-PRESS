@@ -60,6 +60,8 @@ export async function getBooksAction() {
       },
       image: book.image,
       coverPdf: book.coverPdf,
+      coverPdfPaperback: book.coverPdfPaperback,
+      coverPdfHardcover: book.coverPdfHardcover,
       manuscriptUrl: book.manuscriptUrl,
       luluPaperbackId: book.luluPaperbackId,
       luluHardcoverId: book.luluHardcoverId,
@@ -100,6 +102,8 @@ export async function getDashboardBooksAction() {
       status: book.status,
       image: book.image,
       coverPdf: book.coverPdf,
+      coverPdfPaperback: book.coverPdfPaperback,
+      coverPdfHardcover: book.coverPdfHardcover,
       manuscriptUrl: book.manuscriptUrl,
       createdAt: book.createdAt.toISOString(),
       pageCount: book.pageCount,
@@ -171,11 +175,13 @@ export async function updateBookDetailsAction(slug: string, rawFormData: FormDat
     };
 
     const imageFile = rawFormData.get('image') as File;
-    const coverPdfFile = rawFormData.get('coverPdf') as File;
+    const coverPdfPaperbackFile = rawFormData.get('coverPdfPaperback') as File;
+    const coverPdfHardcoverFile = rawFormData.get('coverPdfHardcover') as File;
     const manuscriptFile = rawFormData.get('manuscriptUrl') as File;
 
     const imageUrl = await saveFile(imageFile, 'front');
-    const coverPdfUrl = await saveFile(coverPdfFile, 'cover-pdf');
+    const coverPdfPaperbackUrl = await saveFile(coverPdfPaperbackFile, 'cover-pdf-pb');
+    const coverPdfHardcoverUrl = await saveFile(coverPdfHardcoverFile, 'cover-pdf-hc');
     const manuscriptUrl = await saveFile(manuscriptFile, 'ms');
 
     const updateFields: any = {};
@@ -230,7 +236,8 @@ export async function updateBookDetailsAction(slug: string, rawFormData: FormDat
       }
 
       if (imageUrl) updateFields.image = imageUrl;
-    if (coverPdfUrl) updateFields.coverPdf = coverPdfUrl;
+    if (coverPdfPaperbackUrl) updateFields.coverPdfPaperback = coverPdfPaperbackUrl;
+    if (coverPdfHardcoverUrl) updateFields.coverPdfHardcover = coverPdfHardcoverUrl;
     if (manuscriptUrl) updateFields.manuscriptUrl = manuscriptUrl;
     if (data.status) updateFields.status = data.status;
 
@@ -272,6 +279,8 @@ export async function getBookAction(id: string) {
       },
       image: book.image,
       coverPdf: book.coverPdf,
+      coverPdfPaperback: book.coverPdfPaperback,
+      coverPdfHardcover: book.coverPdfHardcover,
       manuscriptUrl: book.manuscriptUrl,
       luluPaperbackId: book.luluPaperbackId,
       luluHardcoverId: book.luluHardcoverId,
@@ -370,27 +379,35 @@ export async function publishBookAction(rawFormData: FormData) {
     };
 
     const imageFile = rawFormData.get('image') as File;
-    const coverPdfFile = rawFormData.get('coverPdf') as File;
+    const coverPdfPaperbackFile = rawFormData.get('coverPdfPaperback') as File;
+    const coverPdfHardcoverFile = rawFormData.get('coverPdfHardcover') as File;
     const manuscriptFile = rawFormData.get('manuscriptUrl') as File;
 
     const imageUrl = await saveFile(imageFile, 'front');
-    const coverPdfUrl = await saveFile(coverPdfFile, 'cover-pdf');
+    const coverPdfPaperbackUrl = await saveFile(coverPdfPaperbackFile, 'cover-pdf-pb');
+    const coverPdfHardcoverUrl = await saveFile(coverPdfHardcoverFile, 'cover-pdf-hc');
     const manuscriptUrl = await saveFile(manuscriptFile, 'ms');
 
     let luluPaperbackId = '';
     let luluHardcoverId = '';
 
-    // Verify required assets exist
-    if (!manuscriptUrl || !coverPdfUrl) {
-      console.log("❌ CRITICAL: Missing manuscript or cover pdf.");
-      return { 
-        success: false, 
-        error: "Required Publishing assets (Book Cover PDF and Manuscript) are missing." 
-      };
-    }
-
     const enablePaperback = data.enablePaperback === 'true';
     const enableHardcover = data.enableHardcover === 'true';
+
+    // Verify required assets exist
+    if (!manuscriptUrl) {
+      console.log("❌ CRITICAL: Missing manuscript.");
+      return { 
+        success: false, 
+        error: "Required Publishing assets (Manuscript) are missing." 
+      };
+    }
+    if (enablePaperback && !coverPdfPaperbackUrl) {
+      return { success: false, error: "Paperback Cover PDF is missing." };
+    }
+    if (enableHardcover && !coverPdfHardcoverUrl) {
+      return { success: false, error: "Hardcover Cover PDF is missing." };
+    }
 
     const pricePaperback = parseFloat(data.pricePaperback) || 0;
     const priceHardcover = parseFloat(data.priceHardcover) || 0;
@@ -438,7 +455,8 @@ export async function publishBookAction(rawFormData: FormData) {
       language: data.language || 'English',
       specification: data.specification,
       image: imageUrl || '/assets/images/placeholder-book.png',
-      coverPdf: coverPdfUrl,
+      coverPdfPaperback: coverPdfPaperbackUrl,
+      coverPdfHardcover: coverPdfHardcoverUrl,
       manuscriptUrl: manuscriptUrl,
       luluPaperbackId,
       luluHardcoverId,

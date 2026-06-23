@@ -62,7 +62,8 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
          drm: initialData?.drm || 'no',
          manuscript: null,
          cover: null,
-         coverPdfFile: null,
+         coverPdfPaperbackFile: null,
+         coverPdfHardcoverFile: null,
          aiGenerated: initialData?.aiGenerated || 'no',
          isbn: initialData?.isbn || '',
          publisher: initialData?.publisher || '',
@@ -108,11 +109,11 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
       name: "contributors"
    });
 
-   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, field: 'manuscript' | 'coverPdfFile') => {
+   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, field: 'manuscript' | 'coverPdfPaperbackFile' | 'coverPdfHardcoverFile') => {
       const file = e.target.files?.[0];
       if (!file) return;
 
-      if (field === 'coverPdfFile' && file.type === 'application/pdf') {
+      if ((field === 'coverPdfPaperbackFile' || field === 'coverPdfHardcoverFile') && file.type === 'application/pdf') {
          try {
             const arrayBuffer = await file.arrayBuffer();
             const { PDFDocument } = await import('pdf-lib');
@@ -201,7 +202,8 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
                // Map to specific backend keys if needed
                if (key === 'manuscript') formData.append('manuscriptUrl', data[key][0]);
                if (key === 'cover') formData.append('image', data[key][0]);
-               if (key === 'coverPdfFile') formData.append('coverPdf', data[key][0]);
+               if (key === 'coverPdfPaperbackFile') formData.append('coverPdfPaperback', data[key][0]);
+               if (key === 'coverPdfHardcoverFile') formData.append('coverPdfHardcover', data[key][0]);
             }
          } else if (data[key] !== null && data[key] !== undefined) {
             formData.append(key, data[key]);
@@ -508,35 +510,59 @@ export default function BookUploadForm({ format = 'KDP', initialData, onClose }:
                         <div className="h-px bg-slate-100 w-full" />
 
                         {/* Cover PDF Section */}
-                        <div className="space-y-4">
-                           <label className="font-bold text-slate-700 block text-xs uppercase tracking-wider">2. Book Cover (Print-Ready PDF)</label>
-                           <p className="text-slate-600 mb-2 text-xs">Upload your full book cover PDF for high-quality printing.</p>
-                           <input 
-                             type="file" 
-                             {...register("coverPdfFile", {
-                               onChange: (e) => handleFileChange(e, 'coverPdfFile')
-                             })} 
-                             accept=".pdf" 
-                             className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" 
-                           />
-                           
-                           {(initialData?.coverPdf || (watch('coverPdfFile') as any)?.[0]) && (
-                              <div className="border border-sky-500 rounded p-4 bg-sky-50 text-sky-900 font-medium flex gap-2 items-start">
-                                 <CheckCircle2 className="text-sky-600 mt-1" size={18} />
-                                 <div>
-                                    <strong className="block text-base">Cover PDF {(watch('coverPdfFile') as any)?.[0]?.name || 'Current File'} {(watch('coverPdfFile') as any)?.[0] ? 'selected' : 'active'}</strong>
-                                    <span className="text-xs font-normal">
-                                       {initialData?.coverPdf ? `Current file: ${initialData.coverPdf.split('/').pop()}` : 'File ready for printing.'}
-                                    </span>
-                                    {coverDetectedSize && (
-                                       <p className="text-xs font-bold text-sky-600 mt-1">
-                                         Detected Dimensions: {coverDetectedSize.width.toFixed(3)}" x {coverDetectedSize.height.toFixed(3)}"
-                                       </p>
-                                    )}
+                        {enablePaperback && (
+                           <div className="space-y-4">
+                              <label className="font-bold text-slate-700 block text-xs uppercase tracking-wider">2a. Paperback Cover (Print-Ready PDF)</label>
+                              <p className="text-slate-600 mb-2 text-xs">Upload your full paperback cover PDF for high-quality printing.</p>
+                              <input 
+                                type="file" 
+                                {...register("coverPdfPaperbackFile", {
+                                  onChange: (e) => handleFileChange(e, 'coverPdfPaperbackFile')
+                                })} 
+                                accept=".pdf" 
+                                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" 
+                              />
+                              
+                              {(initialData?.coverPdfPaperback || (watch('coverPdfPaperbackFile') as any)?.[0]) && (
+                                 <div className="border border-sky-500 rounded p-4 bg-sky-50 text-sky-900 font-medium flex gap-2 items-start">
+                                    <CheckCircle2 className="text-sky-600 mt-1" size={18} />
+                                    <div>
+                                       <strong className="block text-base">Paperback Cover PDF {(watch('coverPdfPaperbackFile') as any)?.[0]?.name || 'Current File'} {(watch('coverPdfPaperbackFile') as any)?.[0] ? 'selected' : 'active'}</strong>
+                                       <span className="text-xs font-normal">
+                                          {initialData?.coverPdfPaperback ? `Current file: ${initialData.coverPdfPaperback.split('/').pop()}` : 'File ready for printing.'}
+                                       </span>
+                                    </div>
                                  </div>
-                              </div>
-                           )}
-                        </div>
+                              )}
+                           </div>
+                        )}
+
+                        {enableHardcover && (
+                           <div className="space-y-4 mt-6">
+                              <label className="font-bold text-slate-700 block text-xs uppercase tracking-wider">2b. Hardcover Cover (Print-Ready PDF)</label>
+                              <p className="text-slate-600 mb-2 text-xs">Upload your full hardcover cover PDF for high-quality printing.</p>
+                              <input 
+                                type="file" 
+                                {...register("coverPdfHardcoverFile", {
+                                  onChange: (e) => handleFileChange(e, 'coverPdfHardcoverFile')
+                                })} 
+                                accept=".pdf" 
+                                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" 
+                              />
+                              
+                              {(initialData?.coverPdfHardcover || (watch('coverPdfHardcoverFile') as any)?.[0]) && (
+                                 <div className="border border-violet-500 rounded p-4 bg-violet-50 text-violet-900 font-medium flex gap-2 items-start">
+                                    <CheckCircle2 className="text-violet-600 mt-1" size={18} />
+                                    <div>
+                                       <strong className="block text-base">Hardcover Cover PDF {(watch('coverPdfHardcoverFile') as any)?.[0]?.name || 'Current File'} {(watch('coverPdfHardcoverFile') as any)?.[0] ? 'selected' : 'active'}</strong>
+                                       <span className="text-xs font-normal">
+                                          {initialData?.coverPdfHardcover ? `Current file: ${initialData.coverPdfHardcover.split('/').pop()}` : 'File ready for printing.'}
+                                       </span>
+                                    </div>
+                                 </div>
+                              )}
+                           </div>
+                        )}
 
                          {/* Storefront Image Section - Only shown on Edit */}
                          {initialData?.id && (
