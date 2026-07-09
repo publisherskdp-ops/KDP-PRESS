@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { BookMarked, Globe, ShieldCheck, Mail, Users, Share2, Camera, Send } from 'lucide-react';
+import { BookMarked, Globe, ShieldCheck, Mail, Users, Share2, Camera, Send, HomeIcon } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -73,6 +73,10 @@ const Footer = () => {
                 <div className="flex items-center gap-3 text-slate-400">
                   <ShieldCheck size={18} className="text-sky-400" />
                   <span className="text-sm font-bold">Secure Settlement</span>
+                </div>
+                <div className="flex items-center gap-3 text-slate-400">
+                  <HomeIcon size={18} className="text-sky-400" />
+                  <span className="text-sm font-bold">Pasadena, CA 91101 United States</span>
                 </div>
               </div>
             </div>
