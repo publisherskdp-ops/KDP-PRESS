@@ -4,6 +4,7 @@ import BookUploadForm from "@/components/BookUploadForm";
 import React, { useState, useEffect, useRef } from "react";
 import { getDashboardBooksAction, updateBookCoverAction } from "@/app/bookstore/actions";
 import Image from "next/image";
+import Link from "next/link";
 import { toast } from 'sonner';
 import {
   Search,
@@ -311,10 +312,10 @@ function BookRow({
             )}
           </div>
           <div className="flex items-center gap-3 sm:justify-end">
-            <button className="flex items-center gap-1 text-blue-500 hover:text-blue-600 font-semibold transition-colors">
+            <Link href={`/bookstore/${book.id}`} className="flex items-center gap-1 text-blue-500 hover:text-blue-600 font-semibold transition-colors">
               <Eye size={12} />
               Store
-            </button>
+            </Link>
             <span className="text-slate-200">·</span>
             <button className="flex items-center gap-1 text-blue-500 hover:text-blue-600 font-semibold transition-colors">
               <Megaphone size={12} />

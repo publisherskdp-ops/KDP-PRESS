@@ -50,8 +50,8 @@ export default function BookCard({ book, onQuickView }: { book: any, onQuickView
       </div>
 
       {/* Book Cover Container */}
-      <div className="relative w-full aspect-[4/5] overflow-hidden group-hover:brightness-95 transition-all duration-500"
-         style={{ backgroundImage: `url("${book.image}")`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+      <div className="relative w-full aspect-[4/5] overflow-hidden group-hover:brightness-95 transition-all duration-500 bg-slate-50 dark:bg-slate-800"
+         style={{ backgroundImage: `url("${book.image}")`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'center' }}
       >
         <div className="absolute bottom-6 left-6 z-20">
           <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest bg-amber-500 text-white shadow-lg rounded-full">

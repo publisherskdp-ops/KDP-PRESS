@@ -446,7 +446,7 @@ export async function publishBookAction(rawFormData: FormData) {
       author: data.fullName,
       email: data.email,
       genre: data.genre,
-      descriptionHtml: data.descriptionHtml || '<p>No description provided yet.</p>',
+      descriptionHtml: data.descriptionHtml || data.description || '<p>No description provided yet.</p>',
       pricePaperback: enablePaperback ? pricePaperback : 0,
       priceEbook,
       priceHardcover: enableHardcover ? priceHardcover : 0,
