@@ -27,15 +27,15 @@ export default function CheckoutPage() {
 
   // Shipping Address State
   const [address, setAddress] = useState({
-    first_name: "asad",
-    last_name: "abbasi",
-    email: "devsavtech@gmail.com",
-    phone: "03000000000",
-    street1: "123 Main St",
-    city: "New York",
-    state_code: "NY",
-    postcode: "12345",
-    country_code: "US",
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    street1: "",
+    city: "",
+    state_code: "",
+    postcode: "",
+    country_code: "",
   });
 
   // Billing Address State
