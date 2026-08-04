@@ -40,6 +40,25 @@ function generateLuluPodId(specs: {
   return finalId;
 }
 
+/**
+ * Helper to delete a file from the public/library directory.
+ * Safely ignores non-local paths or missing files.
+ */
+async function deleteOldFile(relativeUrl: string | undefined) {
+  if (!relativeUrl || !relativeUrl.startsWith('/library/')) return;
+  
+  try {
+    const filePath = join(process.cwd(), 'public', relativeUrl);
+    // Check if file exists before trying to delete
+    await fs.access(filePath);
+    await fs.unlink(filePath);
+    console.log(`🗑️ Deleted old file: ${filePath}`);
+  } catch (error) {
+    // Silently fail if file doesn't exist or can't be accessed
+    console.warn(`⚠️ Could not delete old file: ${relativeUrl}`);
+  }
+}
+
 export async function getBooksAction() {
   try {
     await dbConnect();
@@ -235,10 +254,22 @@ export async function updateBookDetailsAction(slug: string, rawFormData: FormDat
         });
       }
 
-      if (imageUrl) updateFields.image = imageUrl;
-    if (coverPdfPaperbackUrl) updateFields.coverPdfPaperback = coverPdfPaperbackUrl;
-    if (coverPdfHardcoverUrl) updateFields.coverPdfHardcover = coverPdfHardcoverUrl;
-    if (manuscriptUrl) updateFields.manuscriptUrl = manuscriptUrl;
+      if (imageUrl) {
+        await deleteOldFile(book.image);
+        updateFields.image = imageUrl;
+      }
+      if (coverPdfPaperbackUrl) {
+        await deleteOldFile(book.coverPdfPaperback);
+        updateFields.coverPdfPaperback = coverPdfPaperbackUrl;
+      }
+      if (coverPdfHardcoverUrl) {
+        await deleteOldFile(book.coverPdfHardcover);
+        updateFields.coverPdfHardcover = coverPdfHardcoverUrl;
+      }
+      if (manuscriptUrl) {
+        await deleteOldFile(book.manuscriptUrl);
+        updateFields.manuscriptUrl = manuscriptUrl;
+      }
     if (data.status) updateFields.status = data.status;
 
     console.log("🛠️ Updating book with fields:", Object.keys(updateFields));
@@ -327,6 +358,9 @@ export async function updateBookCoverAction(slug: string, rawFormData: FormData)
 
     await fs.writeFile(filePath, buffer);
     const imageUrl = `/library/${bookFolderName}/${fileName}`;
+
+    // Cleanup old cover image if it exists
+    await deleteOldFile(book.image);
 
     book.image = imageUrl;
     await book.save();

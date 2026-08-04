@@ -135,11 +135,13 @@ function BookRow({
   onEdit,
   onUpdateCover,
   updatingCover,
+  isPriority = false,
 }: {
   book: any;
   onEdit: () => void;
   onUpdateCover: (e: React.ChangeEvent<HTMLInputElement>) => void;
   updatingCover: boolean;
+  isPriority?: boolean;
 }) {
   const s = getStatus(book.status);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -151,9 +153,16 @@ function BookRow({
         className="relative w-full md:w-32 aspect-[3/4] md:aspect-auto bg-slate-50 shrink-0 cursor-pointer min-h-[160px] md:min-h-0"
         onClick={() => fileRef.current?.click()}
         title="Click to update cover"
-      >
+      > 
         {book.image ? (
-          <Image src={book.image} alt={book.title} fill className="object-cover" />
+          <Image 
+            src={book.image} 
+            alt={book.title} 
+            fill 
+            className="object-cover" 
+            sizes="(max-width: 768px) 100vw, 128px"
+            priority={isPriority}
+          />
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-slate-300 p-4 text-center">
             <Sparkles size={20} />
@@ -493,13 +502,14 @@ export default function Dashboard() {
               <SkeletonCard />
             </>
           ) : filteredBooks.length > 0 ? (
-            filteredBooks.map((book) => (
+            filteredBooks.map((book, index) => (
               <BookRow
                 key={book.id}
                 book={book}
                 onEdit={() => setActiveUploadFormat({ format: "KDP", bookData: book })}
                 onUpdateCover={(e) => handleCoverUpdate(book.id, e)}
                 updatingCover={updatingCoverSlug === book.id}
+                isPriority={index < 2}
               />
             ))
           ) : (
